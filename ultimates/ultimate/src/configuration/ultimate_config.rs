@@ -56,21 +56,6 @@ impl TryFrom<&Config> for UltimateConfig {
   }
 }
 
-pub trait KeyTrait {
-  fn token_key(&self) -> &[u8];
-  fn token_duration_sec(&self) -> i64;
-}
-
-impl KeyTrait for UltimateConfig {
-  fn token_key(&self) -> &[u8] {
-    self.security.token().secret_key()
-  }
-
-  fn token_duration_sec(&self) -> i64 {
-    self.security.token().token_expires_in()
-  }
-}
-
 #[derive(Debug, Clone, Serialize, PartialEq)]
 pub enum ApiValidEffect {
   Allow,
@@ -125,7 +110,7 @@ impl<'d> Visitor<'d> for StrToApiValidEffect {
 
 #[cfg(test)]
 mod tests {
-  use crate::configuration::util::load_config;
+  use crate::configuration::{model::KeyConf, util::load_config};
 
   use super::*;
 
@@ -134,14 +119,17 @@ mod tests {
     // 两个下划线作为层级分隔符
     std::env::set_var("FUSION__WEB__SERVER_ADDR", "0.0.0.0:8000");
 
-    std::env::set_var("FUSION__TOKEN_KEY", "8462b1ec9af827ebed13926f8f1e5409774fa1a21a1c8f726a4a34cf7dcabaf2");
-    std::env::set_var("FUSION__PWD_KEY", "80c9a35c0f231219ca14c44fe10c728d");
+    std::env::set_var(
+      "FUSION__SECURITY__TOKEN__SECRET_KEY",
+      "8462b1ec9af827ebed13926f8f1e5409774fa1a21a1c8f726a4a34cf7dcabaf2",
+    );
+    std::env::set_var("FUSION__SECURITY__PWD__PWD_KEY", "80c9a35c0f231219ca14c44fe10c728d");
     std::env::set_var("FUSION__APP__NAME", "ultimate");
     let c = load_config().unwrap();
     let qc = UltimateConfig::try_from(&c).unwrap();
 
-    assert_eq!(qc.token_key(), b"80c9a35c0f231219ca14c44fe10c728d");
-    assert_eq!(qc.token_key(), b"8462b1ec9af827ebed13926f8f1e5409774fa1a21a1c8f726a4a34cf7dcabaf2");
+    assert_eq!(qc.security().pwd().pwd_key(), b"80c9a35c0f231219ca14c44fe10c728d");
+    assert_eq!(qc.security().token().secret_key(), b"8462b1ec9af827ebed13926f8f1e5409774fa1a21a1c8f726a4a34cf7dcabaf2");
 
     // 由默认配置文件提供
     assert_eq!(qc.web().server_addr(), "0.0.0.0:8000");

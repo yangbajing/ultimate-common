@@ -10,6 +10,9 @@ repository.workspace = true
 [lints]
 workspace = true
 
+[features]
+
+
 [dependencies]
 ultimate-common.workspace = true
 ultimate.workspace = true
@@ -23,3 +26,4 @@ serde.workspace = true
 serde_json.workspace = true
 serde_with.workspace = true
 uuid.workspace = true
+tonic = { workspace = true, optional = true }

@@ -4,11 +4,12 @@ name = "qinling"
 
 [ultimate.security.pwd]
 pwd_key = "0123456789ABCDEF0123456789ABCDEF"
-pwd_expires_in = 604800
+secret_key = "0123456789ABCDEF0123456789ABCDEF"
+expires_in = 604800
 default_pwd = "2024.Ultimate"
 
 [ultimate.security.token]
-token_expires_in = 7200
+expires_in = 7200
 secret_key = "0123456789ABCDEF0123456789ABCDEF"
 public_key = """-----BEGIN PUBLIC KEY-----
 MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEOTv4YquENmDfXoSN0TQiOqmgR1Px

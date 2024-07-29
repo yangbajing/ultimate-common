@@ -21,8 +21,8 @@ pub fn unauthorized_app_error(msg: impl Into<String>) -> (StatusCode, Json<AppEr
 /// 从 Http Request Parts 中获取 [SessionCtx]
 pub fn extract_session(parts: &Parts, sc: &SecruityConfig) -> Result<Session, DataError> {
   let req_time = time::now();
-  let typed_get = parts.headers.typed_get::<Authorization<Bearer>>();
-  let token = if let Some(Authorization(bearer)) = typed_get {
+
+  let token = if let Some(Authorization(bearer)) = parts.headers.typed_get::<Authorization<Bearer>>() {
     bearer.token().to_string()
   } else if let Ok(at) = Query::<AccessToken>::try_from_uri(&parts.uri) {
     at.0.access_token
@@ -31,7 +31,7 @@ pub fn extract_session(parts: &Parts, sc: &SecruityConfig) -> Result<Session, Da
   };
 
   let (payload, _) =
-    SecurityUtils::decrypt_jwt(sc.token(), &token).map_err(|_e| DataError::unauthorized("Failed decode jwt"))?;
+    SecurityUtils::decrypt_jwt(sc.pwd(), &token).map_err(|_e| DataError::unauthorized("Failed decode jwt"))?;
 
   Session::try_from_jwt_payload(&payload, Some(req_time))
 }

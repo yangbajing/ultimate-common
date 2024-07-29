@@ -20,7 +20,7 @@ pub(crate) async fn login_by_password(state: &Application, req: &LoginByPassword
 
   let mut payload = JwtPayload::new();
   payload.set_subject(u.id.to_string());
-  let token = SecurityUtils::encrypt_pwd_jwt(state.ultimate_config().security().pwd(), payload)
+  let token = SecurityUtils::encrypt_jwt(state.ultimate_config().security().pwd(), payload)
     .map_err(|_e| DataError::unauthorized("Failed generate token"))?;
 
   Ok(LoginResp { token })

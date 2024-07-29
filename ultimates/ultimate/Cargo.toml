@@ -18,8 +18,7 @@ thiserror.workspace = true
 regex.workspace = true
 tokio.workspace = true
 async-trait.workspace = true
-toml = "0.8"
-# yaml-rust = "0.4"
+toml.workspace = true
 config.workspace = true
 strum_macros.workspace = true
 uuid.workspace = true
@@ -29,13 +28,13 @@ tracing-log.workspace = true
 tracing-subscriber.workspace = true
 tracing-appender = { workspace = true, optional = true }
 rand.workspace = true
-argon2 = "0.5"
+argon2.workspace = true
 josekit.workspace = true
 serde.workspace = true
 serde_json.workspace = true
 serde_with.workspace = true
 derive_more.workspace = true
-# tonic = { workspace = true, optional = true }
+tonic = { workspace = true, optional = true }
 
 [dev-dependencies]
 dotenvy.workspace = true

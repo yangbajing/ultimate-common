@@ -4,7 +4,7 @@ use hyper::StatusCode;
 use typed_builder::TypedBuilder;
 use ultimate::{configuration::UltimateConfig, ctx::Session, Result};
 use ultimate_db::ModelManager;
-use ultimate_web::{utils::extract_session, AppError};
+use ultimate_web::{extract_session, AppError};
 
 use crate::application::{new_application, Application};
 

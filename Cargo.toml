@@ -26,7 +26,7 @@ ultimate-db = { version = "0.1", path = "ultimates/ultimate-db" }
 ultimate-web = { version = "0.1", path = "ultimates/ultimate-web" }
 # -- projects end
 derive_more = { version = "1.0.0-beta", features = ["from", "display"] }
-# o2o = "0.4"
+toml = "0.8"
 config = { version = "0.14", default-features = false, features = [
     "toml",
     "yaml",
@@ -64,6 +64,7 @@ base64ct = { version = "1", features = ["std", "alloc"] }
 aes-gcm = "0.10"
 hmac = "0.12"
 sha2 = "0.10"
+argon2 = "0.5"
 # -- JWT & JWE
 josekit = "0.8"
 aliri = "0.6"
