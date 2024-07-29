@@ -6,11 +6,11 @@ token_duration_sec = 7200
 
 [ultimate.app]
 run_mode = "DEV"
-name = "qinling-iam"
+name = "ultimate-iam"
 
 [ultimate.db]
 enable = true
-url = "postgres://qinling:2024.Qinling@localhost:55432/qinling"
+url = "postgres://ultimate:2024.Ultimate@localhost:5432/ultimate"
 
 [ultimate.trace]
 enable = true
@@ -28,6 +28,6 @@ enable = false
 server_addr = "127.0.0.1:9501"
 plaintext = true
 
-[ultimate.grpc.clients.qinling-iam]
+[ultimate.grpc.clients.ultimate-iam]
 addr = "http://127.0.0.1:9501"
 plaintext = true

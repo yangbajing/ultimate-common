@@ -15,6 +15,9 @@ pub type Result<T> = core::result::Result<T, Error>;
 #[serde_as]
 #[derive(Debug, Serialize, Error)]
 pub enum Error {
+  #[error("Unauthorized")]
+  Unauthorized,
+
   #[error("Invalid argment, error message: {message}")]
   InvalidArgument { message: String },
 
@@ -43,14 +46,14 @@ pub enum Error {
 
   // -- Modules
   #[error(transparent)]
-  Pwd(#[from] security::Error),
+  SecurityError(#[from] security::Error),
 
   #[error(transparent)]
-  Dbx(#[from] dbx::Error),
+  DbxError(#[from] dbx::Error),
 
   // -- Externals
   #[error(transparent)]
-  SeaQuery(
+  SeaQueryError(
     #[from]
     #[serde_as(as = "DisplayFromStr")]
     sea_query::error::Error,
@@ -92,7 +95,7 @@ impl Error {
   /// if this Error is an SQLX Error that contains a database error.
   pub fn as_database_error(&self) -> Option<&(dyn DatabaseError + 'static)> {
     match self {
-      Error::Dbx(dbx::Error::Sqlx(sqlx_error)) => sqlx_error.as_database_error(),
+      Error::DbxError(dbx::Error::Sqlx(sqlx_error)) => sqlx_error.as_database_error(),
       _ => None,
     }
   }

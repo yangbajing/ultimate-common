@@ -9,7 +9,7 @@ use crate::error::DataError;
 #[derive(Clone, Debug)]
 pub struct Session {
   /// 会话用户 ID
-  user_id: i64,
+  uid: i64,
   /// 请求时时间
   req_time: OffsetDateTime,
   /// 会话过期时间
@@ -17,8 +17,8 @@ pub struct Session {
 }
 
 impl Session {
-  pub fn new(user_id: i64, req_time: OffsetDateTime, expires_at: OffsetDateTime) -> Self {
-    Self { user_id, req_time, expires_at }
+  pub fn new(uid: i64, req_time: OffsetDateTime, expires_at: OffsetDateTime) -> Self {
+    Self { uid, req_time, expires_at }
   }
 
   pub fn new_root() -> Self {
@@ -27,8 +27,8 @@ impl Session {
     Self::new(0, req_time, expires_at)
   }
 
-  pub fn user_id(&self) -> i64 {
-    self.user_id
+  pub fn uid(&self) -> i64 {
+    self.uid
   }
 
   pub fn req_time(&self) -> &OffsetDateTime {
@@ -45,7 +45,7 @@ impl Session {
 
     let sub = payload.subject().ok_or_else(|| DataError::unauthorized("'sub' of jwt missing"))?;
 
-    let user_id: i64 = sub.parse().map_err(|_| DataError::unauthorized(format!("<sub:{sub}> invalid")))?;
+    let uid: i64 = sub.parse().map_err(|_| DataError::unauthorized(format!("<sub:{sub}> invalid")))?;
 
     let expires_at: UtcDateTime = if let Some(st) = payload.expires_at() {
       let expires_at = st.into();
@@ -57,7 +57,7 @@ impl Session {
       OffsetDateTime::MAX_UTC
     };
 
-    Ok(Session::new(user_id, req_time, expires_at.fixed_offset()))
+    Ok(Session::new(uid, req_time, expires_at.fixed_offset()))
   }
 }
 

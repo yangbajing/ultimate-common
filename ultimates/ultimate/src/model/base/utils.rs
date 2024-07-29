@@ -15,7 +15,7 @@ where
   MC: DbBmc,
 {
   if MC::has_owner_id() {
-    fields.push(SeaField::new(CommonIden::OwnerId.into_iden(), session.user_id()));
+    fields.push(SeaField::new(CommonIden::OwnerId.into_iden(), session.uid()));
   }
   if MC::has_creation_timestamps() {
     fields = add_timestamps_for_create(fields, session);
@@ -45,7 +45,7 @@ fn _exists_in_fields(fields: &[SeaField], iden: DynIden) -> bool {
 fn add_timestamps_for_create(fields: SeaFields, session: &Session) -> SeaFields {
   let mut fields = fields.into_vec();
   if !_exists_in_fields(&fields, TimestampIden::Cid.into_iden()) {
-    fields.push(SeaField::new(TimestampIden::Cid, session.user_id()));
+    fields.push(SeaField::new(TimestampIden::Cid, session.uid()));
   }
   if !_exists_in_fields(&fields, TimestampIden::Ctime.into_iden()) {
     fields.push(SeaField::new(TimestampIden::Ctime, *session.req_time()));
@@ -58,7 +58,7 @@ fn add_timestamps_for_create(fields: SeaFields, session: &Session) -> SeaFields 
 fn add_timestamps_for_update(fields: SeaFields, session: &Session) -> SeaFields {
   let mut fields = fields.into_vec();
   if !_exists_in_fields(&fields, TimestampIden::Mid.into_iden()) {
-    fields.push(SeaField::new(TimestampIden::Mid, session.user_id()));
+    fields.push(SeaField::new(TimestampIden::Mid, session.uid()));
   }
   if !_exists_in_fields(&fields, TimestampIden::Mtime.into_iden()) {
     fields.push(SeaField::new(TimestampIden::Mtime, *session.req_time()));

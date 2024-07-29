@@ -6,7 +6,6 @@ pub mod modql_utils;
 pub mod store;
 
 use crate::ctx::Session;
-use crate::error::DataError;
 use crate::model::store::dbx::{new_db_pool_from_config, Dbx};
 use crate::model::store::DbConfig;
 
@@ -15,7 +14,7 @@ pub use self::error::{Error, Result};
 #[derive(Clone)]
 pub struct ModelManager {
   dbx: Dbx,
-  ctx: Option<Session>,
+  session: Option<Session>,
 }
 
 impl ModelManager {
@@ -24,28 +23,28 @@ impl ModelManager {
     let db_pool =
       new_db_pool_from_config(db_config).await.map_err(|ex| Error::CantCreateModelManagerProvider(ex.to_string()))?;
     let dbx = Dbx::new(db_pool, false)?;
-    Ok(ModelManager { dbx, ctx: None })
+    Ok(ModelManager { dbx, session: None })
   }
 
   pub fn new_with_txn(&self) -> Result<ModelManager> {
     let dbx = Dbx::new(self.dbx.db().clone(), true)?;
-    Ok(ModelManager { dbx, ctx: self.ctx.clone() })
+    Ok(ModelManager { dbx, session: self.session.clone() })
   }
 
   pub fn dbx(&self) -> &Dbx {
     &self.dbx
   }
 
-  pub fn ctx_opt_ref(&self) -> Option<&Session> {
-    self.ctx.as_ref()
+  pub fn session_opt_ref(&self) -> Option<&Session> {
+    self.session.as_ref()
   }
 
-  pub fn ctx_ref(&self) -> core::result::Result<&Session, DataError> {
-    self.ctx.as_ref().ok_or(DataError::unauthorized("Unauthorized"))
+  pub fn session_ref(&self) -> Result<&Session> {
+    self.session.as_ref().ok_or(Error::Unauthorized)
   }
 
-  pub fn with_ctx(mut self, ctx: Session) -> Self {
-    self.ctx = Some(ctx);
+  pub fn with_session(mut self, ctx: Session) -> Self {
+    self.session = Some(ctx);
     self
   }
 }

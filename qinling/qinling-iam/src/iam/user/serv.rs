@@ -27,7 +27,7 @@ pub async fn create_user(ctx: &Ctx, user_c: UserForCreate) -> Result<i64> {
   let uc = UserCredentialEntity {
     id,
     pwd_hash,
-    cid: ctx.session().user_id(),
+    cid: ctx.session().uid(),
     ctime: *ctx.session().req_time(),
     ..Default::default()
   };
@@ -58,7 +58,7 @@ pub async fn update_user_password(ctx: &Ctx, pwd_u: PwdForUpdate) -> Result<()> 
   let mut uc = UserCredentialBmc::find_by_id(ctx.mm(), pwd_u.id).await?;
 
   // 管理员权限可以不用判断 old_password
-  if !is_admin(ctx.state(), ctx.session().user_id()) {
+  if !is_admin(ctx.state(), ctx.session().uid()) {
     let plain = pwd_u.old_password.ok_or_else(|| DataError::bad_request("普通用户需要传历史密码"))?;
     pwd::verify_pwd(&plain, &uc.pwd_hash).await?;
   }

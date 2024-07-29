@@ -1,7 +1,7 @@
-use ultimate_common::time::OffsetDateTime;
 use modql::field::{Fields, HasSeaFields};
 use serde::{Deserialize, Serialize};
 use sqlx::{postgres::PgRow, FromRow};
+use ultimate_common::time::OffsetDateTime;
 
 use crate::iam::repos::model::UserRoleRel;
 

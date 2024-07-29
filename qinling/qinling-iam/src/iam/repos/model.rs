@@ -1,8 +1,8 @@
-use ultimate_common::time::OffsetDateTime;
 use modql::field::{Fields, HasSeaFields};
 use sea_query::Iden;
 use serde::Deserialize;
 use sqlx::{postgres::PgRow, FromRow};
+use ultimate_common::time::OffsetDateTime;
 
 #[derive(Deserialize, Default, FromRow, Fields)]
 pub struct UserRoleRel {

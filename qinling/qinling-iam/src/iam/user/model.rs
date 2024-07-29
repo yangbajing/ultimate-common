@@ -1,9 +1,9 @@
-use ultimate::{error::DataError, Result};
-use ultimate_common::time::OffsetDateTime;
 use modql::field::{Fields, HasSeaFields};
 use sea_query::Iden;
 use serde::{Deserialize, Serialize};
 use sqlx::{postgres::PgRow, FromRow};
+use ultimate::{error::DataError, Result};
+use ultimate_common::time::OffsetDateTime;
 
 use crate::iam::repos::model::UserRoleRel;
 

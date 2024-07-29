@@ -1,8 +1,8 @@
-use ultimate_common::time::OffsetDateTime;
 use modql::field::{Fields, HasSeaFields};
 use sea_query::enum_def;
 use serde::Deserialize;
 use sqlx::{postgres::PgRow, prelude::FromRow};
+use ultimate_common::time::OffsetDateTime;
 
 #[derive(Default, Deserialize, FromRow, Fields)]
 #[enum_def]

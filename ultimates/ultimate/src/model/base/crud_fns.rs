@@ -276,7 +276,7 @@ where
   MC: DbBmc,
 {
   // -- Build query
-  let (sql, values) = if MC::use_logic_delete() {
+  let (sql, values) = if MC::use_logical_deletion() {
     // -- Prep Fields
     let mut fields = SeaFields::new(vec![SeaField::new(CommonIden::LogiscalDeletion, true)]);
     if MC::has_modification_timestamps() {
@@ -310,7 +310,7 @@ where
   MC: DbBmc,
 {
   if count == 0 {
-    Err(Error::EntityNotFound { schema: MC::SCHEMA, entity: MC::SCHEMA, id })
+    Err(Error::EntityNotFound { schema: MC::SCHEMA, entity: MC::TABLE, id })
   } else {
     Ok(())
   }

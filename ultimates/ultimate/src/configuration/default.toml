@@ -4,7 +4,7 @@ name = "qinling"
 
 [ultimate.security.pwd]
 pwd_key = "0123456789ABCDEF0123456789ABCDEF"
-pwd_expires_in = 86400
+pwd_expires_in = 604800
 default_pwd = "2024.Ultimate"
 
 [ultimate.security.token]
@@ -44,4 +44,4 @@ server_addr = "127.0.0.1:9501"
 plaintext = true
 
 [ultimate.grpc.clients]
-qinling-iam = { addr = "http://127.0.0.1:9501", plaintext = true }
+# ultimate-iam = { addr = "http://127.0.0.1:9501", plaintext = true }

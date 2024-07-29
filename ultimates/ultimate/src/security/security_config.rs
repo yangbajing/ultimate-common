@@ -1,10 +1,10 @@
 use derive_getters::Getters;
+use josekit::{jwe::JweHeader, jwt::JwtPayload, JoseError};
+use serde::{Deserialize, Serialize};
 use ultimate_common::{
   string::{deser_str_to_vecu8, ser_vecu8_to_str},
   time::{self, Duration, OffsetDateTime},
 };
-use josekit::{jwe::JweHeader, jwt::JwtPayload, JoseError};
-use serde::{Deserialize, Serialize};
 
 use super::jose::{decrypt_jwe_dir, encrypt_jwe_dir};
 
@@ -30,9 +30,13 @@ impl SecruityConfig {
 
 #[derive(Clone, Deserialize, Serialize)]
 pub struct PwdConf {
+  /// 密码过期秒数
   pub(crate) pwd_expires_in: i64,
+
   #[serde(deserialize_with = "deser_str_to_vecu8", serialize_with = "ser_vecu8_to_str")]
   pub(crate) pwd_key: Vec<u8>,
+
+  /// 创建新用户时的默认密码（未未指定）
   pub(crate) default_pwd: String,
 }
 

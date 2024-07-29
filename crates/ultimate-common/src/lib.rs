@@ -5,6 +5,7 @@ pub mod env;
 mod error;
 pub mod meta;
 pub mod model;
+pub mod regex;
 pub mod runtime;
 pub mod serde;
 pub mod string;

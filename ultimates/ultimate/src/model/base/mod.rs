@@ -26,6 +26,7 @@ pub enum CommonIden {
   Id,
   OwnerId,
   LogiscalDeletion,
+  OptimisticLock,
 }
 
 #[derive(Iden)]
@@ -73,7 +74,7 @@ pub trait DbBmc {
   /// 是否使用逻辑删除
   ///
   /// default: false
-  fn use_logic_delete() -> bool {
+  fn use_logical_deletion() -> bool {
     false
   }
 
@@ -87,7 +88,7 @@ pub trait DbBmc {
 
   /// 乐观锁
   /// default: false
-  fn has_ol_verion() -> bool {
+  fn has_optimistic_lock() -> bool {
     false
   }
 }

@@ -72,7 +72,7 @@ impl From<model::Error> for DataError {
       model::Error::NotFound { .. } => Self::not_found(e.to_string()),
       model::Error::UserAlreadyExists { .. } => Self::confilicted(e.to_string()),
       model::Error::UniqueViolation { .. } => Self::confilicted(e.to_string()),
-      model::Error::SeaQuery(_) => Self::bad_request(e.to_string()),
+      model::Error::SeaQueryError(_) => Self::bad_request(e.to_string()),
       _ => DataError::server_error(e.to_string()),
     }
   }

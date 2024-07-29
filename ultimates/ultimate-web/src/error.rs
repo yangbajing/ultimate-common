@@ -3,7 +3,7 @@ use axum::response::IntoResponse;
 use axum::Json;
 use serde::Serialize;
 use serde_json::Value;
-use tracing::warn;
+use tracing::debug;
 use ultimate::error::DataError;
 use ultimate::security;
 use uuid::Uuid;
@@ -66,7 +66,7 @@ impl From<DataError> for AppError {
   fn from(err: DataError) -> Self {
     match err {
       DataError::BizError { code, msg } => {
-        warn!("biz error. code:{code}, msg: {msg}");
+        debug!("biz error. code:{code}, msg: {msg}");
         Self::new(msg).with_err_code(code)
       }
       DataError::SecurityError(e) => convert_security_error(e),
