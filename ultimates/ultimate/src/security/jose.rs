@@ -84,7 +84,7 @@ mod tests {
     time::{Duration, SystemTime},
   };
 
-  use crate::{configuration::load_config, security::SecruityConfig};
+  use crate::configuration::{load_config, model::SecruityConfig};
 
   use super::*;
 

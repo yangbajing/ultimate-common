@@ -1,15 +1,8 @@
-pub mod acs;
-pub mod auth;
-pub mod base;
-mod error;
-pub mod modql_utils;
-pub mod store;
+use ultimate::{configuration::model::DbConfig, ctx::Session};
 
-use crate::ctx::Session;
-use crate::model::store::dbx::{new_db_pool_from_config, Dbx};
-use crate::model::store::DbConfig;
+use crate::store::{dbx::new_db_pool_from_config, Dbx};
 
-pub use self::error::{Error, Result};
+use crate::{Error, Result};
 
 #[derive(Clone)]
 pub struct ModelManager {
@@ -46,21 +39,5 @@ impl ModelManager {
   pub fn with_session(mut self, ctx: Session) -> Self {
     self.session = Some(ctx);
     self
-  }
-}
-
-#[derive(Clone)]
-pub struct DbState {
-  mm: ModelManager,
-}
-
-impl DbState {
-  pub async fn from_config(db: &DbConfig) -> Result<Self> {
-    let mm = ModelManager::new(db).await?;
-    Ok(DbState { mm })
-  }
-
-  pub fn mm(&self) -> &ModelManager {
-    &self.mm
   }
 }

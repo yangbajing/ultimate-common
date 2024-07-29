@@ -4,11 +4,12 @@ use axum::http::StatusCode;
 use axum::Json;
 use axum_extra::headers::authorization::Bearer;
 use axum_extra::headers::{Authorization, HeaderMapExt};
+use serde::de::DeserializeOwned;
+use ultimate::configuration::model::SecruityConfig;
 use ultimate::ctx::Session;
 use ultimate::error::DataError;
-use ultimate::security::{AccessToken, SecruityConfig};
+use ultimate::security::{AccessToken, SecurityUtils};
 use ultimate_common::time;
-use serde::de::DeserializeOwned;
 
 use crate::error::AppError;
 use crate::AppResult;
@@ -29,7 +30,8 @@ pub fn extract_session(parts: &Parts, sc: &SecruityConfig) -> Result<Session, Da
     return Err(DataError::unauthorized("Missing token"));
   };
 
-  let (payload, _) = sc.decrypt_jwt(&token).map_err(|_e| DataError::unauthorized("Failed decode jwt"))?;
+  let (payload, _) =
+    SecurityUtils::decrypt_jwt(sc.token(), &token).map_err(|_e| DataError::unauthorized("Failed decode jwt"))?;
 
   Session::try_from_jwt_payload(&payload, Some(req_time))
 }

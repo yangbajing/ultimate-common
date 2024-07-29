@@ -5,13 +5,13 @@ use sea_query_binder::SqlxBinder;
 use sqlx::postgres::PgRow;
 use sqlx::FromRow;
 use sqlx::Row;
+use ultimate::ctx::Session;
 
-use crate::ctx::Session;
-use crate::model::base::{
+use crate::base::{
   prep_fields_for_create, prep_fields_for_update, CommonIden, DbBmc, LIST_LIMIT_DEFAULT, LIST_LIMIT_MAX,
 };
-use crate::model::ModelManager;
-use crate::model::{Error, Result};
+use crate::ModelManager;
+use crate::{Error, Result};
 
 use super::{check_number_of_affected, Id};
 

@@ -1,9 +1,8 @@
-use std::fmt::Display;
-
 use serde::{
   de::{Unexpected, Visitor},
   Deserialize, Deserializer, Serialize,
 };
+use std::fmt::Display;
 use tracing::log::Level;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

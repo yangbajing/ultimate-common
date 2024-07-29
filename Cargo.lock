@@ -2156,6 +2156,7 @@ dependencies = [
  "typed-builder",
  "ultimate",
  "ultimate-common",
+ "ultimate-db",
  "ultimate-web",
  "utoipa",
  "uuid",
@@ -3616,21 +3617,15 @@ dependencies = [
  "argon2",
  "async-trait",
  "config",
- "derive-getters",
  "derive_more",
  "dotenvy",
  "josekit",
  "log",
- "modql",
  "rand 0.8.5",
  "regex",
- "sea-query",
- "sea-query-binder",
  "serde",
  "serde_json",
- "serde_urlencoded",
  "serde_with",
- "sqlx",
  "strum_macros",
  "thiserror",
  "tokio",
@@ -3659,6 +3654,28 @@ dependencies = [
  "serde_json",
  "sha2",
  "thiserror",
+]
+
+[[package]]
+name = "ultimate-db"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "derive_more",
+ "log",
+ "modql",
+ "sea-query",
+ "sea-query-binder",
+ "serde",
+ "serde_json",
+ "serde_with",
+ "sqlx",
+ "thiserror",
+ "tokio",
+ "tracing",
+ "ultimate",
+ "ultimate-common",
+ "uuid",
 ]
 
 [[package]]

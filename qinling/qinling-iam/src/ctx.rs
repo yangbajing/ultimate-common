@@ -2,7 +2,8 @@ use axum::{async_trait, extract::FromRequestParts, http::request::Parts, Json};
 use derive_getters::Getters;
 use hyper::StatusCode;
 use typed_builder::TypedBuilder;
-use ultimate::{configuration::UltimateConfig, ctx::Session, model::ModelManager, Result};
+use ultimate::{configuration::UltimateConfig, ctx::Session, Result};
+use ultimate_db::ModelManager;
 use ultimate_web::{utils::extract_session, AppError};
 
 use crate::application::{new_application, Application};

@@ -1,22 +1,20 @@
 //! 通用配置文件[^config]。
-//! 默认配置在 `src/config/default.toml` 文件提供。
+//! 默认配置在 [default.toml] 文件提供。
 //!
 //! [^config]: 使用了 crate [config](https://docs.rs/config)
+use config::Config;
 use std::{env, str::FromStr, sync::Arc};
 
-use ::config::Config;
-
-pub use error::{Error, Result};
-pub use trace_config::{LogWriterType, TraceConfig};
 use ultimate_common::string::b64u_decode;
-pub use ultimate_config::*;
-
-pub(crate) use self::util::load_config;
 
 mod error;
-mod trace_config;
+pub mod model;
 mod ultimate_config;
 mod util;
+
+pub(crate) use self::util::load_config;
+pub use error::{Error, Result};
+pub use ultimate_config::*;
 
 #[derive(Clone)]
 pub struct ConfigState {

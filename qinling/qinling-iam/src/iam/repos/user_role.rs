@@ -1,9 +1,7 @@
-use ultimate::{
-  ctx::Session,
-  model::{
-    base::{self, DbBmc},
-    ModelManager, Result,
-  },
+use ultimate::ctx::Session;
+use ultimate_db::{
+  base::{self, DbBmc},
+  ModelManager, Result,
 };
 
 use super::model::*;

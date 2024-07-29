@@ -2,9 +2,9 @@ use derive_getters::Getters;
 use typed_builder::TypedBuilder;
 use ultimate::configuration::UltimateConfig;
 
-use ultimate::model::{DbState, ModelManager};
 use ultimate::Result;
 use ultimate::{configuration::ConfigState, starter};
+use ultimate_db::{DbState, ModelManager};
 
 #[derive(Clone, TypedBuilder, Getters)]
 pub struct Application {

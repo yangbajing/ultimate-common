@@ -1,25 +1,19 @@
+use derive_more::Display;
+use sea_query::{Iden, SimpleExpr};
+use serde::{Deserialize, Serialize};
+use uuid::Uuid;
+
 mod crud_fns;
+mod db_bmc;
 mod macro_utils;
 mod utils;
 
-// region:    --- Modules
-
-use derive_more::{Display, From};
-use modql::SIden;
-use sea_query::{Iden, IntoIden, SimpleExpr, TableRef};
-
-// -- Flatten hierarchy for user code.
 pub use crud_fns::*;
-use serde::{Deserialize, Serialize};
+pub use db_bmc::*;
 pub use utils::*;
-use uuid::Uuid;
 
 const LIST_LIMIT_DEFAULT: i64 = 1000;
 const LIST_LIMIT_MAX: i64 = 5000;
-
-// endregion: --- Consts
-
-// region:    --- SeaQuery Idens
 
 #[derive(Iden)]
 pub enum CommonIden {
@@ -35,62 +29,6 @@ pub enum TimestampIden {
   Ctime,
   Mid,
   Mtime,
-}
-
-// endregion: --- SeaQuery Idens
-
-/// The DbBmc trait must be implemented for the Bmc struct of an entity.
-/// It specifies meta information such as the table name,
-/// whether the table has timestamp columns (cid, ctime, mid, mtime), and more as the
-/// code evolves.
-///
-/// Note: This trait should not be confused with the BaseCrudBmc trait, which provides
-///       common default CRUD BMC functions for a given Bmc/Entity.
-pub trait DbBmc {
-  const TABLE: &'static str;
-  const SCHEMA: &'static str = "public";
-
-  fn table_ref() -> TableRef {
-    TableRef::SchemaTable(SIden(Self::SCHEMA).into_iden(), SIden(Self::TABLE).into_iden())
-  }
-
-  fn qualified_table() -> (&'static str, &'static str) {
-    (Self::SCHEMA, Self::TABLE)
-  }
-
-  /// Specifies that the table for this Bmc has timestamps (cid, ctime, mid, mtime) columns.
-  /// This will allow the code to update those as needed.
-  ///
-  /// default: true
-  fn has_creation_timestamps() -> bool {
-    true
-  }
-
-  /// default: true
-  fn has_modification_timestamps() -> bool {
-    true
-  }
-
-  /// 是否使用逻辑删除
-  ///
-  /// default: false
-  fn use_logical_deletion() -> bool {
-    false
-  }
-
-  /// Specifies if the entity table managed by this BMC
-  /// has an `owner_id` column that needs to be set on create (by default ctx.user_id).
-  ///
-  /// default: false
-  fn has_owner_id() -> bool {
-    false
-  }
-
-  /// 乐观锁
-  /// default: false
-  fn has_optimistic_lock() -> bool {
-    false
-  }
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Display)]

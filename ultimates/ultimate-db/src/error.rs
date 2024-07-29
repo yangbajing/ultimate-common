@@ -4,9 +4,7 @@ use serde::Serialize;
 use serde_with::{serde_as, DisplayFromStr};
 use sqlx::error::DatabaseError;
 use thiserror::Error;
-
-use crate::model::store::dbx;
-use crate::security;
+use ultimate::error::DataError;
 
 use super::base::Id;
 
@@ -46,10 +44,10 @@ pub enum Error {
 
   // -- Modules
   #[error(transparent)]
-  SecurityError(#[from] security::Error),
+  SecurityError(#[from] ultimate::security::Error),
 
   #[error(transparent)]
-  DbxError(#[from] dbx::Error),
+  DbxError(#[from] crate::store::dbx::Error),
 
   // -- Externals
   #[error(transparent)]
@@ -95,8 +93,21 @@ impl Error {
   /// if this Error is an SQLX Error that contains a database error.
   pub fn as_database_error(&self) -> Option<&(dyn DatabaseError + 'static)> {
     match self {
-      Error::DbxError(dbx::Error::Sqlx(sqlx_error)) => sqlx_error.as_database_error(),
+      Error::DbxError(crate::store::dbx::Error::SqlxError(sqlx_error)) => sqlx_error.as_database_error(),
       _ => None,
+    }
+  }
+}
+
+impl From<Error> for DataError {
+  fn from(e: Error) -> Self {
+    match e {
+      Error::EntityNotFound { .. } => Self::not_found(e.to_string()),
+      Error::NotFound { .. } => Self::not_found(e.to_string()),
+      Error::UserAlreadyExists { .. } => Self::confilicted(e.to_string()),
+      Error::UniqueViolation { .. } => Self::confilicted(e.to_string()),
+      Error::SeaQueryError(_) => Self::bad_request(e.to_string()),
+      _ => DataError::server_error(e.to_string()),
     }
   }
 }

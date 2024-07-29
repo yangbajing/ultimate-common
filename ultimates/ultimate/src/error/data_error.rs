@@ -5,7 +5,7 @@ use serde::{ser::SerializeMap, Serialize};
 use thiserror::Error;
 use tracing::error;
 
-use crate::{model, security};
+use crate::security::Error as SecurityError;
 
 #[derive(Error, Debug)]
 pub enum DataError {
@@ -13,7 +13,7 @@ pub enum DataError {
   BizError { code: i32, msg: String },
 
   #[error(transparent)]
-  SecurityError(#[from] security::Error),
+  SecurityError(#[from] SecurityError),
 
   #[error(transparent)]
   UltimateCommonError(#[from] ultimate_common::Error),
@@ -62,26 +62,6 @@ impl DataError {
 
   pub fn ok(msg: impl Into<String>) -> Self {
     DataError::BizError { code: 0, msg: msg.into() }
-  }
-}
-
-impl From<model::Error> for DataError {
-  fn from(e: model::Error) -> Self {
-    match e {
-      model::Error::EntityNotFound { .. } => Self::not_found(e.to_string()),
-      model::Error::NotFound { .. } => Self::not_found(e.to_string()),
-      model::Error::UserAlreadyExists { .. } => Self::confilicted(e.to_string()),
-      model::Error::UniqueViolation { .. } => Self::confilicted(e.to_string()),
-      model::Error::SeaQueryError(_) => Self::bad_request(e.to_string()),
-      _ => DataError::server_error(e.to_string()),
-    }
-  }
-}
-
-impl From<model::store::Error> for DataError {
-  fn from(e: model::store::Error) -> Self {
-    // TODO 更多的日志打印
-    DataError::server_error(e.to_string())
   }
 }
 

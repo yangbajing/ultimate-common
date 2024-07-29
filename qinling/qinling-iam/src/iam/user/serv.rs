@@ -1,9 +1,5 @@
-use ultimate::{
-  error::DataError,
-  model::{auth::LoginBy, ModelManager},
-  security::pwd,
-  Result,
-};
+use ultimate::{error::DataError, security::pwd, Result};
+use ultimate_db::{auth::LoginBy, ModelManager};
 
 use crate::{application::Application, ctx::Ctx, iam::repos::UserRoleBmc};
 

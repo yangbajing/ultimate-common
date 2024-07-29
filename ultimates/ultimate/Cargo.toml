@@ -22,7 +22,6 @@ toml = "0.8"
 # yaml-rust = "0.4"
 config.workspace = true
 strum_macros.workspace = true
-derive-getters.workspace = true
 uuid.workspace = true
 log.workspace = true
 tracing.workspace = true
@@ -35,11 +34,6 @@ josekit.workspace = true
 serde.workspace = true
 serde_json.workspace = true
 serde_with.workspace = true
-serde_urlencoded.workspace = true
-sqlx.workspace = true
-sea-query-binder.workspace = true
-sea-query.workspace = true
-modql.workspace = true
 derive_more.workspace = true
 # tonic = { workspace = true, optional = true }
 

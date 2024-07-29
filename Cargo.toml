@@ -20,8 +20,9 @@ cloud-storage = { version = "0.1", path = "crates/storage" }
 wework-sdk = { version = "0.1", path = "crates/wework-sdk" }
 huaweicloud-sdk-obs = { version = "0.1", path = "crates/huaweicloud-sdk-obs" }
 huaweicloud-sdk-core = { version = "0.1", path = "crates/huaweicloud-sdk-core" }
-ultimate-common = { version = "0.1", path = "crates/ultimate-common" }
+ultimate-common = { version = "0.1", path = "ultimates/ultimate-common" }
 ultimate = { version = "0.1", path = "ultimates/ultimate" }
+ultimate-db = { version = "0.1", path = "ultimates/ultimate-db" }
 ultimate-web = { version = "0.1", path = "ultimates/ultimate-web" }
 # -- projects end
 derive_more = { version = "1.0.0-beta", features = ["from", "display"] }

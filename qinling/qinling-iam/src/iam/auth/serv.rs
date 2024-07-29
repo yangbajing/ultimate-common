@@ -1,10 +1,10 @@
+use josekit::jwt::JwtPayload;
 use ultimate::{
   error::DataError,
-  model::auth::{LoginByPasswordReq, LoginResp},
-  security::pwd::verify_pwd,
+  security::{pwd::verify_pwd, SecurityUtils},
   Result,
 };
-use josekit::jwt::JwtPayload;
+use ultimate_db::auth::{LoginByPasswordReq, LoginResp};
 
 use crate::{
   application::Application,
@@ -20,10 +20,7 @@ pub(crate) async fn login_by_password(state: &Application, req: &LoginByPassword
 
   let mut payload = JwtPayload::new();
   payload.set_subject(u.id.to_string());
-  let token = state
-    .ultimate_config()
-    .security()
-    .encrypt_jwt(payload)
+  let token = SecurityUtils::encrypt_pwd_jwt(state.ultimate_config().security().pwd(), payload)
     .map_err(|_e| DataError::unauthorized("Failed generate token"))?;
 
   Ok(LoginResp { token })

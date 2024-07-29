@@ -3,7 +3,7 @@ use axum::{
   routing::{delete, post},
   Json, Router,
 };
-use ultimate::model::auth::{LoginByPasswordReq, LoginResp};
+use ultimate_db::auth::{LoginByPasswordReq, LoginResp};
 use ultimate_web::AppResult;
 
 use crate::{application::Application, ctx::Ctx, iam::auth::serv};

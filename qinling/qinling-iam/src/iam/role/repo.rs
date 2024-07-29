@@ -1,12 +1,10 @@
-use ultimate::{
-  ctx::Session,
-  model::{
-    base::{self, check_number_of_affected, DbBmc},
-    ModelManager, Result,
-  },
-};
 use sea_query::{all, Expr, PostgresQueryBuilder, Query};
 use sea_query_binder::SqlxBinder;
+use ultimate::ctx::Session;
+use ultimate_db::{
+  base::{self, check_number_of_affected, DbBmc},
+  ModelManager, Result,
+};
 
 use crate::iam::repos::model::UserRoleIden;
 

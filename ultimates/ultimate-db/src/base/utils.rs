@@ -1,12 +1,10 @@
 use modql::field::{SeaField, SeaFields};
 use sea_query::{DynIden, IntoIden};
+use ultimate::ctx::Session;
 
 use crate::{
-  ctx::Session,
-  model::{
-    base::{CommonIden, DbBmc, TimestampIden},
-    Error, Result,
-  },
+  base::{CommonIden, DbBmc, TimestampIden},
+  Error, Result,
 };
 
 /// This method must be called when a model controller intends to create its entity.

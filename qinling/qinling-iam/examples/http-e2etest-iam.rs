@@ -1,12 +1,12 @@
 use anyhow::Result;
 use asserhttp::{AsserhttpBody, AsserhttpStatus};
-use ultimate::model::auth::LoginResp;
 use qinling_iam::iam::{
   role::model::{RoleEntity, RoleForCreate},
   user::model::{UserEntity, UserRelRolesReq},
 };
 use reqwest::{Client, ClientBuilder};
 use serde_json::json;
+use ultimate_db::auth::LoginResp;
 
 static URL_BASE: &str = "http://localhost:9500";
 static USERNAME: &str = "qinling";

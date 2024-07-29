@@ -9,26 +9,25 @@ use sqlx::query::{Query, QueryAs};
 use sqlx::{ConnectOptions, FromRow, IntoArguments, Pool, Postgres, Transaction};
 use tokio::sync::Mutex;
 use tracing::trace;
-
-pub use error::{Error, Result};
-
-use crate::model::store::DbConfig;
+use ultimate::configuration::model::DbConfig;
 
 mod error;
+
+pub use error::{Error, Result};
 
 // endregion: --- Modules
 
 pub type Db = Pool<Postgres>;
 pub async fn new_db_pool_from_config(c: &DbConfig) -> Result<Db> {
-  if !c.enable {
+  if !c.enable() {
     return Err(Error::ConfigInvalid("Need set ultimate.db.enable = true"));
   }
 
   let mut opt = PgPoolOptions::new();
-  if let Some(v) = c.max_connections {
+  if let Some(v) = c.max_connections() {
     opt = opt.max_connections(v);
   }
-  if let Some(v) = c.min_connections {
+  if let Some(v) = c.min_connections() {
     opt = opt.min_connections(v);
   }
   if let Some(v) = c.acquire_timeout() {
@@ -43,8 +42,10 @@ pub async fn new_db_pool_from_config(c: &DbConfig) -> Result<Db> {
 
   trace!("Db connection options are: {:?}", opt);
 
+  let level = log::LevelFilter::Debug;
   let mut opts: PgConnectOptions = c.url().parse()?;
-  opts = opts.log_statements(log::LevelFilter::Debug);
+  opts = opts.log_statements(level);
+
   let db = opt.connect_with(opts).await?;
   Ok(db)
 }

@@ -1,43 +1,35 @@
-use derive_getters::Getters;
-use josekit::{jwe::JweHeader, jwt::JwtPayload, JoseError};
 use serde::{Deserialize, Serialize};
 use ultimate_common::{
   string::{deser_str_to_vecu8, ser_vecu8_to_str},
   time::{self, Duration, OffsetDateTime},
 };
 
-use super::jose::{decrypt_jwe_dir, encrypt_jwe_dir};
-
-#[derive(Clone, Deserialize, Serialize, Getters)]
+#[derive(Clone, Deserialize, Serialize)]
 pub struct SecruityConfig {
-  pub(crate) pwd: PwdConf,
-  pub(crate) token: TokenConf,
+  pwd: PwdConf,
+  token: TokenConf,
 }
 
 impl SecruityConfig {
-  pub fn encrypt_jwt(&self, mut payload: JwtPayload) -> Result<String, JoseError> {
-    if payload.expires_at().is_none() {
-      let expires_at = self.token().token_expires_at().into();
-      payload.set_expires_at(&expires_at);
-    }
-    encrypt_jwe_dir(self.token().secret_key(), &payload)
+  pub fn pwd(&self) -> &PwdConf {
+    &self.pwd
   }
 
-  pub fn decrypt_jwt(&self, token: &str) -> Result<(JwtPayload, JweHeader), JoseError> {
-    decrypt_jwe_dir(self.token().secret_key(), token)
+  pub fn token(&self) -> &TokenConf {
+    &self.token
   }
 }
 
 #[derive(Clone, Deserialize, Serialize)]
 pub struct PwdConf {
   /// 密码过期秒数
-  pub(crate) pwd_expires_in: i64,
+  pwd_expires_in: i64,
 
   #[serde(deserialize_with = "deser_str_to_vecu8", serialize_with = "ser_vecu8_to_str")]
-  pub(crate) pwd_key: Vec<u8>,
+  pwd_key: Vec<u8>,
 
   /// 创建新用户时的默认密码（未未指定）
-  pub(crate) default_pwd: String,
+  default_pwd: String,
 }
 
 impl PwdConf {
