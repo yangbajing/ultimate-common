@@ -1,0 +1,27 @@
+use tonic::transport::Server;
+use tracing::info;
+
+use ultimate_common::Result;
+
+use crate::{
+    iam::grpc::{PROTOS, services},
+    state::AppState,
+};
+
+pub async fn start_rpc_server(app_state: AppState) -> Result<()> {
+    let addr = app_state.config_state().qinling_config().grpc().server_addr.parse()?;
+
+    let reflect_services = PROTOS
+        .iter()
+        .fold(tonic_reflection::server::Builder::configure(), |r, p| {
+            r.register_encoded_file_descriptor_set(*p)
+        })
+        .build()
+        .unwrap();
+
+    let router = Server::builder().add_service(reflect_services);
+    services(router, app_state).serve(addr).await.unwrap();
+    info!("The gRPC Server listening on {addr}");
+
+    Ok(())
+}

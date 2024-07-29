@@ -1,0 +1,7 @@
+# 设置运行 cargo 时的系统环境变量
+[env]
+RUST_LOG = "info,ultimate=debug,ultimate_common=debug"
+
+# 设置 rustc 编译器参数
+# [build]
+# rustflags = ["--cfg", "uuid_unstable"]

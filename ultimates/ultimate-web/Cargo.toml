@@ -1,0 +1,25 @@
+[package]
+name = "ultimate-web"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+description.workspace = true
+license-file.workspace = true
+repository.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+ultimate-common.workspace = true
+ultimate.workspace = true
+tokio.workspace = true
+tracing.workspace = true
+mime.workspace = true
+hyper.workspace = true
+axum.workspace = true
+axum-extra.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+serde_with.workspace = true
+uuid.workspace = true

@@ -1,0 +1,13 @@
+[package]
+name = "cloud-storage"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+description.workspace = true
+license-file.workspace = true
+repository.workspace = true
+
+[dependencies]
+anyhow.workspace = true
+tokio.workspace = true
+opendal.workspace = true

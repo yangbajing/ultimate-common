@@ -1,0 +1,147 @@
+[workspace]
+members = ["qinling/qinling-iam", "ultimates/*", "crates/*"]
+resolver = "2"
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.78"
+description = "Rust libraries"
+license-file = "LICENSE"
+repository = "https://gitee.com/yangbajing/ultimate-common"
+
+[workspace.lints.rust]
+unsafe_code = "forbid"
+#unused = "allow" # For experimental dev
+
+[workspace.dependencies]
+# -- projects begin
+cloud-storage = { version = "0.1", path = "crates/storage" }
+wework-sdk = { version = "0.1", path = "crates/wework-sdk" }
+huaweicloud-sdk-obs = { version = "0.1", path = "crates/huaweicloud-sdk-obs" }
+huaweicloud-sdk-core = { version = "0.1", path = "crates/huaweicloud-sdk-core" }
+ultimate-common = { version = "0.1", path = "crates/ultimate-common" }
+ultimate = { version = "0.1", path = "ultimates/ultimate" }
+ultimate-web = { version = "0.1", path = "ultimates/ultimate-web" }
+# -- projects end
+derive_more = { version = "1.0.0-beta", features = ["from", "display"] }
+# o2o = "0.4"
+config = { version = "0.14", default-features = false, features = [
+    "toml",
+    "yaml",
+] }
+itertools = "0.13"
+regex = "1"
+rand = "0.8"
+bytes = "1"
+uuid = { version = "1", features = [
+    "v4",
+    "v7",
+    "fast-rng",
+    "serde",
+    #    "macro-diagnostics", # Enable better diagnostics for compile-time UUIDs
+] }
+rust_decimal = { version = "1", features = ["serde-str"] }
+rust_decimal_macros = "1"
+chrono = { version = "0.4", default-features = false, features = [
+    "std",
+    "clock",
+    "serde",
+] }
+typed-builder = "0.19"
+derive-getters = "0.4"
+clap = { version = "4.5.7", features = ["derive"] }
+# -- Helpful macros for working with enums and strings
+strum = { version = "0.26", features = ["derive"] }
+strum_macros = "0.26"
+# -- Error
+anyhow = "1"
+thiserror = "1"
+# -- Crypt & Encoding
+base16ct = { version = "0.2", features = ["alloc"] }
+base64ct = { version = "1", features = ["std", "alloc"] }
+aes-gcm = "0.10"
+hmac = "0.12"
+sha2 = "0.10"
+# -- JWT & JWE
+josekit = "0.8"
+aliri = "0.6"
+# -- Async
+tokio = { version = "1", features = [
+    "rt",
+    "rt-multi-thread",
+    "net",
+    "macros",
+    "time",
+] }
+tokio-stream = { version = "0.1", features = ["time"] }
+futures = "0.3"
+async-trait = "0.1"
+log = "0.4"
+env_logger = "0.11"
+# -- Tracing
+tracing = "0.1"
+tracing-log = "0.2"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+tracing-appender = "0.2"
+# -- Database
+sqlx = { version = "0.7", features = [
+    "runtime-tokio",
+    "postgres",
+    "uuid",
+    "chrono",
+    "rust_decimal",
+    "json",
+] }
+modql = { version = "=0.4.0-rc.6", features = ["with-sea-query"] }
+sea-query = { version = "0.31.0-rc", features = ["attr"] }
+sea-query-binder = { version = "0.6.0-rc", features = [
+    "sqlx-postgres",
+    "with-uuid",
+    "with-chrono",
+] }
+# -- Serde
+serde = { version = "1", features = ["derive"] }
+serde_with = { version = "3", features = ["chrono_0_4"] }
+serde_json = { version = "1" }
+serde_repr = "0.1"
+# -- Web
+url = "2.4"
+urlencoding = "2.1"
+serde_urlencoded = "0.7"
+headers = "0.4"
+mime = "0.3"
+reqwest = { version = "0.12", features = ["json"] }
+hyper = "1"
+tower-http = { version = "0.5", features = ["fs"] }
+tower-cookies = "0.10"
+cookie = "0.18"
+axum = { version = "0.7", features = ["macros", "form"] }
+axum-extra = { version = "0.9", features = ["typed-header"] }
+axum-macros = { version = "0.4" }
+# openapi
+utoipa = { version = "4.2", features = [
+    # "axum_extra",
+    "chrono",
+    "decimal",
+    "uuid",
+    "rc_schema",
+] }
+utoipa-scalar = { version = "0.1", features = ["axum"] }
+# -- Dev/Test
+asserhttp = { version = "0.7.1", features = ["reqwest"] }
+dotenvy = "0.15"
+# -- Data Science
+polars = "0.41"
+# An Excel/OpenDocument Spreadsheets reader and deserializer in pure rust
+calamine = "0.25"
+# -- RPC
+tonic = "0.12"
+tonic-reflection = "0.12"
+prost = "0.13"
+prost-types = "0.13"
+# -- opendal
+opendal = { version = "0.47", features = ["services-obs"] }
+
+# build-dependencies
+# tonic-build = "0.12"

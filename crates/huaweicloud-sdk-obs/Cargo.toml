@@ -1,0 +1,24 @@
+[package]
+name = "huaweicloud-sdk-obs"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+description.workspace = true
+license-file.workspace = true
+repository.workspace = true
+
+[dependencies]
+huaweicloud-sdk-core = { workspace = true }
+reqwest = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+typed-builder = { workspace = true }
+bytes.workspace = true
+
+[dev-dependencies]
+anyhow = { workspace = true }
+tokio = { workspace = true, features = ["full"] }
+reqwest = { workspace = true }
+asserhttp = { workspace = true }
+config.workspace = true
+dotenvy = { workspace = true }

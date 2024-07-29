@@ -1,0 +1,16 @@
+# HW.CREDENTIALS
+[hw.credentials]
+project_id = "nicoh8paich7aeheer2oocahZa7da0nu"
+endpoint = "https://vpc.cn-southwest-2.myhuaweicloud.com"
+ak = "Bahvahbahre5tae1aiye"
+sk = "EephooKohTh1iechapia0aem0bi2We7eeka9di3i"
+
+# HW.CREDENTIALS.USER_PASSWORD
+[hw.credentials.user_password]
+domain.id = "Ohvoh8aoQuee7aeH2ahphohgee0jeiNe"
+domain.name = "hwtestuser"
+name = "hwtestuser"
+password = "O{%B>~-ZLvL3B5OL;i"
+
+[hw.obs]
+bucket = "test-bucket"

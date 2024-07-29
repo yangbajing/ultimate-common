@@ -1,0 +1,7 @@
+[ultimate.db]
+enable = true
+url = "postgres://qinling:2024.Qinling@localhost:55432/qinling"
+
+[ultimate.web]
+enable = true
+server_addr = "127.0.0.1:9500"
