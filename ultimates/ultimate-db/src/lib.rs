@@ -7,9 +7,11 @@ mod error;
 mod model_manager;
 pub mod modql_utils;
 pub mod store;
+mod types;
 
 pub use error::{Error, Result};
 pub use model_manager::*;
+pub use types::*;
 
 #[derive(Clone)]
 pub struct DbState {

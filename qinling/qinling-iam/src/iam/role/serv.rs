@@ -16,7 +16,7 @@ pub async fn update_role(ctx: &Ctx, id: i64, req: RoleForUpdate) -> Result<()> {
   Ok(())
 }
 
-pub async fn find_role_by_id(ctx: &Ctx, id: i64) -> Result<RoleEntity> {
+pub async fn find_role_by_id(ctx: &Ctx, id: i64) -> Result<Option<RoleEntity>> {
   let role = RoleBmc::find_role_by_id(ctx.mm(), id).await?;
   Ok(role)
 }

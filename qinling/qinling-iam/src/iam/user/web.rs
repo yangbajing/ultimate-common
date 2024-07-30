@@ -19,7 +19,7 @@ pub fn routes() -> Router<Application> {
 }
 
 /// 用户: 根据ID查询明细 , Path(id): Path<i64>
-async fn get_user_by_id(ctx: Ctx, Path(id): Path<i64>) -> AppResult<UserEntity> {
+async fn get_user_by_id(ctx: Ctx, Path(id): Path<i64>) -> AppResult<Option<UserEntity>> {
   let user = serv::find_user_by_id(&ctx, id).await?;
   Ok(user.into())
 }

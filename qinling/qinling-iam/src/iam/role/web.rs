@@ -18,7 +18,7 @@ pub fn routes() -> Router<Application> {
 }
 
 /// 角色: 根据ID查询明细
-async fn get_role_by_id(ctx: Ctx, Path(id): Path<i64>) -> AppResult<RoleEntity> {
+async fn get_role_by_id(ctx: Ctx, Path(id): Path<i64>) -> AppResult<Option<RoleEntity>> {
   let r = serv::find_role_by_id(&ctx, id).await?;
   Ok(r.into())
 }

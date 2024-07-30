@@ -130,7 +130,7 @@ where
   Ok(rows)
 }
 
-pub async fn get<MC, E>(mm: &ModelManager, id: Id) -> Result<E>
+pub async fn get<MC, E>(mm: &ModelManager, id: Id) -> Result<Option<E>>
 where
   MC: DbBmc,
   E: for<'r> FromRow<'r, PgRow> + Unpin + Send,
@@ -143,11 +143,8 @@ where
   // -- Exec query
   let (sql, values) = query.build_sqlx(PostgresQueryBuilder);
   let sqlx_query = sqlx::query_as_with::<_, E, _>(&sql, values);
-  let entity = mm.dbx().fetch_optional(sqlx_query).await?.ok_or(Error::EntityNotFound {
-    schema: MC::SCHEMA,
-    entity: MC::TABLE,
-    id,
-  })?;
+  let entity = mm.dbx().fetch_optional(sqlx_query).await?;
+  // let entity: Option<E> = entity.ok_or(Error::EntityNotFound { schema: MC::SCHEMA, entity: MC::TABLE, id })?;
 
   Ok(entity)
 }
