@@ -9,8 +9,8 @@ pub mod role;
 pub mod user;
 
 pub fn routes() -> Router<Application> {
-  Router::new()
-    .nest("/auth", auth::web::routes())
-    .nest("/api/user", user::web::routes())
-    .nest("/api/role", role::web::routes())
+    Router::new()
+        .nest("/auth", auth::web::routes())
+        .nest("/api/user", user::web::routes())
+        .nest("/api/role", role::web::routes())
 }

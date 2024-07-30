@@ -1,7 +1,7 @@
 pub fn deser_default_true() -> bool {
-  true
+    true
 }
 
 pub fn deser_default_false() -> bool {
-  false
+    false
 }

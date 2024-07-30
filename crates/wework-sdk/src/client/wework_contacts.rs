@@ -8,18 +8,18 @@ use super::WeworkClient;
 /// https://developer.work.weixin.qq.com/document/path/90193
 #[async_trait]
 pub trait WeworkContacts {
-  /// 获取用户信息
-  /// https://developer.work.weixin.qq.com/document/path/90196
-  async fn get_user(&self, userid: &str) -> Result<User>;
+    /// 获取用户信息
+    /// https://developer.work.weixin.qq.com/document/path/90196
+    async fn get_user(&self, userid: &str) -> Result<User>;
 }
 
 static USER_GET: &str = api_url!("/user/get");
 
 #[async_trait]
 impl WeworkContacts for WeworkClient {
-  async fn get_user(&self, userid: &str) -> Result<User> {
-    let rb = self.client.get(USER_GET).query(&[("userid", userid)]);
-    let user = self.send(rb).await?;
-    Ok(user)
-  }
+    async fn get_user(&self, userid: &str) -> Result<User> {
+        let rb = self.client.get(USER_GET).query(&[("userid", userid)]);
+        let user = self.send(rb).await?;
+        Ok(user)
+    }
 }

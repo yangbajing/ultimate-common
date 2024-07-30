@@ -6,10 +6,10 @@ use ultimate_common::time::OffsetDateTime;
 
 #[derive(Deserialize, Default, FromRow, Fields)]
 pub struct UserRoleRel {
-  pub user_id: i64,
-  pub role_id: i64,
-  pub cid: Option<i64>,
-  pub ctime: Option<OffsetDateTime>,
+    pub user_id: i64,
+    pub role_id: i64,
+    pub cid: Option<i64>,
+    pub ctime: Option<OffsetDateTime>,
 }
 
 #[allow(dead_code)]
@@ -19,6 +19,6 @@ impl UserRolePgRow for UserRoleRel {}
 
 #[derive(Iden)]
 pub enum UserRoleIden {
-  RoleId,
-  UserId,
+    RoleId,
+    UserId,
 }
