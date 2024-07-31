@@ -1,6 +1,8 @@
 use derive_more::Display;
+use modql::filter::{OpVal, OpValValue};
 use sea_query::{Iden, SimpleExpr};
 use serde::{Deserialize, Serialize};
+use tracing::error;
 use uuid::Uuid;
 
 mod crud_fns;
@@ -38,6 +40,19 @@ pub enum Id {
     I64(i64),
     String(String),
     Uuid(Uuid),
+}
+
+impl Id {
+    pub fn to_op_with_eq(&self) -> OpVal {
+        let value = match serde_json::to_value(self.clone()) {
+            Ok(v) => v,
+            Err(e) => {
+                error!("Parse id to json error, incoming id: {self}");
+                panic!("{}", e)
+            }
+        };
+        OpValValue::Eq(value).into()
+    }
 }
 
 impl From<Id> for SimpleExpr {

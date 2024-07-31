@@ -1,7 +1,8 @@
 use modql::field::{HasSeaFields, SeaField, SeaFields};
-use modql::filter::{FilterGroups, ListOptions};
+use modql::filter::{FilterGroup, FilterGroups, FilterNode, ListOptions, OpValString};
 use sea_query::{Condition, Expr, PostgresQueryBuilder, Query};
 use sea_query_binder::SqlxBinder;
+use serde_json::json;
 use sqlx::postgres::PgRow;
 use sqlx::FromRow;
 use sqlx::Row;
@@ -136,15 +137,40 @@ where
     E: for<'r> FromRow<'r, PgRow> + Unpin + Send,
     E: HasSeaFields,
 {
-    // -- Build query
-    let mut query = Query::select();
-    query.from(MC::table_ref()).columns(E::sea_column_refs()).and_where(Expr::col(CommonIden::Id).eq(id.clone()));
+    let filter: FilterGroups = FilterNode::new("id", vec![id.to_op_with_eq()]).into();
+    one::<MC, E, _>(mm, filter).await
+    // // -- Build query
+    // let mut query = Query::select();
+    // query.from(MC::table_ref()).columns(E::sea_column_refs()).and_where(Expr::col(CommonIden::Id).eq(id.clone()));
 
-    // -- Exec query
+    // // -- Exec query
+    // let (sql, values) = query.build_sqlx(PostgresQueryBuilder);
+    // let sqlx_query = sqlx::query_as_with::<_, E, _>(&sql, values);
+    // let entity = mm.dbx().fetch_optional(sqlx_query).await?;
+
+    // Ok(entity)
+}
+
+pub async fn one<MC, E, F>(mm: &ModelManager, filter: F) -> Result<Option<E>>
+where
+    MC: DbBmc,
+    E: for<'r> FromRow<'r, PgRow> + Unpin + Send,
+    E: HasSeaFields,
+    F: Into<FilterGroups>,
+{
+    // -- Build the query
+    let mut query = Query::select();
+    query.from(MC::table_ref()).columns(E::sea_column_refs());
+
+    // condition from filter
+    let filters: FilterGroups = filter.into();
+    let cond: Condition = filters.try_into()?;
+    query.cond_where(cond);
+
+    // -- Execute the query
     let (sql, values) = query.build_sqlx(PostgresQueryBuilder);
     let sqlx_query = sqlx::query_as_with::<_, E, _>(&sql, values);
     let entity = mm.dbx().fetch_optional(sqlx_query).await?;
-    // let entity: Option<E> = entity.ok_or(Error::EntityNotFound { schema: MC::SCHEMA, entity: MC::TABLE, id })?;
 
     Ok(entity)
 }
