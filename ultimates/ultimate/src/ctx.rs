@@ -27,6 +27,12 @@ impl Session {
         Self::new(0, req_time, expires_at)
     }
 
+    pub fn new_super_admin() -> Self {
+        let req_time = time::now();
+        let expires_at = req_time + Duration::minutes(30);
+        Self::new(1, req_time, expires_at)
+    }
+
     pub fn uid(&self) -> i64 {
         self.uid
     }

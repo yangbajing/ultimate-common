@@ -1,5 +1,5 @@
 use derive_more::Display;
-use modql::filter::{OpVal, OpValValue};
+use modql::filter::{FilterNode, OpVal, OpValString, OpValValue};
 use sea_query::{Iden, SimpleExpr};
 use serde::{Deserialize, Serialize};
 use tracing::error;
@@ -43,15 +43,13 @@ pub enum Id {
 }
 
 impl Id {
-    pub fn to_op_with_eq(&self) -> OpVal {
-        let value = match serde_json::to_value(self.clone()) {
-            Ok(v) => v,
-            Err(e) => {
-                error!("Parse id to json error, incoming id: {self}");
-                panic!("{}", e)
-            }
-        };
-        OpValValue::Eq(value).into()
+    pub fn to_filter_node(&self, col: &str) -> FilterNode {
+        match self {
+            Id::I32(id) => (col, *id).into(),
+            Id::I64(id) => (col, *id).into(),
+            Id::String(id) => (col, id).into(),
+            Id::Uuid(id) => (col, id.to_string()).into(),
+        }
     }
 }
 

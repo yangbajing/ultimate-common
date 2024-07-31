@@ -1,5 +1,7 @@
 use modql::field::{HasSeaFields, SeaField, SeaFields};
-use modql::filter::{FilterGroup, FilterGroups, FilterNode, ListOptions, OpValString};
+use modql::filter::{
+    FilterGroup, FilterGroups, FilterNode, ListOptions, OpValInt32, OpValInt64, OpValString, OpValValue,
+};
 use sea_query::{Condition, Expr, PostgresQueryBuilder, Query};
 use sea_query_binder::SqlxBinder;
 use serde_json::json;
@@ -137,7 +139,7 @@ where
     E: for<'r> FromRow<'r, PgRow> + Unpin + Send,
     E: HasSeaFields,
 {
-    let filter: FilterGroups = FilterNode::new("id", vec![id.to_op_with_eq()]).into();
+    let filter: FilterGroups = id.to_filter_node("id").into();
     one::<MC, E, _>(mm, filter).await
     // // -- Build query
     // let mut query = Query::select();
