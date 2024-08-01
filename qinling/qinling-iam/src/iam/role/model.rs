@@ -1,7 +1,7 @@
 use modql::field::{Fields, HasSeaFields};
 use serde::{Deserialize, Serialize};
 use sqlx::{postgres::PgRow, FromRow};
-use ultimate_common::time::OffsetDateTime;
+use ultimate_common::time::UtcDateTime;
 
 use crate::iam::repos::model::UserRoleRel;
 
@@ -11,9 +11,9 @@ pub struct RoleEntity {
     pub name: String,
     pub status: i16,
     pub cid: i64,
-    pub ctime: OffsetDateTime,
+    pub ctime: UtcDateTime,
     pub mid: Option<i64>,
-    pub mtime: Option<OffsetDateTime>,
+    pub mtime: Option<UtcDateTime>,
 }
 pub trait RolePgRow: HasSeaFields + for<'r> FromRow<'r, PgRow> + Unpin + Send {}
 impl RolePgRow for RoleEntity {}

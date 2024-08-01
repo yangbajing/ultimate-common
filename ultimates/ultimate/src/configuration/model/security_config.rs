@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use ultimate_common::{
     string::{deser_str_to_vecu8, ser_vecu8_to_str},
-    time::{self, Duration, OffsetDateTime},
+    time::{self, Duration, UtcDateTime},
 };
 
 #[derive(Clone, Deserialize, Serialize)]
@@ -22,7 +22,7 @@ impl SecruityConfig {
 
 pub trait KeyConf {
     fn secret_key(&self) -> &[u8];
-    fn expires_at(&self) -> OffsetDateTime;
+    fn expires_at(&self) -> UtcDateTime;
 }
 
 #[derive(Clone, Deserialize, Serialize)]
@@ -59,7 +59,7 @@ impl KeyConf for PwdConf {
         &self.secret_key
     }
 
-    fn expires_at(&self) -> OffsetDateTime {
+    fn expires_at(&self) -> UtcDateTime {
         time::now_utc() + Duration::seconds(self.expires_in())
     }
 }
@@ -97,7 +97,7 @@ impl KeyConf for TokenConf {
         &self.secret_key
     }
 
-    fn expires_at(&self) -> OffsetDateTime {
+    fn expires_at(&self) -> UtcDateTime {
         time::now_utc() + Duration::seconds(self.expires_in())
     }
 }

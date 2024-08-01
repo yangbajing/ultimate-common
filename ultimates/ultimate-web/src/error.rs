@@ -11,6 +11,20 @@ use uuid::Uuid;
 pub type AppResult<T> = core::result::Result<Json<T>, AppError>;
 
 /// A default error response for most API errors.
+#[cfg(feature = "utoipa")]
+#[derive(Debug, Serialize, utoipa::ToSchema)]
+pub struct AppError {
+    /// A unique error ID.
+    pub err_id: Uuid,
+    pub err_code: i32,
+    /// An error message.
+    pub err_msg: String,
+    /// Optional Additional error details.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub err_msg_detail: Option<Value>,
+}
+
+#[cfg(not(feature = "utoipa"))]
 #[derive(Debug, Serialize)]
 pub struct AppError {
     /// A unique error ID.

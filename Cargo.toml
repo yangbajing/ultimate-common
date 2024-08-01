@@ -122,14 +122,16 @@ axum = { version = "0.7", features = ["macros", "form"] }
 axum-extra = { version = "0.9", features = ["typed-header"] }
 axum-macros = { version = "0.4" }
 # openapi
-utoipa = { version = "4.2", features = [
-    # "axum_extra",
+utoipa = { version = "5.0.0-alpha", features = [
+    "axum_extras",
     "chrono",
     "decimal",
     "uuid",
-    "rc_schema",
+    "repr",
+    "preserve_order",
+    "preserve_path_order",
 ] }
-utoipa-scalar = { version = "0.1", features = ["axum"] }
+utoipa-scalar = { version = "0.2.0-alpha", features = ["axum"] }
 # -- Dev/Test
 asserhttp = { version = "0.7.1", features = ["reqwest"] }
 dotenvy = "0.15"
@@ -143,7 +145,7 @@ tonic-reflection = "0.12"
 prost = "0.13"
 prost-types = "0.13"
 # -- opendal
-opendal = { version = "0.47", features = ["services-obs"] }
+opendal = { version = "0.48", features = ["services-obs"] }
 
 # build-dependencies
 # tonic-build = "0.12"

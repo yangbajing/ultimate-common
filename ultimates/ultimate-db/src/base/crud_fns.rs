@@ -1,10 +1,7 @@
 use modql::field::{HasSeaFields, SeaField, SeaFields};
-use modql::filter::{
-    FilterGroup, FilterGroups, FilterNode, ListOptions, OpValInt32, OpValInt64, OpValString, OpValValue,
-};
+use modql::filter::{FilterGroups, ListOptions};
 use sea_query::{Condition, Expr, PostgresQueryBuilder, Query};
 use sea_query_binder::SqlxBinder;
-use serde_json::json;
 use sqlx::postgres::PgRow;
 use sqlx::FromRow;
 use sqlx::Row;

@@ -17,13 +17,19 @@ fn _local_offset() -> FixedOffset {
     FixedOffset::east_opt(3600 * 8).unwrap()
 }
 
-pub fn now_utc() -> OffsetDateTime {
-    Utc::now().fixed_offset()
+#[inline]
+pub fn now_utc() -> UtcDateTime {
+    Utc::now()
 }
 
 #[inline]
-pub fn now() -> OffsetDateTime {
-    Local::now().fixed_offset()
+pub fn now_local() -> OffsetDateTime {
+    Local::now().with_timezone(local_offset())
+}
+
+#[inline]
+pub fn now() -> UtcDateTime {
+    Utc::now()
 }
 
 pub fn now_epoch_millis() -> i64 {
@@ -36,7 +42,7 @@ pub fn now_epoch_seconds() -> i64 {
     now_utc().timestamp()
 }
 
-pub fn format_time(time: OffsetDateTime) -> Result<String> {
+pub fn format_time(time: UtcDateTime) -> Result<String> {
     Ok(time.to_rfc3339())
 }
 
@@ -45,30 +51,24 @@ pub fn now_utc_plus_sec_str(sec: u64) -> Result<String> {
     format_time(new_time)
 }
 
-pub fn parse_utc(moment: &str) -> Result<OffsetDateTime> {
-    let time = moment.parse::<OffsetDateTime>().unwrap();
+pub fn parse_utc(moment: &str) -> Result<UtcDateTime> {
+    let time = moment.parse::<UtcDateTime>().unwrap();
     Ok(time)
 }
 
 #[cfg(feature = "prost-types")]
-pub fn to_prost_timestamp(d: &OffsetDateTime) -> prost_types::Timestamp {
+pub fn to_prost_timestamp(d: &UtcDateTime) -> prost_types::Timestamp {
     prost_types::Timestamp { seconds: d.timestamp(), nanos: d.timestamp_subsec_nanos() as i32 }
 }
 
 #[cfg(feature = "prost-types")]
-pub fn from_prost_timestamp(t: &prost_types::Timestamp) -> Option<OffsetDateTime> {
-    DateTime::from_timestamp(t.seconds, t.nanos as u32).map(|d| d.fixed_offset())
+pub fn from_prost_timestamp(t: &prost_types::Timestamp) -> Option<UtcDateTime> {
+    DateTime::from_timestamp(t.seconds, t.nanos as u32)
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    #[test]
-    fn test_now_utc() {
-        let now = now_utc();
-        assert_eq!(*now.offset(), FixedOffset::east_opt(0).unwrap());
-    }
 
     #[test]
     fn test_convert_std() {

@@ -3,7 +3,7 @@ use sea_query::Iden;
 use serde::{Deserialize, Serialize};
 use sqlx::{postgres::PgRow, FromRow};
 use ultimate::{error::DataError, Result};
-use ultimate_common::time::OffsetDateTime;
+use ultimate_common::time::UtcDateTime;
 
 use crate::iam::repos::model::UserRoleRel;
 
@@ -19,9 +19,9 @@ pub struct UserEntity {
 
     pub status: i16,
     pub cid: i64,
-    pub ctime: OffsetDateTime,
+    pub ctime: UtcDateTime,
     pub mid: Option<i64>,
-    pub mtime: Option<OffsetDateTime>,
+    pub mtime: Option<UtcDateTime>,
 }
 pub trait UserPgRow: HasSeaFields + for<'r> FromRow<'r, PgRow> + Unpin + Send {}
 impl UserPgRow for UserEntity {}
@@ -42,9 +42,9 @@ pub struct UserCredentialEntity {
     pub id: i64,
     pub pwd_hash: String,
     pub cid: i64,
-    pub ctime: OffsetDateTime,
+    pub ctime: UtcDateTime,
     pub mid: Option<i64>,
-    pub mtime: Option<OffsetDateTime>,
+    pub mtime: Option<UtcDateTime>,
 }
 
 #[derive(Clone, Deserialize, Fields)]
