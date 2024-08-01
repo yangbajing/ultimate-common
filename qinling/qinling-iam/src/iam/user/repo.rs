@@ -20,7 +20,7 @@ impl DbBmc for UserBmc {
 }
 
 impl UserBmc {
-    pub async fn find_by_id(mm: &ModelManager, id: i64) -> Result<Option<UserEntity>> {
+    pub async fn find_by_id(mm: &ModelManager, id: i64) -> Result<UserEntity> {
         let u = base::get::<Self, _>(mm, id.into()).await?;
         Ok(u)
     }
@@ -115,7 +115,7 @@ impl UserCredentialBmc {
         base::create::<Self, _>(ctx, mm, uc).await
     }
 
-    pub async fn find_by_id(mm: &ModelManager, id: i64) -> Result<Option<UserCredentialEntity>> {
+    pub async fn find_by_id(mm: &ModelManager, id: i64) -> Result<UserCredentialEntity> {
         base::get::<Self, _>(mm, id.into()).await
     }
 

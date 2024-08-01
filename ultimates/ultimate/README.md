@@ -1,6 +1,6 @@
 # ultimate-common
 
-秦岭业务公共库
+ULTIMATE 业务公共库
 
 ## 代码结构
 

@@ -130,27 +130,21 @@ where
     Ok(rows)
 }
 
-pub async fn get<MC, E>(mm: &ModelManager, id: Id) -> Result<Option<E>>
+pub async fn get<MC, E>(mm: &ModelManager, id: Id) -> Result<E>
 where
     MC: DbBmc,
     E: for<'r> FromRow<'r, PgRow> + Unpin + Send,
     E: HasSeaFields,
 {
     let filter: FilterGroups = id.to_filter_node("id").into();
-    one::<MC, E, _>(mm, filter).await
-    // // -- Build query
-    // let mut query = Query::select();
-    // query.from(MC::table_ref()).columns(E::sea_column_refs()).and_where(Expr::col(CommonIden::Id).eq(id.clone()));
-
-    // // -- Exec query
-    // let (sql, values) = query.build_sqlx(PostgresQueryBuilder);
-    // let sqlx_query = sqlx::query_as_with::<_, E, _>(&sql, values);
-    // let entity = mm.dbx().fetch_optional(sqlx_query).await?;
-
-    // Ok(entity)
+    one_optional::<MC, E, _>(mm, filter).await?.ok_or_else(|| Error::EntityNotFound {
+        schema: MC::SCHEMA,
+        entity: MC::TABLE,
+        id,
+    })
 }
 
-pub async fn one<MC, E, F>(mm: &ModelManager, filter: F) -> Result<Option<E>>
+pub async fn one_optional<MC, E, F>(mm: &ModelManager, filter: F) -> Result<Option<E>>
 where
     MC: DbBmc,
     E: for<'r> FromRow<'r, PgRow> + Unpin + Send,

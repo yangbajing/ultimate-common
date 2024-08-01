@@ -8,7 +8,7 @@ use ultimate_common::runtime;
 use super::Result;
 
 pub fn load_config() -> Result<Config> {
-    let files = if let Ok(profiles_active) = env::var("FUSION__PROFILES__ACTIVE") {
+    let files = if let Ok(profiles_active) = env::var("ULTIMATE__PROFILES__ACTIVE") {
         vec![
             format!("app-{profiles_active}.yaml"),
             format!("app-{profiles_active}.yml"),
@@ -42,7 +42,7 @@ pub fn load_config() -> Result<Config> {
     }
 
     // load from file of env
-    if let Ok(file) = std::env::var("FUSION_CONFIG_FILE") {
+    if let Ok(file) = std::env::var("ULTIMATE_CONFIG_FILE") {
         let path = Path::new(&file);
         if path.exists() {
             b = b.add_source(File::from(path));

@@ -23,7 +23,7 @@ pub struct ConfigState {
 }
 
 impl ConfigState {
-    /// 秦岭配置文件根，支持通过环境变量覆盖默认配置。
+    /// ULTIMATE 配置文件根，支持通过环境变量覆盖默认配置。
     ///
     /// # Examples
     ///
@@ -31,13 +31,13 @@ impl ConfigState {
     /// # use ultimate::configuration::*;
     /// # fn test_config_state_from_env() {
     /// // 两个下划线作为层级分隔符
-    /// std::env::set_var("FUSION__WEB__SERVER_ADDR", "0.0.0.0:8000");
+    /// std::env::set_var("ULTIMATE__WEB__SERVER_ADDR", "0.0.0.0:8000");
     ///
     /// std::env::set_var(
-    ///     "FUSION__TOKEN_KEY",
+    ///     "ULTIMATE__TOKEN_KEY",
     ///     "8462b1ec9af827ebed13926f8f1e5409774fa1a21a1c8f726a4a34cf7dcabaf2",
     /// );
-    /// std::env::set_var("FUSION__PWD_KEY", "80c9a35c0f231219ca14c44fe10c728d");
+    /// std::env::set_var("ULTIMATE__PWD_KEY", "80c9a35c0f231219ca14c44fe10c728d");
     ///
     /// let config_state = ConfigState::load().unwrap();
     /// let qc = config_state.ultimate_config();

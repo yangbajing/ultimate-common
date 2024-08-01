@@ -14,7 +14,7 @@ use crate::{
 pub(crate) async fn login_by_password(state: &Application, req: &LoginByPasswordReq) -> Result<LoginResp> {
     let mm = state.db_state().mm();
     let u = find_by_login(mm, req.into()).await?;
-    let uc = find_user_credential_by_id(mm, u.id).await?.ok_or_else(|| DataError::not_found("用户不存在"))?;
+    let uc = find_user_credential_by_id(mm, u.id).await?;
 
     verify_pwd(&req.pwd, &uc.pwd_hash).await?;
 

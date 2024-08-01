@@ -7,9 +7,9 @@ use std::sync::Arc;
 use sqlx::postgres::any::AnyConnectionBackend;
 use sqlx::postgres::{PgConnectOptions, PgPoolOptions};
 use sqlx::query::{Query, QueryAs};
-use sqlx::{database, ConnectOptions, FromRow, IntoArguments, Pool, Postgres, Transaction};
+use sqlx::{ConnectOptions, FromRow, IntoArguments, Pool, Postgres, Transaction};
 use tokio::sync::Mutex;
-use tracing::{info, trace};
+use tracing::trace;
 use ultimate::configuration::model::DbConfig;
 
 mod error;
@@ -76,7 +76,7 @@ pub async fn new_db_pool_from_config(c: &DbConfig) -> Result<Db> {
         let original_host = format!("{}:{}", opts.get_host(), opts.get_port());
         let sock_addr = original_host.to_socket_addrs().unwrap().next().unwrap();
         opts = opts.host(&sock_addr.ip().to_string());
-        info!("Resolve original host, from {} to {}", original_host, opts.get_host());
+        trace!("Resolve original host, from {} to {}", original_host, opts.get_host());
     }
 
     opts = opts.log_statements(level);

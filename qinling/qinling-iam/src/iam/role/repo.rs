@@ -17,7 +17,7 @@ impl DbBmc for RoleBmc {
 }
 
 impl RoleBmc {
-    pub(crate) async fn find_role_by_id(mm: &ModelManager, id: i64) -> Result<Option<RoleEntity>> {
+    pub(crate) async fn find_role_by_id(mm: &ModelManager, id: i64) -> Result<RoleEntity> {
         let opt = base::get::<Self, _>(mm, id.into()).await?;
         Ok(opt)
     }

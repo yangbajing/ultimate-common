@@ -35,7 +35,7 @@ pub async fn create_user(ctx: &Ctx, user_c: UserForCreate) -> Result<i64> {
     Ok(id)
 }
 
-pub async fn find_user_by_id(ctx: &Ctx, id: i64) -> Result<Option<UserEntity>> {
+pub async fn find_user_by_id(ctx: &Ctx, id: i64) -> Result<UserEntity> {
     let u = UserBmc::find_by_id(ctx.mm(), id).await?;
     Ok(u)
 }
@@ -51,8 +51,7 @@ pub async fn delete_user(ctx: &Ctx, id: i64) -> Result<()> {
 }
 
 pub async fn update_user_password(ctx: &Ctx, pwd_u: PwdForUpdate) -> Result<()> {
-    let mut uc =
-        UserCredentialBmc::find_by_id(ctx.mm(), pwd_u.id).await?.ok_or_else(|| DataError::not_found("用户不存在"))?;
+    let mut uc = UserCredentialBmc::find_by_id(ctx.mm(), pwd_u.id).await?;
 
     // 管理员权限可以不用判断 old_password
     if !is_admin(ctx.state(), ctx.session().uid()) {
@@ -77,7 +76,7 @@ pub async fn find_by_login(mm: &ModelManager, req: LoginBy) -> Result<UserEntity
     Ok(u)
 }
 
-pub async fn find_user_credential_by_id(mm: &ModelManager, id: i64) -> Result<Option<UserCredentialEntity>> {
+pub async fn find_user_credential_by_id(mm: &ModelManager, id: i64) -> Result<UserCredentialEntity> {
     let uc = UserCredentialBmc::find_by_id(mm, id).await?;
     Ok(uc)
 }
@@ -110,7 +109,7 @@ mod tests {
         let uid = create_user(&ctx, user_c.clone()).await?;
         assert!(uid > 0);
 
-        let user = find_user_by_id(&ctx, uid).await?.ok_or_else(|| DataError::not_found("用户不存在"))?;
+        let user = find_user_by_id(&ctx, uid).await?;
         println!("user is: {}", serde_json::to_string(&user)?);
         assert_eq!(user.status, user_c.status);
         assert_eq!(user.username, user_c.phone);
@@ -122,7 +121,7 @@ mod tests {
     async fn test_find_by_id() -> Result<()> {
         let ctx = Ctx::load_on_test().await?;
         let id = 2;
-        let u = find_user_by_id(&ctx, id).await?.ok_or_else(|| DataError::not_found("用户不存在"))?;
+        let u = find_user_by_id(&ctx, id).await?;
         println!("user is: {}", serde_json::to_string_pretty(&u)?);
 
         assert_eq!(u.id, id);
