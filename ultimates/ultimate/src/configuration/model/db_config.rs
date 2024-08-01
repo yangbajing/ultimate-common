@@ -10,7 +10,15 @@ pub struct DbConfig {
 
     /// The URI of the database
     // #[serde(serialize_with = "ser_str_secret")]
-    url: UriString,
+    url: Option<UriString>,
+
+    host: Option<String>,
+    port: Option<u16>,
+    socket: Option<String>,
+    database: Option<String>,
+    username: Option<String>,
+    #[serde(skip_serializing)]
+    password: Option<String>,
 
     /// Maximum number of connections for a pool
     max_connections: Option<u32>,
@@ -45,8 +53,32 @@ impl DbConfig {
     pub fn enable(&self) -> bool {
         self.enable
     }
-    pub fn url(&self) -> &UriString {
-        &self.url
+    pub fn url(&self) -> Option<&str> {
+        self.url.as_deref()
+    }
+
+    pub fn host(&self) -> Option<&str> {
+        self.host.as_deref()
+    }
+
+    pub fn port(&self) -> Option<u16> {
+        self.port
+    }
+
+    pub fn socket(&self) -> Option<&str> {
+        self.socket.as_deref()
+    }
+
+    pub fn database(&self) -> Option<&str> {
+        self.database.as_deref()
+    }
+
+    pub fn username(&self) -> Option<&str> {
+        self.username.as_deref()
+    }
+
+    pub fn password(&self) -> Option<&str> {
+        self.password.as_deref()
     }
 
     pub fn max_connections(&self) -> Option<u32> {

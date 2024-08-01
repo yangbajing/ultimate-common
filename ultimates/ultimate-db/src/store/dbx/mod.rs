@@ -1,14 +1,15 @@
 // region:    --- Modules
 
+use std::net::ToSocketAddrs;
 use std::ops::{Deref, DerefMut};
 use std::sync::Arc;
 
 use sqlx::postgres::any::AnyConnectionBackend;
 use sqlx::postgres::{PgConnectOptions, PgPoolOptions};
 use sqlx::query::{Query, QueryAs};
-use sqlx::{ConnectOptions, FromRow, IntoArguments, Pool, Postgres, Transaction};
+use sqlx::{database, ConnectOptions, FromRow, IntoArguments, Pool, Postgres, Transaction};
 use tokio::sync::Mutex;
-use tracing::trace;
+use tracing::{info, trace};
 use ultimate::configuration::model::DbConfig;
 
 mod error;
@@ -43,7 +44,41 @@ pub async fn new_db_pool_from_config(c: &DbConfig) -> Result<Db> {
     trace!("Db connection options are: {:?}", opt);
 
     let level = log::LevelFilter::Debug;
-    let mut opts: PgConnectOptions = c.url().parse()?;
+    let mut opts: PgConnectOptions = match c.url() {
+        Some(url) => url.parse()?,
+        None => {
+            let mut o = PgConnectOptions::new();
+            if let Some(host) = c.host() {
+                o = o.host(host);
+            }
+            if let Some(port) = c.port() {
+                o = o.port(port);
+            }
+            if let Some(socket) = c.socket() {
+                o = o.socket(socket);
+            }
+            if let Some(database) = c.database() {
+                o = o.database(database)
+            }
+            if let Some(username) = c.username() {
+                o = o.username(username)
+            }
+            if let Some(password) = c.password() {
+                o = o.password(password)
+            }
+            o
+        }
+    };
+
+    // TODO 若 opts.host 是域名，需要进行DNS查找将期转换为 ip addr
+    let non_ip_addr = opts.get_host().parse::<std::net::IpAddr>().is_err();
+    if non_ip_addr {
+        let original_host = format!("{}:{}", opts.get_host(), opts.get_port());
+        let sock_addr = original_host.to_socket_addrs().unwrap().next().unwrap();
+        opts = opts.host(&sock_addr.ip().to_string());
+        info!("Resolve original host, from {} to {}", original_host, opts.get_host());
+    }
+
     opts = opts.log_statements(level);
 
     let db = opt.connect_with(opts).await?;

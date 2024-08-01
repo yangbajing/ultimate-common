@@ -23,7 +23,7 @@ NOJy7JbTpVxf9c6Ren/q+YggEVRdVZEQmZDLsQiE1czWoLLsezpIr3Ls
 
 [ultimate.web]
 enable = false
-server_addr = "127.0.0.1:9500"
+# server_addr = "0.0.0.0:9500"
 
 [ultimate.trace]
 enable = true
@@ -37,11 +37,11 @@ log_dir = "./logs/"
 
 [ultimate.db]
 enable = false
-url = "postgres://<username>:<password>@localhost:5432/<database>"
+# url = "postgres://<username>:<password>@localhost:5432/<database>"
 
 [ultimate.grpc]
 enable = false
-server_addr = "127.0.0.1:9501"
+# server_addr = "0.0.0.0:9501"
 plaintext = true
 
 [ultimate.grpc.clients]

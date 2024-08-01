@@ -76,3 +76,12 @@ where
 {
     s.serialize_str(v)
 }
+pub fn ser_opt_str_secret<S>(v: Option<String>, s: S) -> core::result::Result<S::Ok, S::Error>
+where
+    S: Serializer,
+{
+    match v {
+        Some(v) => s.serialize_str(&v),
+        None => s.serialize_none(),
+    }
+}
