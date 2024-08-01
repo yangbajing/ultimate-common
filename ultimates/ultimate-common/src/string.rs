@@ -65,7 +65,7 @@ pub fn ser_vecu8_to_str<S>(v: &[u8], s: S) -> core::result::Result<S::Ok, S::Err
 where
     S: Serializer,
 {
-    let string = std::str::from_utf8(v).unwrap();
+    let string = std::str::from_utf8(v).map_err(serde::ser::Error::custom)?;
     s.serialize_str(string)
 }
 

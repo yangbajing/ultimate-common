@@ -28,7 +28,7 @@ impl ConfigState {
     /// # Examples
     ///
     /// ```rust
-    /// # use ultimate::configuration::*;
+    /// # use ultimate::configuration::{ConfigState, model::*};
     /// # fn test_config_state_from_env() {
     /// // 两个下划线作为层级分隔符
     /// std::env::set_var("ULTIMATE__WEB__SERVER_ADDR", "0.0.0.0:8000");
@@ -42,19 +42,19 @@ impl ConfigState {
     /// let config_state = ConfigState::load().unwrap();
     /// let qc = config_state.ultimate_config();
     ///
-    /// assert_eq!(qc.pwd_key, b"80c9a35c0f231219ca14c44fe10c728d");
+    /// assert_eq!(qc.security().pwd().pwd_key(), b"80c9a35c0f231219ca14c44fe10c728d");
     /// assert_eq!(
-    ///     qc.token_key,
-    ///     b"--8462b1ec9af827ebed13926f8f1e5409774fa1a21a1c8f726a4a34cf7dcabaf2"
+    ///     qc.security().token().secret_key(),
+    ///     b"8462b1ec9af827ebed13926f8f1e5409774fa1a21a1c8f726a4a34cf7dcabaf2"
     /// );
     ///
     /// // 由默认配置文件提供
-    /// assert_eq!(&qc.web().server_addr, "0.0.0.0:8000");
-    /// assert_eq!(&qc.app().name, "ultimate");
+    /// assert_eq!(qc.web().server_addr(), "0.0.0.0:8000");
+    /// assert_eq!(qc.app().name(), "ultimate");
     /// # }
     /// ```
     ///
-    pub(crate) fn load() -> Result<Self> {
+    pub fn load() -> Result<Self> {
         let c = load_config()?;
         let ultimate_config = UltimateConfig::try_from(&c)?;
         Ok(Self::new(Arc::new(c), Arc::new(ultimate_config)))

@@ -72,10 +72,10 @@ pub struct TokenConf {
     pub(crate) expires_in: i64,
 
     #[serde(deserialize_with = "deser_str_to_vecu8", serialize_with = "ser_vecu8_to_str")]
-    public_key: Vec<u8>,
+    pub(crate) public_key: Vec<u8>,
 
     #[serde(deserialize_with = "deser_str_to_vecu8", serialize_with = "ser_vecu8_to_str")]
-    private_key: Vec<u8>,
+    pub(crate) private_key: Vec<u8>,
 }
 
 impl TokenConf {

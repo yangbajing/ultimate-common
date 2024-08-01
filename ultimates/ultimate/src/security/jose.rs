@@ -79,19 +79,15 @@ pub fn decode_jwt_hs256(
 
 #[cfg(test)]
 mod tests {
-    use std::{
-        sync::OnceLock,
-        time::{Duration, SystemTime},
-    };
-
-    use ultimate_common::string;
-
+    use super::*;
     use crate::configuration::{
         load_config,
         model::{KeyConf, SecruityConfig},
     };
-
-    use super::*;
+    use std::{
+        sync::OnceLock,
+        time::{Duration, SystemTime},
+    };
 
     #[test]
     fn test_jwe_ecdh_es() -> anyhow::Result<()> {
@@ -116,19 +112,19 @@ mod tests {
 
     #[test]
     fn test_jwe_dir() -> anyhow::Result<()> {
-        let (sc, expires_at) = helper();
+        let secret_key = b"0123456789ABCDEF0123456789ABCDEF";
+        let expires_at = SystemTime::now() + Duration::from_secs(60 * 60 * 24);
 
         let mut jwt_payload = JwtPayload::new();
         jwt_payload.set_subject("subject");
-        jwt_payload.set_expires_at(expires_at);
+        jwt_payload.set_expires_at(&expires_at);
 
         // Encrypting JWT
-        println!("secret key is {}", string::b64u_encode(sc.token().secret_key()));
-        let jwt = encrypt_jwe_dir(sc.token().secret_key(), &jwt_payload).unwrap();
+        let jwt = encrypt_jwe_dir(secret_key, &jwt_payload).unwrap();
         println!("Encrypting JWT with DIR signre is: {}", jwt);
 
         // Decrypting JWT
-        let (payload, header) = decrypt_jwe_dir(sc.token().secret_key(), jwt).unwrap();
+        let (payload, header) = decrypt_jwe_dir(secret_key, jwt).unwrap();
         println!("Encrypting JWT with DIR JwsHeader is: {:?}", header);
         println!("Encrypting JWT with DIR JwtPayload is: {:?}", payload);
 
