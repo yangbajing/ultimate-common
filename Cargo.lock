@@ -690,17 +690,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "derive-getters"
-version = "0.4.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0a6433aac097572ea8ccc60b3f2e756c661c9aeed9225cdd4d0cb119cb7ff6ba"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn 2.0.72",
-]
-
-[[package]]
 name = "derive_more"
 version = "1.0.0-beta.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -882,6 +871,7 @@ checksum = "645c6916888f6cb6350d2550b80fb63e734897a8498abe35cfb732b6487804b0"
 dependencies = [
  "futures-channel",
  "futures-core",
+ "futures-executor",
  "futures-io",
  "futures-sink",
  "futures-task",
@@ -2157,46 +2147,6 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn 1.0.109",
-]
-
-[[package]]
-name = "qinling-iam"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "asserhttp",
- "async-trait",
- "axum",
- "axum-extra",
- "derive-getters",
- "dotenvy",
- "headers",
- "hyper",
- "josekit",
- "modql",
- "prost 0.13.1",
- "prost-types 0.13.1",
- "reqwest",
- "sea-query",
- "sea-query-binder",
- "serde",
- "serde_json",
- "serde_with",
- "sqlx",
- "strum_macros",
- "thiserror",
- "tokio",
- "tracing",
- "tracing-appender",
- "tracing-log",
- "tracing-subscriber",
- "typed-builder",
- "ultimate",
- "ultimate-common",
- "ultimate-db",
- "ultimate-web",
- "utoipa",
- "uuid",
 ]
 
 [[package]]
@@ -3690,6 +3640,7 @@ dependencies = [
  "config",
  "derive_more",
  "dotenvy",
+ "futures",
  "josekit",
  "log",
  "rand 0.8.5",
@@ -3704,7 +3655,6 @@ dependencies = [
  "tonic",
  "tracing",
  "tracing-appender",
- "tracing-log",
  "tracing-subscriber",
  "ultimate-common",
  "uuid",

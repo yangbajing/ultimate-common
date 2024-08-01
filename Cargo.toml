@@ -1,5 +1,5 @@
 [workspace]
-members = ["qinling/qinling-iam", "ultimates/*", "crates/*"]
+members = ["ultimates/*", "crates/*"]
 resolver = "2"
 
 [workspace.package]
@@ -69,20 +69,22 @@ argon2 = "0.5"
 josekit = "0.8"
 aliri = "0.6"
 # -- Async
+futures = "0.3"
+async-trait = "0.1"
 tokio = { version = "1", features = [
     "rt",
     "rt-multi-thread",
     "net",
     "macros",
     "time",
+    "signal",
 ] }
 tokio-stream = { version = "0.1", features = ["time"] }
-futures = "0.3"
-async-trait = "0.1"
+# -- Logging
 log = "0.4"
 env_logger = "0.11"
 # -- Tracing
-tracing = "0.1"
+tracing = { version = "0.1", features = ["log"] }
 tracing-log = "0.2"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 tracing-appender = "0.2"

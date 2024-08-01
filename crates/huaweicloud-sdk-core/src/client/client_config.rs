@@ -179,12 +179,12 @@ mod tests {
     fn test_canonical_request() -> Result<()> {
         let text = r#"[hw]
 project_id = "nicoh8paich7aeheer2oocahZa7da0nu"
-endpoint = "https://vpc.cn-southwest-2.myhuaweicloud.com"
 
 # HW.CREDENTIALS
 [hw.credentials]
 ak = "Bahvahbahre5tae1aiye"
 sk = "EephooKohTh1iechapia0aem0bi2We7eeka9di3i"
+endpoint = "https://vpc.cn-southwest-2.myhuaweicloud.com"
 
 # HW.USER_PASSWORD
 [hw.user_password]

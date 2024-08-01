@@ -84,6 +84,8 @@ mod tests {
         time::{Duration, SystemTime},
     };
 
+    use ultimate_common::string;
+
     use crate::configuration::{
         load_config,
         model::{KeyConf, SecruityConfig},
@@ -121,11 +123,12 @@ mod tests {
         jwt_payload.set_expires_at(expires_at);
 
         // Encrypting JWT
-        let jwt = encrypt_jwe_dir(sc.token().secret_key(), &jwt_payload)?;
+        println!("secret key is {}", string::b64u_encode(sc.token().secret_key()));
+        let jwt = encrypt_jwe_dir(sc.token().secret_key(), &jwt_payload).unwrap();
         println!("Encrypting JWT with DIR signre is: {}", jwt);
 
         // Decrypting JWT
-        let (payload, header) = decrypt_jwe_dir(sc.token().secret_key(), jwt)?;
+        let (payload, header) = decrypt_jwe_dir(sc.token().secret_key(), jwt).unwrap();
         println!("Encrypting JWT with DIR JwsHeader is: {:?}", header);
         println!("Encrypting JWT with DIR JwtPayload is: {:?}", payload);
 
@@ -163,6 +166,7 @@ mod tests {
         jwt_payload.set_expires_at(expires_at);
 
         // Signing JWT
+        println!("-- TOKEN JSON STR -- {}", serde_json::to_string(sc.token()).unwrap());
         let jwt = encode_jwt_hs256(sc.token().secret_key(), &jwt_payload)?;
         println!("HS256 JWT signre is: {}", jwt);
 

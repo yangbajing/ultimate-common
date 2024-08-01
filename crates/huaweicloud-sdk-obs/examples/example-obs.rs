@@ -10,8 +10,7 @@ async fn main() -> Result<()> {
     let cc = ClientConfig::load_from_file(&file)?;
     let cc = Arc::new(cc);
 
-    // let obs = ObsClient::new(cc.clone());
-    // obs.get_object()
+    let _obs = ObsClient::new(cc.clone());
 
     Ok(())
 }

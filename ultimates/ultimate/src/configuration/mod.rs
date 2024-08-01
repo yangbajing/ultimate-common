@@ -34,10 +34,10 @@ impl ConfigState {
     /// std::env::set_var("ULTIMATE__WEB__SERVER_ADDR", "0.0.0.0:8000");
     ///
     /// std::env::set_var(
-    ///     "ULTIMATE__TOKEN_KEY",
+    ///     "ULTIMATE__SECURITY__TOKEN__SECRET_KEY",
     ///     "8462b1ec9af827ebed13926f8f1e5409774fa1a21a1c8f726a4a34cf7dcabaf2",
     /// );
-    /// std::env::set_var("ULTIMATE__PWD_KEY", "80c9a35c0f231219ca14c44fe10c728d");
+    /// std::env::set_var("ULTIMATE__SECURITY__PWD__PWD_KEY", "80c9a35c0f231219ca14c44fe10c728d");
     ///
     /// let config_state = ConfigState::load().unwrap();
     /// let qc = config_state.ultimate_config();

@@ -16,6 +16,7 @@ workspace = true
 ultimate-common.workspace = true
 thiserror.workspace = true
 regex.workspace = true
+futures.workspace = true
 tokio.workspace = true
 async-trait.workspace = true
 toml.workspace = true
@@ -24,7 +25,7 @@ strum_macros.workspace = true
 uuid.workspace = true
 log.workspace = true
 tracing.workspace = true
-tracing-log.workspace = true
+# tracing-log.workspace = true
 tracing-subscriber.workspace = true
 tracing-appender = { workspace = true, optional = true }
 rand.workspace = true

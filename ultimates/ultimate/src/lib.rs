@@ -6,6 +6,7 @@ mod run_mode;
 pub mod security;
 pub mod starter;
 pub mod trace;
+pub mod signal;
 
 pub use run_mode::*;
 
