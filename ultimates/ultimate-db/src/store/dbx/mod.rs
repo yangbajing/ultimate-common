@@ -89,53 +89,26 @@ pub async fn new_db_pool_from_config(c: &DbConfig) -> Result<Db> {
 pub struct Dbx {
     db_pool: Db,
     txn_holder: Arc<Mutex<Option<TxnHolder>>>,
-    with_txn: bool,
+    txn: bool,
 }
 
 impl Dbx {
-    pub fn new(db_pool: Db, with_txn: bool) -> Result<Self> {
-        Ok(Dbx { db_pool, txn_holder: Arc::default(), with_txn })
-    }
-}
-
-#[derive(Debug)]
-struct TxnHolder {
-    txn: Transaction<'static, Postgres>,
-    counter: i32,
-}
-
-impl TxnHolder {
-    fn new(txn: Transaction<'static, Postgres>) -> Self {
-        TxnHolder { txn, counter: 1 }
+    pub fn new(db_pool: Db, txn: bool) -> Result<Self> {
+        Ok(Dbx { db_pool, txn_holder: Arc::default(), txn })
     }
 
-    fn inc(&mut self) {
-        self.counter += 1;
+    pub fn is_txn(&self) -> bool {
+        self.txn
     }
 
-    fn dec(&mut self) -> i32 {
-        self.counter -= 1;
-        self.counter
-    }
-}
-
-impl Deref for TxnHolder {
-    type Target = Transaction<'static, Postgres>;
-
-    fn deref(&self) -> &Self::Target {
-        &self.txn
-    }
-}
-
-impl DerefMut for TxnHolder {
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        &mut self.txn
+    pub fn non_txn(&self) -> bool {
+        !self.txn
     }
 }
 
 impl Dbx {
     pub async fn begin_txn(&self) -> Result<()> {
-        if !self.with_txn {
+        if !self.txn {
             return Err(Error::CannotBeginTxnWithTxnFalse);
         }
 
@@ -172,7 +145,7 @@ impl Dbx {
     }
 
     pub async fn commit_txn(&self) -> Result<()> {
-        if !self.with_txn {
+        if !self.txn {
             return Err(Error::CannotCommitTxnWithTxnFalse);
         }
 
@@ -205,7 +178,7 @@ impl Dbx {
         O: for<'r> FromRow<'r, <Postgres as sqlx::Database>::Row> + Send + Unpin,
         A: IntoArguments<'q, Postgres> + 'q,
     {
-        let data = if self.with_txn {
+        let data = if self.txn {
             let mut txh_g = self.txn_holder.lock().await;
             if let Some(txn) = txh_g.as_deref_mut() {
                 query.fetch_one(txn.as_mut()).await?
@@ -224,7 +197,7 @@ impl Dbx {
         O: for<'r> FromRow<'r, <Postgres as sqlx::Database>::Row> + Send + Unpin,
         A: IntoArguments<'q, Postgres> + 'q,
     {
-        let data = if self.with_txn {
+        let data = if self.txn {
             let mut txh_g = self.txn_holder.lock().await;
             if let Some(txn) = txh_g.as_deref_mut() {
                 query.fetch_optional(txn.as_mut()).await?
@@ -243,7 +216,7 @@ impl Dbx {
         O: for<'r> FromRow<'r, <Postgres as sqlx::Database>::Row> + Send + Unpin,
         A: IntoArguments<'q, Postgres> + 'q,
     {
-        let data = if self.with_txn {
+        let data = if self.txn {
             let mut txh_g = self.txn_holder.lock().await;
             if let Some(txn) = txh_g.as_deref_mut() {
                 query.fetch_all(txn.as_mut()).await?
@@ -261,7 +234,7 @@ impl Dbx {
     where
         A: IntoArguments<'q, Postgres> + 'q,
     {
-        let row_affected = if self.with_txn {
+        let row_affected = if self.txn {
             let mut txh_g = self.txn_holder.lock().await;
             if let Some(txn) = txh_g.as_deref_mut() {
                 query.execute(txn.as_mut()).await?.rows_affected()
@@ -273,5 +246,40 @@ impl Dbx {
         };
 
         Ok(row_affected)
+    }
+}
+
+#[derive(Debug)]
+struct TxnHolder {
+    txn: Transaction<'static, Postgres>,
+    counter: i32,
+}
+
+impl TxnHolder {
+    fn new(txn: Transaction<'static, Postgres>) -> Self {
+        TxnHolder { txn, counter: 1 }
+    }
+
+    fn inc(&mut self) {
+        self.counter += 1;
+    }
+
+    fn dec(&mut self) -> i32 {
+        self.counter -= 1;
+        self.counter
+    }
+}
+
+impl Deref for TxnHolder {
+    type Target = Transaction<'static, Postgres>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.txn
+    }
+}
+
+impl DerefMut for TxnHolder {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.txn
     }
 }

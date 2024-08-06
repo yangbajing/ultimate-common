@@ -1,0 +1,13 @@
+# HW.CREDENTIALS
+[hw.credentials]
+project_id = "0af556037a80f2d72fccc000a511a79f"
+endpoint = "https://vpc.cn-southwest-2.myhuaweicloud.com"
+ak = "9QT5KDADUGWMKVQ0IYBZ"
+sk = "u2p3j1pyvHs2cMZ76mF1ElTZIdAEhZaA7nFhqWVe"
+
+# HW.CREDENTIALS.USER_PASSWORD
+[hw.credentials.user_password]
+domain.id = "0ad13f5425000f260f32c000bd2ad000"
+domain.name = "hw80013999"
+name = "hw80013999"
+password = "asArPg-A16jT"

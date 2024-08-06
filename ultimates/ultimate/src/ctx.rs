@@ -1,24 +1,35 @@
 use josekit::jwt::JwtPayload;
 
-use ultimate_common::time::{self, Duration, UtcDateTime};
+use ultimate_common::time::{self, DateTime, Duration, Utc, UtcDateTime};
 
 use crate::error::DataError;
 
 /// 会话上下文。
 /// 此处 clone 的成本很低，若后续数据多的话可以使用 Arc 加 Wrapper 模式来降低数据复制的成本
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Default)]
 pub struct Session {
     /// 会话用户 ID
     uid: i64,
+
     /// 请求时时间
-    req_time: UtcDateTime,
+    req_time: DateTime<Utc>,
+
     /// 会话过期时间
-    expires_at: UtcDateTime,
+    expires_at: DateTime<Utc>,
+
+    /// 组织ID列表。用于需要通过不同组织身份进行细粒度权限控制
+    ext_orgs: Vec<i64>,
+
+    /// 角色ID列表。用于需要通过不同角色身份进行细粒度权限控制
+    ext_roles: Vec<i64>,
+
+    /// 权限ID列表。用于需要通过不同权限ID进行细粒度权限控制
+    ext_privileges: Vec<i64>,
 }
 
 impl Session {
     pub fn new(uid: i64, req_time: UtcDateTime, expires_at: UtcDateTime) -> Self {
-        Self { uid, req_time, expires_at }
+        Self { uid, req_time, expires_at, ..Default::default() }
     }
 
     pub fn new_root() -> Self {
@@ -43,6 +54,33 @@ impl Session {
 
     pub fn with_expires_at(mut self, expires_at: UtcDateTime) -> Self {
         self.expires_at = expires_at;
+        self
+    }
+
+    pub fn ext_orgs(&self) -> &[i64] {
+        &self.ext_orgs
+    }
+
+    pub fn with_ext_orgs(mut self, ext_orgs: Vec<i64>) -> Self {
+        self.ext_orgs = ext_orgs;
+        self
+    }
+
+    pub fn ext_roles(&self) -> &[i64] {
+        &self.ext_roles
+    }
+
+    pub fn with_ext_roles(mut self, ext_roles: Vec<i64>) -> Self {
+        self.ext_roles = ext_roles;
+        self
+    }
+
+    pub fn ext_privileges(&self) -> &[i64] {
+        &self.ext_privileges
+    }
+
+    pub fn with_ext_privileges(mut self, ext_privileges: Vec<i64>) -> Self {
+        self.ext_privileges = ext_privileges;
         self
     }
 
