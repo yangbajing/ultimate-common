@@ -11,7 +11,7 @@ repository.workspace = true
 workspace = true
 
 [features]
-default = ["utoipa"]
+# default = ["utoipa"]
 
 [dependencies]
 ultimate-common.workspace = true

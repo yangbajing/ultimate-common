@@ -7,7 +7,7 @@ use crate::error::DataError;
 /// 会话上下文。
 /// 此处 clone 的成本很低，若后续数据多的话可以使用 Arc 加 Wrapper 模式来降低数据复制的成本
 #[derive(Clone, Debug, Default)]
-pub struct Session {
+pub struct Ctx {
     /// 会话用户 ID
     uid: i64,
 
@@ -27,7 +27,7 @@ pub struct Session {
     ext_privileges: Vec<i64>,
 }
 
-impl Session {
+impl Ctx {
     pub fn new(uid: i64, req_time: UtcDateTime, expires_at: UtcDateTime) -> Self {
         Self { uid, req_time, expires_at, ..Default::default() }
     }
@@ -101,14 +101,14 @@ impl Session {
             UtcDateTime::MAX_UTC
         };
 
-        Ok(Session::new(uid, req_time, expires_at))
+        Ok(Ctx::new(uid, req_time, expires_at))
     }
 }
 
-impl TryFrom<JwtPayload> for Session {
+impl TryFrom<JwtPayload> for Ctx {
     type Error = DataError;
 
     fn try_from(payload: JwtPayload) -> std::result::Result<Self, Self::Error> {
-        Session::try_from_jwt_payload(&payload, Some(time::now_utc()))
+        Ctx::try_from_jwt_payload(&payload, Some(time::now_utc()))
     }
 }

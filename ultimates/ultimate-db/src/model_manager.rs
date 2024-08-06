@@ -1,4 +1,4 @@
-use ultimate::{configuration::model::DbConfig, ctx::Session};
+use ultimate::{configuration::model::DbConfig, ctx::Ctx};
 
 use crate::store::{dbx::new_db_pool_from_config, Dbx};
 
@@ -7,7 +7,7 @@ use crate::{Error, Result};
 #[derive(Clone)]
 pub struct ModelManager {
     dbx: Dbx,
-    session: Option<Session>,
+    session: Option<Ctx>,
 }
 
 impl ModelManager {
@@ -25,19 +25,27 @@ impl ModelManager {
         Ok(ModelManager { dbx, session: self.session.clone() })
     }
 
+    pub fn get_or_new_with_txn(&self) -> Result<ModelManager> {
+        if self.dbx().is_txn() {
+            Ok(self.clone())
+        } else {
+            Ok(self.new_with_txn()?)
+        }
+    }
+
     pub fn dbx(&self) -> &Dbx {
         &self.dbx
     }
 
-    pub fn session_opt_ref(&self) -> Option<&Session> {
+    pub fn session_opt_ref(&self) -> Option<&Ctx> {
         self.session.as_ref()
     }
 
-    pub fn session_ref(&self) -> Result<&Session> {
+    pub fn session_ref(&self) -> Result<&Ctx> {
         self.session.as_ref().ok_or(Error::Unauthorized)
     }
 
-    pub fn with_session(mut self, ctx: Session) -> Self {
+    pub fn with_session(mut self, ctx: Ctx) -> Self {
         self.session = Some(ctx);
         self
     }

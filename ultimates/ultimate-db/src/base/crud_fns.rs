@@ -5,7 +5,7 @@ use sea_query_binder::SqlxBinder;
 use sqlx::postgres::PgRow;
 use sqlx::FromRow;
 use sqlx::Row;
-use ultimate::ctx::Session;
+use ultimate::ctx::Ctx;
 
 use crate::base::{
     prep_fields_for_create, prep_fields_for_update, CommonIden, DbBmc, LIST_LIMIT_DEFAULT, LIST_LIMIT_MAX,
@@ -15,7 +15,7 @@ use crate::{Error, Result};
 
 use super::{check_number_of_affected, Id};
 
-pub async fn create<MC, E>(session: &Session, mm: &ModelManager, data: E) -> Result<i64>
+pub async fn create<MC, E>(session: &Ctx, mm: &ModelManager, data: E) -> Result<i64>
 where
     MC: DbBmc,
     E: HasSeaFields,
@@ -42,7 +42,7 @@ where
     Ok(id)
 }
 
-pub async fn create_many<MC, E>(session: &Session, mm: &ModelManager, data: Vec<E>) -> Result<Vec<i64>>
+pub async fn create_many<MC, E>(session: &Ctx, mm: &ModelManager, data: Vec<E>) -> Result<Vec<i64>>
 where
     MC: DbBmc,
     E: HasSeaFields,
@@ -78,7 +78,7 @@ where
     Ok(ids)
 }
 
-pub async fn insert<MC, E>(session: &Session, mm: &ModelManager, data: E) -> Result<()>
+pub async fn insert<MC, E>(session: &Ctx, mm: &ModelManager, data: E) -> Result<()>
 where
     MC: DbBmc,
     E: HasSeaFields,
@@ -106,7 +106,7 @@ where
     }
 }
 
-pub async fn insert_many<MC, E>(session: &Session, mm: &ModelManager, data: impl IntoIterator<Item = E>) -> Result<u64>
+pub async fn insert_many<MC, E>(session: &Ctx, mm: &ModelManager, data: impl IntoIterator<Item = E>) -> Result<u64>
 where
     MC: DbBmc,
     E: HasSeaFields,
@@ -169,7 +169,7 @@ where
 }
 
 pub async fn first<MC, E, F>(
-    session: &Session,
+    session: &Ctx,
     mm: &ModelManager,
     filter: Option<F>,
     list_options: Option<ListOptions>,
@@ -203,7 +203,7 @@ where
 }
 
 pub async fn list<MC, E, F>(
-    _session: &Session,
+    _session: &Ctx,
     mm: &ModelManager,
     filter: Option<F>,
     list_options: Option<ListOptions>,
@@ -237,7 +237,7 @@ where
     Ok(entities)
 }
 
-pub async fn count<MC, F>(_session: &Session, mm: &ModelManager, filter: Option<F>) -> Result<i64>
+pub async fn count<MC, F>(_session: &Ctx, mm: &ModelManager, filter: Option<F>) -> Result<i64>
 where
     MC: DbBmc,
     F: Into<FilterGroups>,
@@ -262,7 +262,7 @@ where
     Ok(count)
 }
 
-pub async fn update<MC, E>(session: &Session, mm: &ModelManager, id: Id, data: E) -> Result<()>
+pub async fn update<MC, E>(session: &Ctx, mm: &ModelManager, id: Id, data: E) -> Result<()>
 where
     MC: DbBmc,
     E: HasSeaFields,
@@ -287,7 +287,7 @@ where
     _check_result::<MC>(count, id)
 }
 
-pub async fn delete<MC>(session: &Session, mm: &ModelManager, id: Id) -> Result<()>
+pub async fn delete<MC>(session: &Ctx, mm: &ModelManager, id: Id) -> Result<()>
 where
     MC: DbBmc,
 {
@@ -332,7 +332,7 @@ where
     }
 }
 
-pub async fn delete_many<MC>(_session: &Session, mm: &ModelManager, ids: Vec<Id>) -> Result<u64>
+pub async fn delete_many<MC>(_session: &Ctx, mm: &ModelManager, ids: Vec<Id>) -> Result<u64>
 where
     MC: DbBmc,
 {

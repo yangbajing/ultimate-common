@@ -1,6 +1,6 @@
 use modql::field::{SeaField, SeaFields};
 use sea_query::{DynIden, IntoIden};
-use ultimate::ctx::Session;
+use ultimate::ctx::Ctx;
 
 use crate::{
     base::{CommonIden, DbBmc, TimestampIden},
@@ -8,7 +8,7 @@ use crate::{
 };
 
 /// This method must be called when a model controller intends to create its entity.
-pub fn prep_fields_for_create<MC>(mut fields: SeaFields, session: &Session) -> SeaFields
+pub fn prep_fields_for_create<MC>(mut fields: SeaFields, session: &Ctx) -> SeaFields
 where
     MC: DbBmc,
 {
@@ -23,7 +23,7 @@ where
 }
 
 /// This method must be calledwhen a Model Controller plans to update its entity.
-pub fn prep_fields_for_update<MC>(mut fields: SeaFields, session: &Session) -> SeaFields
+pub fn prep_fields_for_update<MC>(mut fields: SeaFields, session: &Ctx) -> SeaFields
 where
     MC: DbBmc,
 {
@@ -40,7 +40,7 @@ fn _exists_in_fields(fields: &[SeaField], iden: DynIden) -> bool {
 
 /// Update the timestamps info for create
 /// (e.g., cid, ctime, and mid, mtime will be updated with the same values)
-fn add_timestamps_for_create(fields: SeaFields, session: &Session) -> SeaFields {
+fn add_timestamps_for_create(fields: SeaFields, session: &Ctx) -> SeaFields {
     let mut fields = fields.into_vec();
     if !_exists_in_fields(&fields, TimestampIden::Cid.into_iden()) {
         fields.push(SeaField::new(TimestampIden::Cid, session.uid()));
@@ -53,7 +53,7 @@ fn add_timestamps_for_create(fields: SeaFields, session: &Session) -> SeaFields 
 
 /// Update the timestamps info only for update.
 /// (.e.g., only mid, mtime will be udpated)
-fn add_timestamps_for_update(fields: SeaFields, session: &Session) -> SeaFields {
+fn add_timestamps_for_update(fields: SeaFields, session: &Ctx) -> SeaFields {
     let mut fields = fields.into_vec();
     if !_exists_in_fields(&fields, TimestampIden::Mid.into_iden()) {
         fields.push(SeaField::new(TimestampIden::Mid, session.uid()));

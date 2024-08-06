@@ -6,7 +6,7 @@ use axum_extra::headers::authorization::Bearer;
 use axum_extra::headers::{Authorization, HeaderMapExt};
 use serde::de::DeserializeOwned;
 use ultimate::configuration::model::SecruityConfig;
-use ultimate::ctx::Session;
+use ultimate::ctx::Ctx;
 use ultimate::error::DataError;
 use ultimate::security::{AccessToken, SecurityUtils};
 use ultimate_common::time;
@@ -19,7 +19,7 @@ pub fn unauthorized_app_error(msg: impl Into<String>) -> (StatusCode, Json<AppEr
 }
 
 /// 从 Http Request Parts 中获取 [SessionCtx]
-pub fn extract_session(parts: &Parts, sc: &SecruityConfig) -> Result<Session, DataError> {
+pub fn extract_session(parts: &Parts, sc: &SecruityConfig) -> Result<Ctx, DataError> {
     let req_time = time::now();
 
     let token = if let Some(Authorization(bearer)) = parts.headers.typed_get::<Authorization<Bearer>>() {
@@ -33,7 +33,7 @@ pub fn extract_session(parts: &Parts, sc: &SecruityConfig) -> Result<Session, Da
     let (payload, _) =
         SecurityUtils::decrypt_jwt(sc.pwd(), &token).map_err(|_e| DataError::unauthorized("Failed decode jwt"))?;
 
-    Session::try_from_jwt_payload(&payload, Some(req_time))
+    Ctx::try_from_jwt_payload(&payload, Some(req_time))
 }
 
 pub fn opt_to_app_result<T>(opt: Option<T>) -> AppResult<T>
@@ -45,4 +45,12 @@ where
     } else {
         Err(AppError::new_with_code(404, "Not found."))
     }
+}
+
+#[cfg(feature = "utoipa")]
+pub fn op_vals_obj_schema() -> utoipa::openapi::Object {
+    utoipa::openapi::    ObjectBuilder::new()
+        .schema_type(utoipa::openapi::SchemaType::Object)
+        .description(Some("支持的详细操作条件见：https://github.com/jeremychone/rust-modql?tab=readme-ov-file#opvaltype-conditional-operators"))
+        .build()
 }
