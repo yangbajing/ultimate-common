@@ -20,6 +20,7 @@ tokio.workspace = true
 tracing.workspace = true
 mime.workspace = true
 hyper.workspace = true
+tower-http.workspace = true
 axum.workspace = true
 axum-extra.workspace = true
 serde.workspace = true

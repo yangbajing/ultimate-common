@@ -3,7 +3,6 @@ use axum::response::IntoResponse;
 use axum::Json;
 use serde::Serialize;
 use serde_json::Value;
-use tracing::debug;
 use ultimate::error::DataError;
 use ultimate::security;
 use uuid::Uuid;
@@ -11,27 +10,17 @@ use uuid::Uuid;
 pub type AppResult<T> = core::result::Result<Json<T>, AppError>;
 
 /// A default error response for most API errors.
-#[cfg(feature = "utoipa")]
-#[derive(Debug, Serialize, utoipa::ToSchema)]
-pub struct AppError {
-    /// A unique error ID.
-    pub err_id: Uuid,
-    pub err_code: i32,
-    /// An error message.
-    pub err_msg: String,
-    /// Optional Additional error details.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub err_msg_detail: Option<Value>,
-}
-
-#[cfg(not(feature = "utoipa"))]
 #[derive(Debug, Serialize)]
+#[cfg_attr(feature = "utoipa", derive(utoipa::ToSchema))]
 pub struct AppError {
     /// A unique error ID.
     pub err_id: Uuid,
+
     pub err_code: i32,
+
     /// An error message.
     pub err_msg: String,
+
     /// Optional Additional error details.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub err_msg_detail: Option<Value>,
@@ -79,10 +68,7 @@ impl From<hyper::Error> for AppError {
 impl From<DataError> for AppError {
     fn from(err: DataError) -> Self {
         match err {
-            DataError::BizError { code, msg } => {
-                debug!("biz error. code:{code}, msg: {msg}");
-                Self::new(msg).with_err_code(code)
-            }
+            DataError::BizError { code, msg } => Self::new(msg).with_err_code(code),
             DataError::SecurityError(e) => convert_security_error(e),
             DataError::UltimateCommonError(e) => Self::new(e.to_string()),
             DataError::SystemTimeError(e) => Self::new(e.to_string()),
