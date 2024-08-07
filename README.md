@@ -6,4 +6,5 @@ Rust 实用工具库，微服务融合……
 - [ultimates](ultimates/): ultimate 融合库。比如：数据库、消息系统等，可以放置类似 `spring-boot` 一样的 **starter**。
 
 ```sh
-cargo clippy-all && cargo check-all```
+cargo clippy-all && cargo check-all
+```

@@ -31,6 +31,12 @@ impl Id {
     }
 }
 
+impl From<Id> for FilterNode {
+    fn from(id: Id) -> Self {
+        id.to_filter_node("id")
+    }
+}
+
 impl From<Id> for SimpleExpr {
     fn from(value: Id) -> Self {
         match value {

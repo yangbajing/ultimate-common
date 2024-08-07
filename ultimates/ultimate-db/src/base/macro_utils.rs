@@ -75,23 +75,23 @@ macro_rules! generate_common_bmc_fns {
 				)?
 
 				$(
-					pub async fn update(
+					pub async fn update_by_id(
 							mm: &ultimate_db::ModelManager,
 							id: impl Into<ultimate_db::Id>,
 							entity_u: $for_update,
 					) -> ultimate_db::Result<()> {
-							ultimate_db::base::update::<Self, _>(mm, id.into(), entity_u).await
+							ultimate_db::base::update_by_id::<Self, _>(mm, id.into(), entity_u).await
 					}
 				)?
 
-					pub async fn delete(
+					pub async fn delete_by_id(
 							mm: &ultimate_db::ModelManager,
 							id: impl Into<ultimate_db::Id>,
 					) -> ultimate_db::Result<()> {
-							ultimate_db::base::delete::<Self>(mm, id.into()).await
+							ultimate_db::base::delete_by_id::<Self>(mm, id.into()).await
 					}
 
-					pub async fn delete_many<V, I>(
+					pub async fn delete_by_ids<V, I>(
 							mm: &ultimate_db::ModelManager,
 							ids: I,
 					) -> ultimate_db::Result<u64>
@@ -100,7 +100,7 @@ macro_rules! generate_common_bmc_fns {
 							I: IntoIterator<Item = V>,
 					{
 							let ids = ids.into_iter().map(|v| v.into()).collect();
-							ultimate_db::base::delete_many::<Self>(mm, ids).await
+							ultimate_db::base::delete_by_ids::<Self>(mm, ids).await
 					}
 		}
 	};
