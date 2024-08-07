@@ -8,27 +8,27 @@ use crate::{
 };
 
 /// This method must be called when a model controller intends to create its entity.
-pub fn prep_fields_for_create<MC>(mut fields: SeaFields, session: &Ctx) -> SeaFields
+pub fn prep_fields_for_create<MC>(mut fields: SeaFields, ctx: &Ctx) -> SeaFields
 where
     MC: DbBmc,
 {
     if MC::has_owner_id() {
-        fields.push(SeaField::new(CommonIden::OwnerId.into_iden(), session.uid()));
+        fields.push(SeaField::new(CommonIden::OwnerId.into_iden(), ctx.uid()));
     }
     if MC::has_creation_timestamps() {
-        fields = add_timestamps_for_create(fields, session);
+        fields = add_timestamps_for_create(fields, ctx);
     }
 
     fields
 }
 
 /// This method must be calledwhen a Model Controller plans to update its entity.
-pub fn prep_fields_for_update<MC>(mut fields: SeaFields, session: &Ctx) -> SeaFields
+pub fn prep_fields_for_update<MC>(mut fields: SeaFields, ctx: &Ctx) -> SeaFields
 where
     MC: DbBmc,
 {
     if MC::has_creation_timestamps() {
-        fields = add_timestamps_for_update(fields, session);
+        fields = add_timestamps_for_update(fields, ctx);
     }
     fields
 }
@@ -40,26 +40,26 @@ fn _exists_in_fields(fields: &[SeaField], iden: DynIden) -> bool {
 
 /// Update the timestamps info for create
 /// (e.g., cid, ctime, and mid, mtime will be updated with the same values)
-fn add_timestamps_for_create(fields: SeaFields, session: &Ctx) -> SeaFields {
+fn add_timestamps_for_create(fields: SeaFields, ctx: &Ctx) -> SeaFields {
     let mut fields = fields.into_vec();
     if !_exists_in_fields(&fields, TimestampIden::Cid.into_iden()) {
-        fields.push(SeaField::new(TimestampIden::Cid, session.uid()));
+        fields.push(SeaField::new(TimestampIden::Cid, ctx.uid()));
     }
     if !_exists_in_fields(&fields, TimestampIden::Ctime.into_iden()) {
-        fields.push(SeaField::new(TimestampIden::Ctime, *session.req_time()));
+        fields.push(SeaField::new(TimestampIden::Ctime, *ctx.req_time()));
     }
     SeaFields::new(fields)
 }
 
 /// Update the timestamps info only for update.
 /// (.e.g., only mid, mtime will be udpated)
-fn add_timestamps_for_update(fields: SeaFields, session: &Ctx) -> SeaFields {
+fn add_timestamps_for_update(fields: SeaFields, ctx: &Ctx) -> SeaFields {
     let mut fields = fields.into_vec();
     if !_exists_in_fields(&fields, TimestampIden::Mid.into_iden()) {
-        fields.push(SeaField::new(TimestampIden::Mid, session.uid()));
+        fields.push(SeaField::new(TimestampIden::Mid, ctx.uid()));
     }
     if !_exists_in_fields(&fields, TimestampIden::Mtime.into_iden()) {
-        fields.push(SeaField::new(TimestampIden::Mtime, *session.req_time()));
+        fields.push(SeaField::new(TimestampIden::Mtime, *ctx.req_time()));
     }
     SeaFields::new(fields)
 }

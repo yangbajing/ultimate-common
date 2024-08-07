@@ -7,7 +7,7 @@ use crate::{Error, Result};
 #[derive(Clone)]
 pub struct ModelManager {
     dbx: Dbx,
-    session: Option<Ctx>,
+    ctx: Option<Ctx>,
 }
 
 impl ModelManager {
@@ -17,12 +17,12 @@ impl ModelManager {
             .await
             .map_err(|ex| Error::CantCreateModelManagerProvider(ex.to_string()))?;
         let dbx = Dbx::new(db_pool, false)?;
-        Ok(ModelManager { dbx, session: None })
+        Ok(ModelManager { dbx, ctx: None })
     }
 
     pub fn new_with_txn(&self) -> Result<ModelManager> {
         let dbx = Dbx::new(self.dbx.db().clone(), true)?;
-        Ok(ModelManager { dbx, session: self.session.clone() })
+        Ok(ModelManager { dbx, ctx: self.ctx.clone() })
     }
 
     pub fn get_or_new_with_txn(&self) -> Result<ModelManager> {
@@ -37,16 +37,16 @@ impl ModelManager {
         &self.dbx
     }
 
-    pub fn session_opt_ref(&self) -> Option<&Ctx> {
-        self.session.as_ref()
+    pub fn ctx_ref(&self) -> Result<&Ctx> {
+        self.ctx.as_ref().ok_or(Error::Unauthorized)
     }
 
-    pub fn session_ref(&self) -> Result<&Ctx> {
-        self.session.as_ref().ok_or(Error::Unauthorized)
+    pub fn ctx_opt_ref(&self) -> Option<&Ctx> {
+        self.ctx.as_ref()
     }
 
-    pub fn with_session(mut self, ctx: Ctx) -> Self {
-        self.session = Some(ctx);
+    pub fn with_ctx(mut self, ctx: Ctx) -> Self {
+        self.ctx = Some(ctx);
         self
     }
 }

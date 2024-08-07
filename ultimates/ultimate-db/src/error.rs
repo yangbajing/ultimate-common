@@ -1,17 +1,14 @@
 use std::borrow::Cow;
 
-use serde::Serialize;
-use serde_with::{serde_as, DisplayFromStr};
 use sqlx::error::DatabaseError;
 use thiserror::Error;
 use ultimate::error::DataError;
 
-use super::base::Id;
+use crate::Id;
 
 pub type Result<T> = core::result::Result<T, Error>;
 
-#[serde_as]
-#[derive(Debug, Serialize, Error)]
+#[derive(Debug, Error)]
 pub enum Error {
     #[error("Unauthorized")]
     Unauthorized,
@@ -51,25 +48,13 @@ pub enum Error {
 
     // -- Externals
     #[error(transparent)]
-    SeaQueryError(
-        #[from]
-        #[serde_as(as = "DisplayFromStr")]
-        sea_query::error::Error,
-    ),
+    SeaQueryError(#[from] sea_query::error::Error),
 
     #[error(transparent)]
-    ModqlIntoSea(
-        #[from]
-        #[serde_as(as = "DisplayFromStr")]
-        modql::filter::IntoSeaError,
-    ),
+    ModqlIntoSea(#[from] modql::filter::IntoSeaError),
 
     #[error(transparent)]
-    JsonError(
-        #[from]
-        #[serde_as(as = "DisplayFromStr")]
-        serde_json::Error,
-    ),
+    JsonError(#[from] serde_json::Error),
 }
 
 impl Error {
@@ -96,7 +81,7 @@ impl Error {
     /// if this Error is an SQLX Error that contains a database error.
     pub fn as_database_error(&self) -> Option<&(dyn DatabaseError + 'static)> {
         match self {
-            Error::DbxError(crate::store::dbx::Error::SqlxError(sqlx_error)) => sqlx_error.as_database_error(),
+            Error::DbxError(crate::store::dbx::Error::Sqlx(sqlx_error)) => sqlx_error.as_database_error(),
             _ => None,
         }
     }

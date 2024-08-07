@@ -5,24 +5,26 @@ use sea_query_binder::SqlxBinder;
 use sqlx::postgres::PgRow;
 use sqlx::FromRow;
 use sqlx::Row;
-use ultimate::ctx::Ctx;
 
 use crate::base::{
     prep_fields_for_create, prep_fields_for_update, CommonIden, DbBmc, LIST_LIMIT_DEFAULT, LIST_LIMIT_MAX,
 };
-use crate::ModelManager;
 use crate::{Error, Result};
+use crate::{Id, ModelManager};
 
-use super::{check_number_of_affected, Id};
+use super::check_number_of_affected;
 
-pub async fn create<MC, E>(session: &Ctx, mm: &ModelManager, data: E) -> Result<i64>
+/// Create a new entity。需要自增主键ID
+pub async fn create<MC, E>(mm: &ModelManager, data: E) -> Result<i64>
 where
     MC: DbBmc,
     E: HasSeaFields,
 {
+    let ctx = mm.ctx_ref()?;
     // -- Extract fields (name / sea-query value expression)
     let mut fields = data.not_none_sea_fields();
-    fields = prep_fields_for_create::<MC>(fields, session);
+    fields = SeaFields::new(fields.into_iter().filter(|f| f.iden.to_string() != "id").collect());
+    fields = prep_fields_for_create::<MC>(fields, ctx);
 
     // -- Build query
     let (columns, sea_values) = fields.for_sea_insert();
@@ -42,11 +44,12 @@ where
     Ok(id)
 }
 
-pub async fn create_many<MC, E>(session: &Ctx, mm: &ModelManager, data: Vec<E>) -> Result<Vec<i64>>
+pub async fn create_many<MC, E>(mm: &ModelManager, data: Vec<E>) -> Result<Vec<i64>>
 where
     MC: DbBmc,
     E: HasSeaFields,
 {
+    let ctx = mm.ctx_ref()?;
     let mut ids = Vec::with_capacity(data.len());
 
     // Prepare insert query
@@ -54,7 +57,7 @@ where
 
     for item in data {
         let mut fields = item.not_none_sea_fields();
-        fields = prep_fields_for_create::<MC>(fields, session);
+        fields = prep_fields_for_create::<MC>(fields, ctx);
         let (columns, sea_values) = fields.for_sea_insert();
 
         // Append values for each item
@@ -78,14 +81,16 @@ where
     Ok(ids)
 }
 
-pub async fn insert<MC, E>(session: &Ctx, mm: &ModelManager, data: E) -> Result<()>
+pub async fn insert<MC, E>(mm: &ModelManager, data: E) -> Result<()>
 where
     MC: DbBmc,
     E: HasSeaFields,
 {
+    let ctx = mm.ctx_ref()?;
+
     // -- Extract fields (name / sea-query value expression)
     let mut fields = data.not_none_sea_fields();
-    fields = prep_fields_for_create::<MC>(fields, session);
+    fields = prep_fields_for_create::<MC>(fields, ctx);
 
     // -- Build query
     let (columns, sea_values) = fields.for_sea_insert();
@@ -106,17 +111,19 @@ where
     }
 }
 
-pub async fn insert_many<MC, E>(session: &Ctx, mm: &ModelManager, data: impl IntoIterator<Item = E>) -> Result<u64>
+pub async fn insert_many<MC, E>(mm: &ModelManager, data: impl IntoIterator<Item = E>) -> Result<u64>
 where
     MC: DbBmc,
     E: HasSeaFields,
 {
+    let ctx = mm.ctx_ref()?;
+
     // Prepare insert query
     let mut query = Query::insert();
 
     for item in data {
         let mut fields = item.not_none_sea_fields();
-        fields = prep_fields_for_create::<MC>(fields, session);
+        fields = prep_fields_for_create::<MC>(fields, ctx);
         let (columns, sea_values) = fields.for_sea_insert();
 
         // Append values for each item
@@ -130,21 +137,21 @@ where
     Ok(rows)
 }
 
-pub async fn get<MC, E>(mm: &ModelManager, id: Id) -> Result<E>
+pub async fn get_by_id<MC, E>(mm: &ModelManager, id: Id) -> Result<E>
 where
     MC: DbBmc,
     E: for<'r> FromRow<'r, PgRow> + Unpin + Send,
     E: HasSeaFields,
 {
     let filter: FilterGroups = id.to_filter_node("id").into();
-    one_optional::<MC, E, _>(mm, filter).await?.ok_or_else(|| Error::EntityNotFound {
+    find::<MC, E, _>(mm, filter).await?.ok_or_else(|| Error::EntityNotFound {
         schema: MC::SCHEMA,
         entity: MC::TABLE,
         id,
     })
 }
 
-pub async fn one_optional<MC, E, F>(mm: &ModelManager, filter: F) -> Result<Option<E>>
+pub async fn find<MC, E, F>(mm: &ModelManager, filter: F) -> Result<Option<E>>
 where
     MC: DbBmc,
     E: for<'r> FromRow<'r, PgRow> + Unpin + Send,
@@ -168,46 +175,7 @@ where
     Ok(entity)
 }
 
-pub async fn first<MC, E, F>(
-    session: &Ctx,
-    mm: &ModelManager,
-    filter: Option<F>,
-    list_options: Option<ListOptions>,
-) -> Result<Option<E>>
-where
-    MC: DbBmc,
-    F: Into<FilterGroups>,
-    E: for<'r> FromRow<'r, PgRow> + Unpin + Send,
-    E: HasSeaFields,
-{
-    let list_options = match list_options {
-        Some(mut list_options) => {
-            // Reset the offset/limit
-            list_options.offset = None;
-            list_options.limit = Some(1);
-
-            // Don't change order_bys if not empty,
-            // otherwise, set it to id (creation asc order)
-            list_options.order_bys = list_options.order_bys.or_else(|| Some("id".into()));
-
-            list_options
-        }
-        None => ListOptions {
-            limit: Some(1),
-            offset: None,
-            order_bys: Some("id".into()), // default id asc
-        },
-    };
-
-    list::<MC, E, F>(session, mm, filter, Some(list_options)).await.map(|item| item.into_iter().next())
-}
-
-pub async fn list<MC, E, F>(
-    _session: &Ctx,
-    mm: &ModelManager,
-    filter: Option<F>,
-    list_options: Option<ListOptions>,
-) -> Result<Vec<E>>
+pub async fn list<MC, E, F>(mm: &ModelManager, filter: Option<F>, list_options: Option<ListOptions>) -> Result<Vec<E>>
 where
     MC: DbBmc,
     F: Into<FilterGroups>,
@@ -237,7 +205,7 @@ where
     Ok(entities)
 }
 
-pub async fn count<MC, F>(_session: &Ctx, mm: &ModelManager, filter: Option<F>) -> Result<i64>
+pub async fn count<MC, F>(mm: &ModelManager, filter: Option<F>) -> Result<i64>
 where
     MC: DbBmc,
     F: Into<FilterGroups>,
@@ -262,15 +230,17 @@ where
     Ok(count)
 }
 
-pub async fn update<MC, E>(session: &Ctx, mm: &ModelManager, id: Id, data: E) -> Result<()>
+pub async fn update<MC, E>(mm: &ModelManager, id: Id, data: E) -> Result<()>
 where
     MC: DbBmc,
     E: HasSeaFields,
 {
+    let ctx = mm.ctx_ref()?;
+
     // -- Prep Fields
     let mut fields = data.not_none_sea_fields();
     if MC::has_modification_timestamps() {
-        fields = prep_fields_for_update::<MC>(fields, session);
+        fields = prep_fields_for_update::<MC>(fields, ctx);
     }
 
     // -- Build query
@@ -287,16 +257,18 @@ where
     _check_result::<MC>(count, id)
 }
 
-pub async fn delete<MC>(session: &Ctx, mm: &ModelManager, id: Id) -> Result<()>
+pub async fn delete<MC>(mm: &ModelManager, id: Id) -> Result<()>
 where
     MC: DbBmc,
 {
+    let ctx = mm.ctx_ref()?;
+
     // -- Build query
     let (sql, values) = if MC::use_logical_deletion() {
         // -- Prep Fields
         let mut fields = SeaFields::new(vec![SeaField::new(CommonIden::LogiscalDeletion, true)]);
         if MC::has_modification_timestamps() {
-            fields = prep_fields_for_update::<MC>(fields, session);
+            fields = prep_fields_for_update::<MC>(fields, ctx);
         }
 
         let fields = fields.for_sea_update();
@@ -332,7 +304,7 @@ where
     }
 }
 
-pub async fn delete_many<MC>(_session: &Ctx, mm: &ModelManager, ids: Vec<Id>) -> Result<u64>
+pub async fn delete_many<MC>(mm: &ModelManager, ids: Vec<Id>) -> Result<u64>
 where
     MC: DbBmc,
 {
