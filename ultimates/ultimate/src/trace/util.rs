@@ -32,7 +32,6 @@ pub fn init_trace(c: &UltimateConfig) {
             let r = registry.with(fmt_layer.with_writer(init_log_appender(c)));
             r.init();
         }
-
         #[cfg(not(feature = "tracing-appender"))]
         {
             let r = registry.with(fmt_layer);

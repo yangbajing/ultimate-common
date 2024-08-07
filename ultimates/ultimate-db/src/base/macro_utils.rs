@@ -61,9 +61,9 @@ macro_rules! generate_common_bmc_fns {
 						pub async fn list(
 								mm: &ultimate_db::ModelManager,
 								filter: Vec<$filter>,
-								list_options: Option<modql::filter::ListOptions>,
+								pagination: Option<&ultimate_db::Pagination>,
 						) -> ultimate_db::Result<Vec<$entity>> {
-								ultimate_db::base::list::<Self, _, _>(mm, Some(filter), list_options).await
+								ultimate_db::base::list::<Self, _, _>(mm, Some(filter), pagination.map(Into::into)).await
 						}
 
 						pub async fn count(
@@ -72,26 +72,34 @@ macro_rules! generate_common_bmc_fns {
 						) -> ultimate_db::Result<i64> {
 								ultimate_db::base::count::<Self, _>(mm, Some(filter)).await
 						}
+
+						pub async fn page(
+								mm: &ultimate_db::ModelManager,
+								pagination: ultimate_db::Pagination,
+								filter: Vec<$filter>,
+						) -> ultimate_db::Result<ultimate_db::PagePayload<$entity>> {
+								ultimate_db::base::page::<Self, _, _>(mm, pagination, Some(filter)).await
+						}
 				)?
 
 				$(
-					pub async fn update(
+					pub async fn update_by_id(
 							mm: &ultimate_db::ModelManager,
 							id: impl Into<ultimate_db::Id>,
 							entity_u: $for_update,
 					) -> ultimate_db::Result<()> {
-							ultimate_db::base::update::<Self, _>(mm, id.into(), entity_u).await
+							ultimate_db::base::update_by_id::<Self, _>(mm, id.into(), entity_u).await
 					}
 				)?
 
-					pub async fn delete(
+					pub async fn delete_by_id(
 							mm: &ultimate_db::ModelManager,
 							id: impl Into<ultimate_db::Id>,
 					) -> ultimate_db::Result<()> {
-							ultimate_db::base::delete::<Self>(mm, id.into()).await
+							ultimate_db::base::delete_by_id::<Self>(mm, id.into()).await
 					}
 
-					pub async fn delete_many<V, I>(
+					pub async fn delete_by_ids<V, I>(
 							mm: &ultimate_db::ModelManager,
 							ids: I,
 					) -> ultimate_db::Result<u64>
@@ -100,7 +108,7 @@ macro_rules! generate_common_bmc_fns {
 							I: IntoIterator<Item = V>,
 					{
 							let ids = ids.into_iter().map(|v| v.into()).collect();
-							ultimate_db::base::delete_many::<Self>(mm, ids).await
+							ultimate_db::base::delete_by_ids::<Self>(mm, ids).await
 					}
 		}
 	};

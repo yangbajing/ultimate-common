@@ -7,7 +7,7 @@ use sqlx::FromRow;
 use sqlx::Row;
 
 use crate::base::{prep_fields_for_create, prep_fields_for_update, CommonIden, DbBmc};
-use crate::{Error, Result};
+use crate::{Error, Page, PagePayload, Pagination, Result};
 use crate::{Id, ModelManager};
 
 use super::check_number_of_affected;
@@ -68,13 +68,11 @@ where
     let (sql, values) = query.build_sqlx(PostgresQueryBuilder);
     let sqlx_query = sqlx::query_as_with::<_, (i64,), _>(&sql, values);
 
-    mm.dbx().begin_txn().await?;
     let rows = mm.dbx().fetch_all(sqlx_query).await?;
     for row in rows {
         let (id,): (i64,) = row;
         ids.push(id);
     }
-    mm.dbx().commit_txn().await?;
 
     Ok(ids)
 }
@@ -228,7 +226,22 @@ where
     Ok(count)
 }
 
-pub async fn update<MC, E>(mm: &ModelManager, id: Id, data: E) -> Result<()>
+pub async fn page<MC, E, F>(mm: &ModelManager, pagination: Pagination, filter: Option<F>) -> Result<PagePayload<E>>
+where
+    MC: DbBmc,
+    F: Into<FilterGroups>,
+    E: for<'r> FromRow<'r, PgRow> + Unpin + Send,
+    E: HasSeaFields,
+{
+    let filter: Option<FilterGroups> = filter.map(|f| f.into());
+
+    let total_size = count::<MC, _>(mm, filter.clone()).await?;
+    let records = list::<MC, E, _>(mm, filter, Some((&pagination).into())).await?;
+
+    Ok(PagePayload::new(Page::new(&pagination, total_size), records))
+}
+
+pub async fn update_by_id<MC, E>(mm: &ModelManager, id: Id, data: E) -> Result<()>
 where
     MC: DbBmc,
     E: HasSeaFields,
@@ -255,7 +268,38 @@ where
     _check_result::<MC>(count, id)
 }
 
-pub async fn delete<MC>(mm: &ModelManager, id: Id) -> Result<()>
+/// 根据过滤条件更新，返回更新的记录数
+pub async fn update<MC, E, F>(mm: &ModelManager, filter: F, data: E) -> Result<u64>
+where
+    MC: DbBmc,
+    F: Into<FilterGroups>,
+    E: HasSeaFields,
+{
+    let ctx = mm.ctx_ref()?;
+
+    // -- Prep Fields
+    let mut fields = data.not_none_sea_fields();
+    if MC::has_modification_timestamps() {
+        fields = prep_fields_for_update::<MC>(fields, ctx);
+    }
+
+    // -- Build query
+    let fields = fields.for_sea_update();
+    let mut query = Query::update();
+    query.table(MC::table_ref()).values(fields);
+    let filters: FilterGroups = filter.into();
+    let cond: Condition = filters.try_into()?;
+    query.cond_where(cond);
+
+    // -- Execute query
+    let (sql, values) = query.build_sqlx(PostgresQueryBuilder);
+    let sqlx_query = sqlx::query_with(&sql, values);
+    let count = mm.dbx().execute(sqlx_query).await?;
+
+    Ok(count)
+}
+
+pub async fn delete_by_id<MC>(mm: &ModelManager, id: Id) -> Result<()>
 where
     MC: DbBmc,
 {
@@ -290,19 +334,7 @@ where
     _check_result::<MC>(count, id)
 }
 
-/// Check result
-fn _check_result<MC>(count: u64, id: Id) -> Result<()>
-where
-    MC: DbBmc,
-{
-    if count == 0 {
-        Err(Error::EntityNotFound { schema: MC::SCHEMA, entity: MC::TABLE, id })
-    } else {
-        Ok(())
-    }
-}
-
-pub async fn delete_many<MC>(mm: &ModelManager, ids: Vec<Id>) -> Result<u64>
+pub async fn delete_by_ids<MC>(mm: &ModelManager, ids: Vec<Id>) -> Result<u64>
 where
     MC: DbBmc,
 {
@@ -344,5 +376,17 @@ where
     // When None, return default
     else {
         Ok(ListOptions { limit: Some(MC::LIST_LIMIT_DEFAULT), offset: None, order_bys: Some("id".into()) })
+    }
+}
+
+/// Check result
+fn _check_result<MC>(count: u64, id: Id) -> Result<()>
+where
+    MC: DbBmc,
+{
+    if count == 0 {
+        Err(Error::EntityNotFound { schema: MC::SCHEMA, entity: MC::TABLE, id })
+    } else {
+        Ok(())
     }
 }

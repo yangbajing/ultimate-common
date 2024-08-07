@@ -11,6 +11,7 @@ repository.workspace = true
 workspace = true
 
 [features]
+default = ["tracing-appender"]
 
 [dependencies]
 ultimate-common.workspace = true

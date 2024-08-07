@@ -46,11 +46,3 @@ where
         Err(AppError::new_with_code(404, "Not found."))
     }
 }
-
-#[cfg(feature = "utoipa")]
-pub fn op_vals_obj_schema() -> utoipa::openapi::Object {
-    utoipa::openapi::    ObjectBuilder::new()
-        .schema_type(utoipa::openapi::SchemaType::Object)
-        .description(Some("支持的详细操作条件见：https://github.com/jeremychone/rust-modql?tab=readme-ov-file#opvaltype-conditional-operators"))
-        .build()
-}
