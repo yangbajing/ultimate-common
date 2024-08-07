@@ -1,4 +1,4 @@
-use modql::filter::{FilterNode, ListOptions, OrderBys};
+use modql::filter::{FilterNode, ListOptions, OrderBy, OrderBys};
 use serde::{Deserialize, Serialize};
 
 pub trait ForPage {
@@ -48,14 +48,54 @@ impl Page {
 #[cfg_attr(feature = "utoipa", derive(utoipa::ToSchema))]
 pub struct Pagination {
     #[serde(default = "default_page")]
+    #[cfg_attr(feature = "utoipa", schema(default = default_page))]
     pub page: i64,
 
     #[serde(default = "default_page_size")]
+    #[cfg_attr(feature = "utoipa", schema(default = default_page_size))]
     pub page_size: i64,
 
-    pub order_bys: Option<OrderBys>,
+    pub sort_bys: Vec<SortBy>,
 
     pub offset: Option<i64>,
+}
+
+#[derive(Debug, Clone, Default, Deserialize)]
+#[cfg_attr(feature = "utoipa", derive(utoipa::ToSchema))]
+pub struct SortBy {
+    /// 要排序字段
+    pub f: String,
+
+    /// 排序方法
+    #[serde(default)]
+    pub b: SortByDirection,
+}
+
+impl From<SortBy> for OrderBy {
+    fn from(value: SortBy) -> Self {
+        match value.b {
+            SortByDirection::asc => OrderBy::Asc(value.f),
+            SortByDirection::desc => OrderBy::Desc(value.f),
+        }
+    }
+}
+
+impl From<&SortBy> for OrderBy {
+    fn from(value: &SortBy) -> Self {
+        match value.b {
+            SortByDirection::asc => OrderBy::Asc(value.f.clone()),
+            SortByDirection::desc => OrderBy::Desc(value.f.clone()),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Default, Deserialize)]
+#[cfg_attr(feature = "utoipa", derive(utoipa::ToSchema))]
+#[allow(non_camel_case_types)]
+pub enum SortByDirection {
+    #[default]
+    asc,
+    desc,
 }
 
 // pub static DEFAULT_PAGE_INFO: LazyLock<PageInfo> = LazyLock::new(|| PageInfo::default());
@@ -74,19 +114,30 @@ impl Pagination {
 
 impl Default for Pagination {
     fn default() -> Self {
-        Self { page: default_page(), page_size: default_page_size(), order_bys: Default::default(), offset: None }
+        Self {
+            page: default_page(),
+            page_size: default_page_size(),
+            sort_bys: Default::default(),
+            offset: Default::default(),
+        }
     }
 }
 
 impl From<Pagination> for ListOptions {
     fn from(value: Pagination) -> Self {
-        ListOptions { limit: Some(value.page_size), offset: Some(value.offset()), order_bys: value.order_bys }
+        let offset = Some(value.offset());
+        let list: Vec<OrderBy> = value.sort_bys.into_iter().map(Into::into).collect();
+        let order_bys = if list.is_empty() { None } else { Some(OrderBys::new(list)) };
+        ListOptions { limit: Some(value.page_size), offset, order_bys }
     }
 }
 
 impl From<&Pagination> for ListOptions {
     fn from(value: &Pagination) -> Self {
-        ListOptions { limit: Some(value.page_size), offset: Some(value.offset()), order_bys: value.order_bys.clone() }
+        let offset = Some(value.offset());
+        let list: Vec<OrderBy> = value.sort_bys.iter().map(Into::into).collect();
+        let order_bys = if list.is_empty() { None } else { Some(OrderBys::new(list)) };
+        ListOptions { limit: Some(value.page_size), offset, order_bys }
     }
 }
 
