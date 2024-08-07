@@ -61,9 +61,9 @@ macro_rules! generate_common_bmc_fns {
 						pub async fn list(
 								mm: &ultimate_db::ModelManager,
 								filter: Vec<$filter>,
-								list_options: Option<modql::filter::ListOptions>,
+								pagination: Option<&ultimate_db::Pagination>,
 						) -> ultimate_db::Result<Vec<$entity>> {
-								ultimate_db::base::list::<Self, _, _>(mm, Some(filter), list_options).await
+								ultimate_db::base::list::<Self, _, _>(mm, Some(filter), pagination.map(Into::into)).await
 						}
 
 						pub async fn count(
