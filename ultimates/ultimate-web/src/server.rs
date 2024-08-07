@@ -1,5 +1,6 @@
 use axum::Router;
 use tower_http::{
+    compression::CompressionLayer,
     cors::{self, CorsLayer},
     trace::TraceLayer,
 };
@@ -9,6 +10,7 @@ use ultimate::configuration::UltimateConfig;
 
 pub async fn init_server(conf: &UltimateConfig, app: Router) -> ultimate::Result<()> {
     let make_service = app
+        .layer(CompressionLayer::new())
         .layer(CorsLayer::new().allow_methods(cors::Any).allow_origin(cors::Any))
         .layer(TraceLayer::new_for_http())
         .into_make_service();

@@ -117,7 +117,12 @@ headers = "0.4"
 mime = "0.3"
 reqwest = { version = "0.12", features = ["json"] }
 hyper = "1"
-tower-http = { version = "0.5", features = ["fs", "trace", "cors"] }
+tower-http = { version = "0.5", features = [
+    "fs",
+    "trace",
+    "cors",
+    "compression-full",
+] }
 tower-cookies = "0.10"
 cookie = "0.18"
 axum = { version = "0.7", features = ["macros", "form"] }
