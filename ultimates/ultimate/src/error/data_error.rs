@@ -121,15 +121,13 @@ impl From<DataError> for tonic::Status {
     fn from(value: DataError) -> Self {
         match value {
             DataError::BizError { code, msg } => make_tonic_status(code, msg),
-            DataError::Unauthorized => tonic::Status::unauthenticated("Unauthorized"),
             DataError::SecurityError(_) => tonic::Status::unauthenticated("Token error"),
-            DataError::DbErr(ex) => tonic::Status::from_error(ex.into()),
             DataError::UltimateCommonError(ex) => tonic::Status::from_error(ex.into()),
-            DataError::AnyhowError(ex) => tonic::Status::from_error(ex.into()),
             DataError::SystemTimeError(ex) => tonic::Status::from_error(ex.into()),
             DataError::ParseIntError(ex) => tonic::Status::from_error(ex.into()),
-            DataError::GrpcTransportError(ex) => tonic::Status::from_error(ex.into()),
             DataError::IoError(e) => tonic::Status::internal(e.to_string()),
+            DataError::JsonError(ex) => tonic::Status::from_error(ex.into()),
+            DataError::GrpcTransportError(ex) => tonic::Status::from_error(ex.into()),
         }
     }
 }

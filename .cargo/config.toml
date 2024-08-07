@@ -2,6 +2,9 @@
 [env]
 RUST_LOG = "info,ultimate=debug,ultimate_common=debug"
 
+[alias]
+check-all = "check --all-features"
+clippy-all = "clippy --all-features -- -D warnings"
 # 设置 rustc 编译器参数
 # [build]
 # rustflags = ["--cfg", "uuid_unstable"]
