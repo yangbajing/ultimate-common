@@ -2,13 +2,12 @@ use modql::field::{HasSeaFields, SeaField, SeaFields};
 use modql::filter::{FilterGroups, ListOptions};
 use sea_query::{Condition, Expr, PostgresQueryBuilder, Query};
 use sea_query_binder::SqlxBinder;
-use serde::Serialize;
 use sqlx::postgres::PgRow;
 use sqlx::FromRow;
 use sqlx::Row;
 
 use crate::base::{prep_fields_for_create, prep_fields_for_update, CommonIden, DbBmc};
-use crate::{Error, ForPage, Page, PagePayload, Result};
+use crate::{Error, Page, PagePayload, Pagination, Result};
 use crate::{Id, ModelManager};
 
 use super::check_number_of_affected;
@@ -227,25 +226,19 @@ where
     Ok(count)
 }
 
-pub async fn page<MC, E, F>(mm: &ModelManager, for_page: &dyn ForPage) -> Result<PagePayload<E>>
+pub async fn page<MC, E, F>(mm: &ModelManager, pagination: Pagination, filter: Option<F>) -> Result<PagePayload<E>>
 where
     MC: DbBmc,
     F: Into<FilterGroups>,
     E: for<'r> FromRow<'r, PgRow> + Unpin + Send,
     E: HasSeaFields,
-    E: Serialize,
 {
-    let filter: Option<FilterGroups> = if for_page.filters().is_empty() {
-        None
-    } else {
-        let filters = for_page.filters().to_vec();
-        Some(filters.into())
-    };
+    let filter: Option<FilterGroups> = filter.map(|f| f.into());
 
     let total_size = count::<MC, _>(mm, filter.clone()).await?;
-    let records = list::<MC, E, _>(mm, filter, Some(for_page.get_list_options())).await?;
+    let records = list::<MC, E, _>(mm, filter, Some((&pagination).into())).await?;
 
-    Ok(PagePayload::new(Page::new(for_page.page(), total_size), records))
+    Ok(PagePayload::new(Page::new(&pagination, total_size), records))
 }
 
 pub async fn update_by_id<MC, E>(mm: &ModelManager, id: Id, data: E) -> Result<()>

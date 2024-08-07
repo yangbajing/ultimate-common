@@ -1,28 +1,13 @@
-use modql::filter::{FilterNode, ListOptions, OrderBy, OrderBys};
+use modql::filter::{ListOptions, OrderBy, OrderBys};
 use serde::{Deserialize, Serialize};
 
-pub trait ForPage {
-    fn page(&self) -> &Pagination;
-
-    fn filters(&self) -> &[FilterNode];
-
-    fn get_list_options(&self) -> ListOptions {
-        self.page().into()
-    }
-}
-
-pub struct PagePayload<T>
-where
-    T: Serialize,
-{
+#[derive(Serialize)]
+pub struct PagePayload<T> {
     pub page: Page,
     pub records: Vec<T>,
 }
 
-impl<T> PagePayload<T>
-where
-    T: Serialize,
-{
+impl<T> PagePayload<T> {
     pub fn new(page: Page, records: Vec<T>) -> Self {
         Self { page, records }
     }

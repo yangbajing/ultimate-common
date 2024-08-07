@@ -6,13 +6,14 @@ pub mod base;
 mod error;
 mod id;
 mod model_manager;
-pub mod modql_utils;
+mod modql_utils;
 mod page;
 pub mod store;
 
 pub use error::{Error, Result};
 pub use id::*;
 pub use model_manager::*;
+pub use modql_utils::*;
 pub use page::*;
 
 #[derive(Clone)]

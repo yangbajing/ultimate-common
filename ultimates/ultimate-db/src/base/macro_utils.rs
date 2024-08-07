@@ -72,6 +72,14 @@ macro_rules! generate_common_bmc_fns {
 						) -> ultimate_db::Result<i64> {
 								ultimate_db::base::count::<Self, _>(mm, Some(filter)).await
 						}
+
+						pub async fn page(
+								mm: &ultimate_db::ModelManager,
+								pagination: ultimate_db::Pagination,
+								filter: Vec<$filter>,
+						) -> ultimate_db::Result<ultimate_db::PagePayload<$entity>> {
+								ultimate_db::base::page::<Self, _, _>(mm, pagination, Some(filter)).await
+						}
 				)?
 
 				$(

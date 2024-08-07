@@ -6,9 +6,25 @@ pub fn time_to_sea_value(json_value: serde_json::Value) -> modql::filter::SeaRes
 }
 
 #[cfg(feature = "utoipa")]
-pub fn op_vals_obj_schema() -> utoipa::openapi::Object {
-    utoipa::openapi::    ObjectBuilder::new()
+pub fn op_vals_integer_schema() -> utoipa::openapi::Object {
+    utoipa::openapi::ObjectBuilder::new()
         .schema_type(utoipa::openapi::SchemaType::Object)
-        .description(Some("支持的详细操作条件见：https://github.com/jeremychone/rust-modql?tab=readme-ov-file#opvaltype-conditional-operators"))
+        .description(Some("opvalfloat64"))
+        .build()
+}
+
+#[cfg(feature = "utoipa")]
+pub fn op_vals_string_schema() -> utoipa::openapi::Object {
+    utoipa::openapi::ObjectBuilder::new()
+        .schema_type(utoipa::openapi::SchemaType::String)
+        .description(Some("https://github.com/jeremychone/rust-modql?tab=readme-ov-file#opvalstring-operators"))
+        .build()
+}
+
+#[cfg(feature = "utoipa")]
+pub fn op_vals_bool_schema() -> utoipa::openapi::Object {
+    utoipa::openapi::ObjectBuilder::new()
+        .schema_type(utoipa::openapi::SchemaType::Boolean)
+        .description(Some("https://github.com/jeremychone/rust-modql?tab=readme-ov-file#opvalbool-operators"))
         .build()
 }
