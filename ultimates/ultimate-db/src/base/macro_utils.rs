@@ -13,14 +13,14 @@ macro_rules! generate_common_bmc_fns {
 		impl $struct_name {
 			$(
 				pub async fn create(
-					mm: &ModelManager,
+					mm: &ultimate_db::ModelManager,
 					entity_c: $for_create,
 				) -> ultimate_db::Result<i64> {
 					ultimate_db::base::create::<Self, _>(mm, entity_c).await
 				}
 
 				pub async fn create_many(
-					mm: &ModelManager,
+					mm: &ultimate_db::ModelManager,
 					entity_c: Vec<$for_create>,
 				) -> ultimate_db::Result<Vec<i64>> {
 					ultimate_db::base::create_many::<Self, _>(mm, entity_c).await
@@ -29,14 +29,14 @@ macro_rules! generate_common_bmc_fns {
 
 			$(
 				pub async fn insert(
-					mm: &ModelManager,
+					mm: &ultimate_db::ModelManager,
 					entity_c: $for_create,
 				) -> ultimate_db::Result<()> {
 					ultimate_db::base::insert::<Self, _>(mm, entity_c).await
 				}
 
 				pub async fn insert_many(
-					mm: &ModelManager,
+					mm: &ultimate_db::ModelManager,
 					entity_c: Vec<$for_create>,
 				) -> ultimate_db::Result<u64> {
 					ultimate_db::base::insert_many::<Self, _>(mm, entity_c).await
@@ -44,7 +44,7 @@ macro_rules! generate_common_bmc_fns {
 			)?
 
 				pub async fn get_by_id(
-					mm: &ModelManager,
+					mm: &ultimate_db::ModelManager,
 					id: ultimate_db::Id,
 				) -> ultimate_db::Result<$entity> {
 					ultimate_db::base::get_by_id::<Self, _>(mm, id).await
@@ -52,14 +52,14 @@ macro_rules! generate_common_bmc_fns {
 
 			$(
 				pub async fn find(
-					mm: &ModelManager,
+					mm: &ultimate_db::ModelManager,
 					filter: $filter,
 				) -> ultimate_db::Result<Option<$entity>> {
 					ultimate_db::base::find::<Self, _, _>(mm, filter).await
 				}
 
 				pub async fn list(
-					mm: &ModelManager,
+					mm: &ultimate_db::ModelManager,
 					filter: Option<$filter>,
 					list_options: Option<modql::filter::ListOptions>,
 				) -> ultimate_db::Result<Vec<$entity>> {
@@ -67,7 +67,7 @@ macro_rules! generate_common_bmc_fns {
 				}
 
 				pub async fn count(
-					mm: &ModelManager,
+					mm: &ultimate_db::ModelManager,
 					filter: Option<$filter>,
 				) -> ultimate_db::Result<i64> {
 					ultimate_db::base::count::<Self, _>(mm, filter).await
@@ -76,7 +76,7 @@ macro_rules! generate_common_bmc_fns {
 
 			$(
 				pub async fn update(
-					mm: &ModelManager,
+					mm: &ultimate_db::ModelManager,
 					id: ultimate_db::Id,
 					entity_u: $for_update,
 				) -> ultimate_db::Result<()> {
@@ -85,14 +85,14 @@ macro_rules! generate_common_bmc_fns {
 			)?
 
 				pub async fn delete(
-					mm: &ModelManager,
+					mm: &ultimate_db::ModelManager,
 					id: ultimate_db::Id,
 				) -> ultimate_db::Result<()> {
 					ultimate_db::base::delete::<Self>(mm, id).await
 				}
 
 				pub async fn delete_many(
-					mm: &ModelManager,
+					mm: &ultimate_db::ModelManager,
 					ids: Vec<ultimate_db::Id>,
 				) -> ultimate_db::Result<u64> {
 					ultimate_db::base::delete_many::<Self>(mm, ids).await

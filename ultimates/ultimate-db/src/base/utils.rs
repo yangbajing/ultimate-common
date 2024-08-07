@@ -15,6 +15,7 @@ where
     if MC::has_owner_id() {
         fields.push(SeaField::new(CommonIden::OwnerId.into_iden(), ctx.uid()));
     }
+
     if MC::has_creation_timestamps() {
         fields = add_timestamps_for_create(fields, ctx);
     }
@@ -23,14 +24,21 @@ where
 }
 
 /// This method must be calledwhen a Model Controller plans to update its entity.
-pub fn prep_fields_for_update<MC>(mut fields: SeaFields, ctx: &Ctx) -> SeaFields
+pub fn prep_fields_for_update<MC>(fields: SeaFields, ctx: &Ctx) -> SeaFields
 where
     MC: DbBmc,
 {
     if MC::has_creation_timestamps() {
-        fields = add_timestamps_for_update(fields, ctx);
+        add_timestamps_for_update(fields, ctx)
+    } else {
+        fields
     }
-    fields
+}
+
+pub fn clear_id_from_fields<MC>(fields: SeaFields) -> SeaFields {
+    let mut fields = fields.into_vec();
+    fields.retain(|f| f.iden != CommonIden::Id.into_iden());
+    SeaFields::new(fields)
 }
 
 fn _exists_in_fields(fields: &[SeaField], iden: DynIden) -> bool {

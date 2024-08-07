@@ -6,9 +6,7 @@ use sqlx::postgres::PgRow;
 use sqlx::FromRow;
 use sqlx::Row;
 
-use crate::base::{
-    prep_fields_for_create, prep_fields_for_update, CommonIden, DbBmc, LIST_LIMIT_DEFAULT, LIST_LIMIT_MAX,
-};
+use crate::base::{prep_fields_for_create, prep_fields_for_update, CommonIden, DbBmc};
 use crate::{Error, Result};
 use crate::{Id, ModelManager};
 
@@ -193,7 +191,7 @@ where
         query.cond_where(cond);
     }
     // list options
-    let list_options = compute_list_options(list_options)?;
+    let list_options = compute_list_options::<MC>(list_options)?;
     list_options.apply_to_sea_query(&mut query);
 
     // -- Execute the query
@@ -327,22 +325,24 @@ where
     check_number_of_affected::<MC>(ids_len, n)
 }
 
-pub fn compute_list_options(list_options: Option<ListOptions>) -> Result<ListOptions> {
+pub fn compute_list_options<MC>(list_options: Option<ListOptions>) -> Result<ListOptions>
+where
+    MC: DbBmc,
+{
     if let Some(mut list_options) = list_options {
         // Validate the limit.
         if let Some(limit) = list_options.limit {
-            if limit > LIST_LIMIT_MAX {
-                return Err(Error::ListLimitOverMax { max: LIST_LIMIT_MAX, actual: limit });
+            if limit > MC::LIST_LIMIT_MAX {
+                return Err(Error::ListLimitOverMax { max: MC::LIST_LIMIT_MAX, actual: limit });
             }
-        }
-        // Set the default limit if no limit
-        else {
-            list_options.limit = Some(LIST_LIMIT_DEFAULT);
+        } else {
+            // Set the default limit if no limit
+            list_options.limit = Some(MC::LIST_LIMIT_DEFAULT);
         }
         Ok(list_options)
     }
     // When None, return default
     else {
-        Ok(ListOptions { limit: Some(LIST_LIMIT_DEFAULT), offset: None, order_bys: Some("id".into()) })
+        Ok(ListOptions { limit: Some(MC::LIST_LIMIT_DEFAULT), offset: None, order_bys: Some("id".into()) })
     }
 }

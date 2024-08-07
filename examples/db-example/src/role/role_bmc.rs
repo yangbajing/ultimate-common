@@ -1,4 +1,4 @@
-use ultimate_db::{base::DbBmc, generate_common_bmc_fns, ModelManager};
+use ultimate_db::{base::DbBmc, generate_common_bmc_fns};
 
 use super::model::{RoleEntity, RoleFilter, RoleForCreate, RoleForUpdate};
 
@@ -20,19 +20,20 @@ generate_common_bmc_fns!(
 #[cfg(test)]
 mod test {
     use ultimate::{configuration::model::DbConfig, ctx::Ctx};
+    use ultimate_db::ModelManager;
 
     use super::*;
 
-    static db_conf_json: &str = r#""#;
+    static DB_CONF_JSON: &str = r#""#;
 
     #[tokio::test]
     async fn test_role_bmc() -> anyhow::Result<()> {
-        let db_config: DbConfig = serde_json::from_str(db_conf_json)?;
+        let db_config: DbConfig = serde_json::from_str(DB_CONF_JSON)?;
         let ctx = Ctx::new_root();
         let mm = ModelManager::new(&db_config).await?.with_ctx(ctx.clone());
 
         let filter = RoleFilter::default();
-        let role = RoleBmc::find(&mm, vec![filter]).await?;
+        let role = RoleBmc::find(&mm, filter).await?;
         println!("Fetch role: {:?}", role);
 
         Ok(())

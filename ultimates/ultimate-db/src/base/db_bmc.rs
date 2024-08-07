@@ -11,6 +11,8 @@ use sea_query::{IntoIden, TableRef};
 pub trait DbBmc {
     const TABLE: &'static str;
     const SCHEMA: &'static str = "public";
+    const LIST_LIMIT_DEFAULT: i64 = super::LIST_LIMIT_DEFAULT;
+    const LIST_LIMIT_MAX: i64 = super::LIST_LIMIT_MAX;
 
     fn table_ref() -> TableRef {
         TableRef::SchemaTable(SIden(Self::SCHEMA).into_iden(), SIden(Self::TABLE).into_iden())
