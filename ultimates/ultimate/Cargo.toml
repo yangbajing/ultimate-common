@@ -23,7 +23,8 @@ async-trait.workspace = true
 toml.workspace = true
 config.workspace = true
 strum_macros.workspace = true
-uuid.workspace = true
+uuid = { workspace = true, optional = true }
+ulid = { workspace = true, optional = true }
 log.workspace = true
 tracing.workspace = true
 # tracing-log.workspace = true
@@ -37,6 +38,7 @@ serde_json.workspace = true
 serde_with.workspace = true
 derive_more.workspace = true
 tonic = { workspace = true, optional = true }
+utoipa = { workspace = true, optional = true }
 
 [dev-dependencies]
 dotenvy.workspace = true

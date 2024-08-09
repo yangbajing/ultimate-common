@@ -1,5 +1,5 @@
 use thiserror::Error;
-use ultimate::error::DataError;
+use ultimate::DataError;
 
 pub type Result<T> = core::result::Result<T, Error>;
 

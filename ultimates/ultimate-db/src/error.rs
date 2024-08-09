@@ -2,7 +2,7 @@ use std::borrow::Cow;
 
 use sqlx::error::DatabaseError;
 use thiserror::Error;
-use ultimate::error::DataError;
+use ultimate::DataError;
 
 use crate::Id;
 

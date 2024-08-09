@@ -2,7 +2,7 @@ use josekit::jwt::JwtPayload;
 
 use ultimate_common::time::{self, DateTime, Duration, Utc, UtcDateTime};
 
-use crate::error::DataError;
+use crate::DataError;
 
 /// 会话上下文。
 /// 此处 clone 的成本很低，若后续数据多的话可以使用 Arc 加 Wrapper 模式来降低数据复制的成本

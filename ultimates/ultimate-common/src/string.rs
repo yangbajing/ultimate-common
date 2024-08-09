@@ -1,7 +1,8 @@
-use crate::{Error, Result};
 use base64ct::{Base64UrlUnpadded, Encoding};
 use rand::{distributions::Alphanumeric, thread_rng, Rng};
 use serde::{de::Visitor, Deserializer, Serializer};
+
+use crate::{Error, Result};
 
 pub fn repeat_str(s: &str, n: usize) -> String {
     let mut v = String::with_capacity(s.len() * n);
@@ -76,6 +77,7 @@ where
 {
     s.serialize_str(v)
 }
+
 pub fn ser_opt_str_secret<S>(v: Option<String>, s: S) -> core::result::Result<S::Ok, S::Error>
 where
     S: Serializer,

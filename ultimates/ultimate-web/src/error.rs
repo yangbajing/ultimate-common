@@ -3,8 +3,8 @@ use axum::response::IntoResponse;
 use axum::Json;
 use serde::Serialize;
 use serde_json::Value;
-use ultimate::error::DataError;
 use ultimate::security;
+use ultimate::DataError;
 use uuid::Uuid;
 
 pub type AppResult<T> = core::result::Result<Json<T>, AppError>;
