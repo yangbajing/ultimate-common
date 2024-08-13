@@ -55,4 +55,10 @@ pub trait DbBmc {
     fn has_optimistic_lock() -> bool {
         false
     }
+
+    /// 是否过滤用 column id
+    /// default: fals
+    fn filter_column_id() -> bool {
+        false
+    }
 }

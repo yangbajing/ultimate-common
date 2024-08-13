@@ -21,7 +21,6 @@ where
     let ctx = mm.ctx_ref()?;
     // -- Extract fields (name / sea-query value expression)
     let mut fields = data.not_none_sea_fields();
-    fields = SeaFields::new(fields.into_iter().filter(|f| f.iden.to_string() != "id").collect());
     fields = prep_fields_for_create::<MC>(fields, ctx);
 
     // -- Build query

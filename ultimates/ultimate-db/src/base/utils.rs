@@ -20,6 +20,10 @@ where
         fields = add_timestamps_for_create(fields, ctx);
     }
 
+    if MC::filter_column_id() {
+        fields = SeaFields::new(fields.into_iter().filter(|f| f.iden.to_string() != "id").collect());
+    }
+
     fields
 }
 

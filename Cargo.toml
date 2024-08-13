@@ -104,6 +104,7 @@ sea-query-binder = { version = "0.6", features = [
     "sqlx-postgres",
     "with-uuid",
     "with-chrono",
+    "with-rust_decimal",
 ] }
 # -- Serde
 serde = { version = "1", features = ["derive"] }
