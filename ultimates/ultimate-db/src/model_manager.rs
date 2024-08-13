@@ -20,16 +20,16 @@ impl ModelManager {
         Ok(ModelManager { dbx, ctx: None })
     }
 
-    pub fn new_with_txn(&self) -> Result<ModelManager> {
+    pub fn clone_with_txn(&self) -> Result<ModelManager> {
         let dbx = Dbx::new(self.dbx.db().clone(), true)?;
         Ok(ModelManager { dbx, ctx: self.ctx.clone() })
     }
 
-    pub fn get_or_new_with_txn(&self) -> Result<ModelManager> {
+    pub fn get_or_clone_with_txn(&self) -> Result<ModelManager> {
         if self.dbx().is_txn() {
             Ok(self.clone())
         } else {
-            Ok(self.new_with_txn()?)
+            Ok(self.clone_with_txn()?)
         }
     }
 
