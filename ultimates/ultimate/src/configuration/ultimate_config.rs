@@ -6,8 +6,6 @@ use super::model::{AppConfig, DbConfig, GrpcConfig, SecruityConfig, TraceConfig,
 
 #[derive(Clone, Serialize, Deserialize)]
 pub struct UltimateConfig {
-    pub config_file: String,
-
     app: AppConfig,
 
     security: SecruityConfig,
