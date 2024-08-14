@@ -16,12 +16,15 @@ impl RunMode {
     pub fn is_dev(&self) -> bool {
         self == &RunMode::DEV
     }
+
     pub fn is_test(&self) -> bool {
         self == &RunMode::TEST
     }
-    pub fn is_stage(&self) -> bool {
+
+    pub fn is_demo(&self) -> bool {
         self == &RunMode::DEMO
     }
+
     pub fn is_prod(&self) -> bool {
         self == &RunMode::PROD
     }

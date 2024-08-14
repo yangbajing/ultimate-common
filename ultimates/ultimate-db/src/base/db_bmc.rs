@@ -57,7 +57,7 @@ pub trait DbBmc {
     }
 
     /// 是否过滤用 column id
-    /// default: fals
+    /// default: false
     fn filter_column_id() -> bool {
         false
     }

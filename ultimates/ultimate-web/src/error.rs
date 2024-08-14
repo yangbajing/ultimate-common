@@ -59,12 +59,6 @@ impl IntoResponse for AppError {
     }
 }
 
-impl From<hyper::Error> for AppError {
-    fn from(value: hyper::Error) -> Self {
-        AppError::new_with_code(500, value.to_string())
-    }
-}
-
 impl From<DataError> for AppError {
     fn from(err: DataError) -> Self {
         match err {
@@ -78,6 +72,18 @@ impl From<DataError> for AppError {
             #[cfg(feature = "tonic")]
             DataError::GrpcTransportError(e) => Self::new(e.to_string()),
         }
+    }
+}
+
+impl From<hyper::Error> for AppError {
+    fn from(value: hyper::Error) -> Self {
+        AppError::new_with_code(500, value.to_string())
+    }
+}
+
+impl From<serde_json::Error> for AppError {
+    fn from(value: serde_json::Error) -> Self {
+        AppError::new_with_code(500, value.to_string())
     }
 }
 

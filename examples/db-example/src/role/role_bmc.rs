@@ -2,6 +2,7 @@ use ultimate_db::{base::DbBmc, generate_common_bmc_fns};
 
 use super::model::{RoleEntity, RoleFilter, RoleForCreate, RoleForUpdate};
 
+#[allow(unused)]
 pub struct RoleBmc;
 impl DbBmc for RoleBmc {
     const TABLE: &'static str = "role";
