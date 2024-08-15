@@ -23,26 +23,64 @@ pub struct Page {
 }
 
 impl Page {
-    pub fn new(page: &Pagination, total_size: i64) -> Self {
-        let total_page = if total_size == 0 { 0 } else { (total_size + page.page_size - 1) / page.page_size };
-        Self { page: page.page, page_size: page.page_size, total_size, total_page }
+    pub fn new(pagination: &Pagination, total_size: i64) -> Self {
+        let page = pagination.page();
+        let page_size = pagination.page_size();
+        let total_page = if total_size == 0 { 0 } else { (total_size + page_size - 1) / page_size };
+        Self { page, page_size, total_size, total_page }
     }
 }
 
 #[derive(Debug, Clone, Deserialize)]
 #[cfg_attr(feature = "utoipa", derive(utoipa::ToSchema))]
 pub struct Pagination {
-    #[serde(default = "default_page")]
-    #[cfg_attr(feature = "utoipa", schema(default = default_page))]
-    pub page: i64,
+    pub page: Option<i64>,
 
-    #[serde(default = "default_page_size")]
-    #[cfg_attr(feature = "utoipa", schema(default = default_page_size))]
-    pub page_size: i64,
+    pub page_size: Option<i64>,
 
-    pub sort_bys: Vec<SortBy>,
+    pub sort_bys: Option<Vec<SortBy>>,
 
     pub offset: Option<i64>,
+}
+
+impl Pagination {
+    pub fn page(&self) -> i64 {
+        self.page.unwrap_or(default_page())
+    }
+
+    pub fn page_size(&self) -> i64 {
+        self.page_size.unwrap_or(default_page_size())
+    }
+
+    pub fn sort_bys(&self) -> Vec<&SortBy> {
+        match self.sort_bys.as_ref() {
+            Some(vs) => vs.iter().collect(),
+            None => vec![],
+        }
+    }
+
+    pub fn offset(&self) -> i64 {
+        if let Some(offset) = self.offset {
+            return offset;
+        }
+        let page = self.page();
+        let page_size = self.page_size();
+        if page < 2 {
+            return 0;
+        }
+        page_size * (page - 1)
+    }
+}
+
+impl Default for Pagination {
+    fn default() -> Self {
+        Self {
+            page: Some(default_page()),
+            page_size: Some(default_page_size()),
+            sort_bys: Default::default(),
+            offset: Default::default(),
+        }
+    }
 }
 
 #[derive(Debug, Clone, Default, Deserialize)]
@@ -53,12 +91,12 @@ pub struct SortBy {
 
     /// 排序方法
     #[serde(default)]
-    pub b: SortByDirection,
+    pub d: SortByDirection,
 }
 
 impl From<SortBy> for OrderBy {
     fn from(value: SortBy) -> Self {
-        match value.b {
+        match value.d {
             SortByDirection::asc => OrderBy::Asc(value.f),
             SortByDirection::desc => OrderBy::Desc(value.f),
         }
@@ -67,7 +105,7 @@ impl From<SortBy> for OrderBy {
 
 impl From<&SortBy> for OrderBy {
     fn from(value: &SortBy) -> Self {
-        match value.b {
+        match value.d {
             SortByDirection::asc => OrderBy::Asc(value.f.clone()),
             SortByDirection::desc => OrderBy::Desc(value.f.clone()),
         }
@@ -83,46 +121,22 @@ pub enum SortByDirection {
     desc,
 }
 
-// pub static DEFAULT_PAGE_INFO: LazyLock<PageInfo> = LazyLock::new(|| PageInfo::default());
-
-impl Pagination {
-    pub fn offset(&self) -> i64 {
-        if let Some(offset) = self.offset {
-            return offset;
-        }
-        if self.page < 2 {
-            return 0;
-        }
-        self.page_size * (self.page - 1)
-    }
-}
-
-impl Default for Pagination {
-    fn default() -> Self {
-        Self {
-            page: default_page(),
-            page_size: default_page_size(),
-            sort_bys: Default::default(),
-            offset: Default::default(),
-        }
-    }
-}
-
 impl From<Pagination> for ListOptions {
     fn from(value: Pagination) -> Self {
         let offset = Some(value.offset());
-        let list: Vec<OrderBy> = value.sort_bys.into_iter().map(Into::into).collect();
-        let order_bys = if list.is_empty() { None } else { Some(OrderBys::new(list)) };
-        ListOptions { limit: Some(value.page_size), offset, order_bys }
+        let limit = Some(value.page_size.unwrap_or(default_page_size()));
+        let order_bys = value.sort_bys.map(|v| OrderBys::new(v.into_iter().map(Into::into).collect()));
+
+        ListOptions { limit, offset, order_bys }
     }
 }
 
 impl From<&Pagination> for ListOptions {
     fn from(value: &Pagination) -> Self {
         let offset = Some(value.offset());
-        let list: Vec<OrderBy> = value.sort_bys.iter().map(Into::into).collect();
-        let order_bys = if list.is_empty() { None } else { Some(OrderBys::new(list)) };
-        ListOptions { limit: Some(value.page_size), offset, order_bys }
+        let limit = Some(value.page_size.unwrap_or(default_page_size()));
+        let order_bys = value.sort_bys.as_ref().map(|v| OrderBys::new(v.iter().map(Into::into).collect()));
+        ListOptions { limit, offset, order_bys }
     }
 }
 
