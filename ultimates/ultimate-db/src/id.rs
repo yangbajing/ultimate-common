@@ -5,7 +5,6 @@ use serde::{Deserialize, Serialize};
 use sqlx::{postgres::PgRow, FromRow};
 use uuid::Uuid;
 
-#[allow(unused)]
 pub trait DbRowType: HasSeaFields + for<'r> FromRow<'r, PgRow> + Unpin + Send {}
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Display)]

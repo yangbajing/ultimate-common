@@ -7,6 +7,10 @@ description.workspace = true
 license-file.workspace = true
 repository.workspace = true
 
+[[bin]]
+name = "api-example"
+path = "bin/api-example.rs"
+
 [lints]
 workspace = true
 
@@ -30,3 +34,6 @@ sea-query.workspace = true
 sea-query-binder.workspace = true
 modql.workspace = true
 enum-iterator.workspace = true
+
+[target.'cfg(not(target_env = "msvc"))'.dependencies]
+tikv-jemallocator.workspace = true

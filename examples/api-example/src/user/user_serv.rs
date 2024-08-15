@@ -16,7 +16,6 @@ use super::{
 
 #[derive(Constructor)]
 pub struct UserServ {
-  _app: AppState,
   ctx: CtxW,
 }
 
@@ -59,6 +58,6 @@ impl FromRequestParts<AppState> for UserServ {
 
   async fn from_request_parts(parts: &mut Parts, state: &AppState) -> core::result::Result<Self, Self::Rejection> {
     let ctx = CtxW::from_request_parts(parts, state).await?;
-    Ok(UserServ::new(state.clone(), ctx))
+    Ok(UserServ::new(ctx))
   }
 }
