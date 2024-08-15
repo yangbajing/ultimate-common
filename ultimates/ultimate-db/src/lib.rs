@@ -1,7 +1,6 @@
 use ultimate::configuration::model::DbConfig;
 
 pub mod acs;
-pub mod auth;
 pub mod base;
 mod error;
 mod id;

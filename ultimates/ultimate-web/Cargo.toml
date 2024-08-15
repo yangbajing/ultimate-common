@@ -11,7 +11,9 @@ repository.workspace = true
 workspace = true
 
 [features]
-# default = ["utoipa"]
+default = ["with-ulid"]
+with-ulid = ["ultimate/ulid"]
+uuid = ["dep:uuid", "ultimate/uuid"]
 
 [dependencies]
 ultimate-common.workspace = true
@@ -27,5 +29,6 @@ serde.workspace = true
 serde_json.workspace = true
 serde_with.workspace = true
 ulid.workspace = true
+uuid = { workspace = true, optional = true }
 tonic = { workspace = true, optional = true }
 utoipa = { workspace = true, optional = true }

@@ -13,7 +13,7 @@ impl<T> PagePayload<T> {
   }
 }
 
-#[derive(Serialize)]
+#[derive(Debug, Clone, Serialize)]
 #[cfg_attr(feature = "utoipa", derive(utoipa::ToSchema))]
 pub struct Page {
   pub page: i64,

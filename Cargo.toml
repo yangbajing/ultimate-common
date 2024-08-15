@@ -1,12 +1,17 @@
 [workspace]
-members = ["ultimates/*", "crates/*", "examples/db-example"]
+members = [
+    "ultimates/*",
+    "crates/*",
+    "examples/db-example",
+    "examples/api-example",
+]
 resolver = "2"
 
 [workspace.package]
 version = "0.1.0"
 edition = "2021"
 rust-version = "1.79"
-description = "Rust libraries"
+description = "Rust libraries of The ultimate-common"
 license-file = "LICENSE"
 repository = "https://gitee.com/yangbajing/ultimate-common"
 
@@ -25,7 +30,7 @@ ultimate = { version = "0.1", path = "ultimates/ultimate" }
 ultimate-db = { version = "0.1", path = "ultimates/ultimate-db" }
 ultimate-web = { version = "0.1", path = "ultimates/ultimate-web" }
 # -- projects end
-derive_more = { version = "1.0", features = ["from", "display"] }
+derive_more = { version = "1.0", features = ["from", "display", "constructor"] }
 toml = "0.8"
 config = { version = "0.14", default-features = false, features = [
     "toml",
@@ -54,8 +59,7 @@ typed-builder = "0.19"
 derive-getters = "0.5"
 clap = { version = "4.5.7", features = ["derive"] }
 # -- Helpful macros for working with enums and strings
-strum = { version = "0.26", features = ["derive"] }
-strum_macros = "0.26"
+enum-iterator = "2"
 # -- Error
 anyhow = "1"
 thiserror = "1"
@@ -158,3 +162,5 @@ opendal = { version = "0.48", features = ["services-obs"] }
 
 # build-dependencies
 # tonic-build = "0.12"
+strum = { version = "0.26", features = ["derive"] }
+strum_macros = "0.26"

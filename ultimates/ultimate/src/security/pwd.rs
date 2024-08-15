@@ -82,13 +82,13 @@ mod tests {
 
   #[tokio::test]
   async fn test_pwd() -> Result<()> {
-    let password = "Lightshadow.2024";
-    let pwd = generate_pwd(password).await?;
-    println!("The pwd is {pwd}");
+    let plain_pwd = "2024.Ultimate";
+    let encrypted_pwd = generate_pwd(plain_pwd).await?;
+    println!("The pwd is {}", encrypted_pwd);
 
-    assert!(pwd.starts_with("#1#"));
+    assert!(encrypted_pwd.starts_with("#1#"));
 
-    let version = verify_pwd(password, &pwd).await?;
+    let version = verify_pwd(plain_pwd, &encrypted_pwd).await?;
     assert_eq!(version, 1);
 
     Ok(())

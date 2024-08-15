@@ -6,19 +6,8 @@ use serde_json::Value;
 use ulid::Ulid;
 use ultimate::security;
 use ultimate::DataError;
-use ultimate::IdI64Result;
 
 pub type AppResult<T> = core::result::Result<Json<T>, AppError>;
-
-#[allow(unused)]
-pub fn ok_result<T: Serialize>(data: T) -> AppResult<T> {
-  Ok(data.into())
-}
-
-#[allow(unused)]
-pub fn ok_id(id: i64) -> AppResult<IdI64Result> {
-  Ok(IdI64Result::new(id).into())
-}
 
 /// A default error response for most API errors.
 #[derive(Debug, Serialize)]

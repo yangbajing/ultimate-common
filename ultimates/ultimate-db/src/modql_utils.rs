@@ -1,8 +1,30 @@
+use modql::filter::{IntoSeaError, SeaResult};
 use serde::Deserialize;
-use ultimate_common::time::UtcDateTime;
+use ultimate_common::time::{local_offset, Duration, OffsetDateTime, UtcDateTime};
 
-pub fn time_to_sea_value(json_value: serde_json::Value) -> modql::filter::SeaResult<sea_query::Value> {
+pub fn time_to_sea_value(json_value: serde_json::Value) -> SeaResult<sea_query::Value> {
   Ok(UtcDateTime::deserialize(json_value)?.into())
+}
+
+pub fn to_sea_chrono_utc(v: serde_json::Value) -> SeaResult<sea_query::Value> {
+  if v.as_str().is_some() {
+    Ok(UtcDateTime::deserialize(v)?.into())
+  } else if let Some(i) = v.as_i64() {
+    let d = UtcDateTime::MIN_UTC + Duration::milliseconds(i);
+    Ok(sea_query::Value::ChronoDateTimeUtc(Some(Box::new(d))))
+  } else {
+    Err(IntoSeaError::Custom(format!("Invalid value: incoming is {:?}", v)))
+  }
+}
+pub fn to_sea_chrono_offset(v: serde_json::Value) -> SeaResult<sea_query::Value> {
+  if v.as_str().is_some() {
+    Ok(OffsetDateTime::deserialize(v)?.into())
+  } else if let Some(i) = v.as_i64() {
+    let d = (OffsetDateTime::MIN_UTC + Duration::milliseconds(i)).with_timezone(local_offset());
+    Ok(sea_query::Value::ChronoDateTimeWithTimeZone(Some(Box::new(d))))
+  } else {
+    Err(IntoSeaError::Custom(format!("Invalid value: incoming is {:?}", v)))
+  }
 }
 
 #[cfg(feature = "utoipa")]

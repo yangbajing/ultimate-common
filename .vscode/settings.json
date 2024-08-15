@@ -76,5 +76,6 @@
   },
   "accessibility.signals.positionHasError": {
     "sound": "off"
-  }
+  },
+  "editor.tabSize": 2
 }

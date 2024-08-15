@@ -5,14 +5,37 @@ use axum::Json;
 use axum_extra::headers::authorization::Bearer;
 use axum_extra::headers::{Authorization, HeaderMapExt};
 use serde::de::DeserializeOwned;
+use serde::Serialize;
+use ulid::Ulid;
 use ultimate::configuration::model::SecruityConfig;
 use ultimate::ctx::Ctx;
 use ultimate::security::{AccessToken, SecurityUtils};
-use ultimate::DataError;
+use ultimate::{DataError, IdI64Result, IdUlidResult};
 use ultimate_common::time;
 
 use crate::error::AppError;
 use crate::AppResult;
+
+#[inline]
+pub fn ok<T: Serialize>(v: T) -> AppResult<T> {
+  Ok(Json(v))
+}
+
+#[inline]
+pub fn ok_id(id: i64) -> AppResult<IdI64Result> {
+  Ok(IdI64Result::new(id).into())
+}
+
+#[inline]
+pub fn ok_ulid(id: Ulid) -> AppResult<IdUlidResult> {
+  Ok(IdUlidResult::new(id).into())
+}
+
+#[inline]
+#[cfg(feature = "uuid")]
+pub fn ok_uuid(id: uuid::Uuid) -> AppResult<IdI64Result> {
+  Ok(ultimate::IdUuidResult::new(id).into())
+}
 
 pub fn unauthorized_app_error(msg: impl Into<String>) -> (StatusCode, Json<AppError>) {
   (StatusCode::UNAUTHORIZED, Json(AppError::new(msg).with_err_code(401)))

@@ -60,7 +60,7 @@ macro_rules! generate_common_bmc_fns {
 
 						pub async fn list(
 								mm: &ultimate_db::ModelManager,
-								filter: Vec<$filter>,
+								filter: $filter,
 								pagination: Option<&ultimate_db::Pagination>,
 						) -> ultimate_db::Result<Vec<$entity>> {
 								ultimate_db::base::list::<Self, _, _>(mm, Some(filter), pagination.map(Into::into)).await
@@ -68,7 +68,7 @@ macro_rules! generate_common_bmc_fns {
 
 						pub async fn count(
 								mm: &ultimate_db::ModelManager,
-								filter: Vec<$filter>,
+								filter: $filter,
 						) -> ultimate_db::Result<i64> {
 								ultimate_db::base::count::<Self, _>(mm, Some(filter)).await
 						}
@@ -76,7 +76,7 @@ macro_rules! generate_common_bmc_fns {
 						pub async fn page(
 								mm: &ultimate_db::ModelManager,
 								pagination: ultimate_db::Pagination,
-								filter: Vec<$filter>,
+								filter: $filter,
 						) -> ultimate_db::Result<ultimate_db::PagePayload<$entity>> {
 								ultimate_db::base::page::<Self, _, _>(mm, pagination, Some(filter)).await
 						}

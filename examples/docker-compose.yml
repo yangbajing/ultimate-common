@@ -1,0 +1,22 @@
+name: "ultimate"
+
+services:
+  db:
+    build:
+      context: software/postgres
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - ultimate
+    ports:
+      - "15432:15432"
+
+networks:
+  ultimate:
+
+volumes:
+  postgres-data:
