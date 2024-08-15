@@ -4,8 +4,8 @@ use opendal::Operator;
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    // create backend builder
-    let builder = Obs::default()
+  // create backend builder
+  let builder = Obs::default()
     // set the storage bucket for OpenDAL
     .bucket("file-009")
     .endpoint("obs.cn-southwest-2.myhuaweicloud.com")
@@ -17,15 +17,15 @@ async fn main() -> Result<()> {
     .access_key_id("HGSSSWHAXMKCPFNCWVY3")
     .secret_access_key("r7gFLoIGBAvrl4mQhGu8Lnlu2IfNTLgC4vwtbglF");
 
-    let op: Operator = Operator::new(builder)?.finish();
+  let op: Operator = Operator::new(builder)?.finish();
 
-    let file1 = "sqls/2023-04-24/pgsql-approval-2023-04-24.tar.bz2";
-    let meta = op.stat(file1).await?;
-    println!("Metadata is {meta:?}");
+  let file1 = "sqls/2023-04-24/pgsql-approval-2023-04-24.tar.bz2";
+  let meta = op.stat(file1).await?;
+  println!("Metadata is {meta:?}");
 
-    // 当前 opendal 不支持
-    // let file1_to = "sqls/2023-04-24/pgsql-approval-2023-04-24.tar.bz2.bak";
-    // op.remo(file1, file1_to).await?;
+  // 当前 opendal 不支持
+  // let file1_to = "sqls/2023-04-24/pgsql-approval-2023-04-24.tar.bz2.bak";
+  // op.remo(file1, file1_to).await?;
 
-    Ok(())
+  Ok(())
 }

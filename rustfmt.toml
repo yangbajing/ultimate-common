@@ -1,7 +1,8 @@
 # rustfmt doc - https://rust-lang.github.io/rustfmt/
 
-hard_tabs = false
 edition = "2021"
+hard_tabs = false
+tab_spaces = 2
 max_width = 120
 
 # unstable_feature = true

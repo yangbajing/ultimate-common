@@ -18,16 +18,16 @@ pub use page::*;
 
 #[derive(Clone)]
 pub struct DbState {
-    mm: ModelManager,
+  mm: ModelManager,
 }
 
 impl DbState {
-    pub async fn from_config(db: &DbConfig) -> Result<Self> {
-        let mm = ModelManager::new(db).await?;
-        Ok(DbState { mm })
-    }
+  pub async fn from_config(db: &DbConfig) -> Result<Self> {
+    let mm = ModelManager::new(db).await?;
+    Ok(DbState { mm })
+  }
 
-    pub fn mm(&self) -> &ModelManager {
-        &self.mm
-    }
+  pub fn mm(&self) -> &ModelManager {
+    &self.mm
+  }
 }

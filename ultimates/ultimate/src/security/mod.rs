@@ -10,5 +10,5 @@ pub use security_utils::SecurityUtils;
 
 #[derive(Deserialize)]
 pub struct AccessToken {
-    pub access_token: String,
+  pub access_token: String,
 }

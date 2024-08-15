@@ -14,16 +14,16 @@ const LIST_LIMIT_MAX: i64 = 5000;
 
 #[derive(Iden)]
 pub enum CommonIden {
-    Id,
-    OwnerId,
-    LogiscalDeletion,
-    OptimisticLock,
+  Id,
+  OwnerId,
+  LogiscalDeletion,
+  OptimisticLock,
 }
 
 #[derive(Iden)]
 pub enum TimestampIden {
-    Cid,
-    Ctime,
-    Mid,
-    Mtime,
+  Cid,
+  Ctime,
+  Mid,
+  Mtime,
 }
