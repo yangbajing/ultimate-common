@@ -28,7 +28,7 @@ ultimate-web = { version = "0.1", path = "ultimates/ultimate-web" }
 # begin -- memory allocator
 tikv-jemallocator = "0.6"
 # end   -- memory allocator
-derive_more = { version = "1.0", features = ["from", "display", "constructor"] }
+derive_more = { version = "1.0", features = ["from", "display"] }
 toml = "0.8"
 config = { version = "0.14", default-features = false, features = [
     "toml",

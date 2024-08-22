@@ -4,7 +4,7 @@ use axum::{
   http::{request::Parts, StatusCode},
   Json,
 };
-use derive_more::derive::Constructor;
+use derive_new::new;
 use ultimate::{DataError, Result};
 use ultimate_web::AppError;
 
@@ -14,7 +14,7 @@ use super::{
   User, UserBmc, UserCredential, UserCredentialBmc, UserFilter, UserForCreate, UserForPage, UserForUpdate, UserPage,
 };
 
-#[derive(Constructor)]
+#[derive(new)]
 pub struct UserServ {
   ctx: CtxW,
 }
