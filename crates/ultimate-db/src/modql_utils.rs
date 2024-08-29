@@ -30,7 +30,7 @@ pub fn to_sea_chrono_offset(v: serde_json::Value) -> SeaResult<sea_query::Value>
 #[cfg(feature = "utoipa")]
 pub fn op_vals_integer_schema() -> utoipa::openapi::Object {
   utoipa::openapi::ObjectBuilder::new()
-    .schema_type(utoipa::openapi::SchemaType::Object)
+    .schema_type(utoipa::openapi::Type::Object)
     .description(Some("opvalfloat64"))
     .build()
 }
@@ -38,7 +38,7 @@ pub fn op_vals_integer_schema() -> utoipa::openapi::Object {
 #[cfg(feature = "utoipa")]
 pub fn op_vals_string_schema() -> utoipa::openapi::Object {
   utoipa::openapi::ObjectBuilder::new()
-    .schema_type(utoipa::openapi::SchemaType::String)
+    .schema_type(utoipa::openapi::schema::Type::String)
     .description(Some("https://github.com/jeremychone/rust-modql?tab=readme-ov-file#opvalstring-operators"))
     .build()
 }
@@ -46,7 +46,7 @@ pub fn op_vals_string_schema() -> utoipa::openapi::Object {
 #[cfg(feature = "utoipa")]
 pub fn op_vals_bool_schema() -> utoipa::openapi::Object {
   utoipa::openapi::ObjectBuilder::new()
-    .schema_type(utoipa::openapi::SchemaType::Boolean)
+    .schema_type(utoipa::openapi::schema::Type::Boolean)
     .description(Some("https://github.com/jeremychone/rust-modql?tab=readme-ov-file#opvalbool-operators"))
     .build()
 }

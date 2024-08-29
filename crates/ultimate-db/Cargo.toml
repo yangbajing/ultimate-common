@@ -10,6 +10,9 @@ repository.workspace = true
 [lints]
 workspace = true
 
+[features]
+# default = ["utoipa"]
+
 [dependencies]
 ultimate-common.workspace = true
 ultimate.workspace = true
