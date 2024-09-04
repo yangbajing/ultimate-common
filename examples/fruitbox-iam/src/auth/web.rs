@@ -3,13 +3,13 @@ use ultimate_web::{ok, AppResult};
 
 use crate::app::AppState;
 
-use super::{AuthServ, LoginByPwdReq, LoginResp};
+use super::{AuthServ, SigninReq, SigninResp};
 
 pub fn auth_routes() -> Router<AppState> {
-  Router::new().route("/login/pwd", post(login_pwd))
+  Router::new().route("/signin", post(signin))
 }
 
-async fn login_pwd(auth_serv: AuthServ, Json(req): Json<LoginByPwdReq>) -> AppResult<LoginResp> {
-  let resp = auth_serv.login_by_pwd(req).await?;
+async fn signin(auth_serv: AuthServ, Json(req): Json<SigninReq>) -> AppResult<SigninResp> {
+  let resp = auth_serv.signin(req).await?;
   ok(resp)
 }

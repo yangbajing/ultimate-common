@@ -11,7 +11,7 @@ use crate::{
   user::{UserFilter, UserServ},
 };
 
-use super::{utils::make_token, LoginByPwdReq, LoginResp, TokenType};
+use super::{utils::make_token, SigninReq, SigninResp, TokenType};
 
 pub struct AuthServ {
   app: AppState,
@@ -22,14 +22,14 @@ impl AuthServ {
     Self { app }
   }
 
-  pub async fn login_by_pwd(&self, req: LoginByPwdReq) -> Result<LoginResp> {
+  pub async fn signin(&self, req: SigninReq) -> Result<SigninResp> {
     let user_serv = UserServ::new(self.app.create_super_admin_ctx());
 
     let (u, uc) = user_serv.get_fetch_credential(UserFilter::from(&req)).await?;
-    verify_pwd(&req.pwd, &uc.encrypted_pwd).await?;
+    verify_pwd(&req.password, &uc.encrypted_pwd).await?;
 
     let token = make_token(self.app.ultimate_config().security(), u.id)?;
-    Ok(LoginResp { token, token_type: TokenType::Bearer })
+    Ok(SigninResp { token, token_type: TokenType::Bearer })
   }
 }
 

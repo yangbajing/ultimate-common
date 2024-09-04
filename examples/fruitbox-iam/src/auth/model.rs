@@ -9,8 +9,8 @@ pub struct LoginFilter {
   pub phone: Option<OpValsString>,
 }
 
-impl From<&LoginByPwdReq> for LoginFilter {
-  fn from(req: &LoginByPwdReq) -> Self {
+impl From<&SigninReq> for LoginFilter {
+  fn from(req: &SigninReq) -> Self {
     Self {
       email: req.email.as_deref().map(|s| OpValString::Eq(s.to_string()).into()),
       phone: req.phone.as_deref().map(|s| OpValString::Eq(s.to_string()).into()),
@@ -19,15 +19,15 @@ impl From<&LoginByPwdReq> for LoginFilter {
 }
 
 #[derive(Deserialize)]
-pub struct LoginByPwdReq {
+pub struct SigninReq {
   pub email: Option<String>,
   pub phone: Option<String>,
   #[serde(skip_serializing)]
-  pub pwd: String,
+  pub password: String,
 }
 
-impl From<&LoginByPwdReq> for UserFilter {
-  fn from(value: &LoginByPwdReq) -> Self {
+impl From<&SigninReq> for UserFilter {
+  fn from(value: &SigninReq) -> Self {
     UserFilter {
       email: value.email.as_deref().map(|s| OpValString::Eq(s.to_string()).into()),
       phone: value.phone.as_deref().map(|s| OpValString::Eq(s.to_string()).into()),
@@ -37,7 +37,7 @@ impl From<&LoginByPwdReq> for UserFilter {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct LoginResp {
+pub struct SigninResp {
   pub token: String,
   pub token_type: TokenType,
 }
