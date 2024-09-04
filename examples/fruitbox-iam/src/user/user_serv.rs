@@ -4,7 +4,6 @@ use axum::{
   http::{request::Parts, StatusCode},
   Json,
 };
-use derive_new::new;
 use ultimate::{DataError, Result};
 use ultimate_web::AppError;
 
@@ -14,20 +13,22 @@ use super::{
   User, UserBmc, UserCredential, UserCredentialBmc, UserFilter, UserForCreate, UserForPage, UserForUpdate, UserPage,
 };
 
-#[derive(new)]
 pub struct UserServ {
   ctx: CtxW,
 }
 
 impl UserServ {
+  pub fn new(ctx: CtxW) -> Self {
+    Self { ctx }
+  }
+
   pub async fn create(&self, req: UserForCreate) -> Result<i64> {
     let id = UserBmc::create(self.ctx.mm(), req.validate_and_init()?).await?;
     Ok(id)
   }
 
   pub async fn page(&self, req: UserForPage) -> Result<UserPage> {
-    let page =
-      UserBmc::page(self.ctx.mm(), req.filter.into_iter().collect::<Vec<_>>(), req.page.unwrap_or_default()).await?;
+    let page = UserBmc::page(self.ctx.mm(), req.filter, req.page).await?;
     Ok(page.into())
   }
 

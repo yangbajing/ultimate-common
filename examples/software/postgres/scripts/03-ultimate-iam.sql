@@ -37,7 +37,7 @@ create table if not exists iam.user_credential
 ------------------
 insert into iam."user" (id, email, phone, name, status, cid, ctime)
 values (1, 'admin@ultimate.com', null, '超管', 100, 1, current_timestamp),
-       (10000, null, '13912345678', '普通用户', 100, 1, current_timestamp);
+       (10000, 'user@ultimate.com', '13912345678', '普通用户', 100, 1, current_timestamp);
 insert into iam.user_credential (id, encrypted_pwd, cid, ctime)
 values (1,
         '#1#$argon2id$v=19$m=19456,t=2,p=1$hAPRw63nW4mdwOd0l0WnmA$wN1i4uYbL+h/FjsaMVae6n93A3LikkqJ4IwiAqr78x0', -- 密码为：2024.Ultimate

@@ -3,24 +3,25 @@ use axum::{
   extract::FromRequestParts,
   http::{request::Parts, StatusCode},
 };
-use derive_new::new;
 use ultimate::{security::pwd::verify_pwd, Result};
 use ultimate_web::AppError;
 
 use crate::{
   app::AppState,
   user::{UserFilter, UserServ},
-  util::make_token,
 };
 
-use super::{LoginByPwdReq, LoginResp, TokenType};
+use super::{utils::make_token, LoginByPwdReq, LoginResp, TokenType};
 
-#[derive(new)]
 pub struct AuthServ {
   app: AppState,
 }
 
 impl AuthServ {
+  pub fn new(app: AppState) -> Self {
+    Self { app }
+  }
+
   pub async fn login_by_pwd(&self, req: LoginByPwdReq) -> Result<LoginResp> {
     let user_serv = UserServ::new(self.app.create_super_admin_ctx());
 

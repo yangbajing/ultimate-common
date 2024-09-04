@@ -1,4 +1,5 @@
-use api_example::{router::new_api_router, app::new_app_state};
+use fruitbox_iam::{app::new_app_state, router::new_api_router};
+use ultimate::Result;
 use ultimate_web::server::init_server;
 
 #[cfg(not(target_env = "msvc"))]
@@ -6,11 +7,10 @@ use ultimate_web::server::init_server;
 static GLOBAL: tikv_jemallocator::Jemalloc = tikv_jemallocator::Jemalloc;
 
 #[tokio::main]
-async fn main() -> ultimate::Result<()> {
+async fn main() -> Result<()> {
   let state = new_app_state().await?;
-  let conf = state.ultimate_config();
   let router = new_api_router(state.clone());
 
-  init_server(conf, router).await?;
+  init_server(state.ultimate_config(), router).await?;
   Ok(())
 }

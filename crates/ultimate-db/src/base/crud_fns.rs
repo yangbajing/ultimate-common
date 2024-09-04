@@ -10,8 +10,6 @@ use crate::base::{prep_fields_for_create, prep_fields_for_update, CommonIden, Db
 use crate::{Error, Page, PagePayload, Pagination, Result};
 use crate::{Id, ModelManager};
 
-use super::check_number_of_affected;
-
 /// Create a new entity。需要自增主键ID
 pub async fn create<MC, E>(mm: &ModelManager, data: E) -> Result<i64>
 where
@@ -132,17 +130,21 @@ where
   Ok(rows)
 }
 
-pub async fn get_by_id<MC, E>(mm: &ModelManager, id: Id) -> Result<E>
+pub async fn find_by_id<MC, E>(mm: &ModelManager, id: Id) -> Result<E>
 where
   MC: DbBmc,
   E: for<'r> FromRow<'r, PgRow> + Unpin + Send,
   E: HasSeaFields,
 {
   let filter: FilterGroups = id.to_filter_node("id").into();
-  find::<MC, E, _>(mm, filter).await?.ok_or_else(|| Error::EntityNotFound { schema: MC::SCHEMA, entity: MC::TABLE, id })
+  find_unique::<MC, E, _>(mm, filter).await?.ok_or_else(|| Error::EntityNotFound {
+    schema: MC::SCHEMA,
+    entity: MC::TABLE,
+    id,
+  })
 }
 
-pub async fn find<MC, E, F>(mm: &ModelManager, filter: F) -> Result<Option<E>>
+pub async fn find_unique<MC, E, F>(mm: &ModelManager, filter: F) -> Result<Option<E>>
 where
   MC: DbBmc,
   E: for<'r> FromRow<'r, PgRow> + Unpin + Send,
@@ -166,7 +168,18 @@ where
   Ok(entity)
 }
 
-pub async fn list<MC, E, F>(mm: &ModelManager, filter: Option<F>, list_options: Option<ListOptions>) -> Result<Vec<E>>
+pub async fn find_first<MC, E, F>(mm: &ModelManager, filter: F) -> Result<Option<E>>
+where
+  MC: DbBmc,
+  E: for<'r> FromRow<'r, PgRow> + Unpin + Send,
+  E: HasSeaFields,
+  F: Into<FilterGroups>,
+{
+  let list = find_many::<MC, E, F>(mm, filter, None).await?;
+  Ok(list.into_iter().next())
+}
+
+pub async fn find_many<MC, E, F>(mm: &ModelManager, filter: F, list_options: Option<ListOptions>) -> Result<Vec<E>>
 where
   MC: DbBmc,
   F: Into<FilterGroups>,
@@ -178,11 +191,10 @@ where
   query.from(MC::table_ref()).columns(E::sea_column_refs());
 
   // condition from filter
-  if let Some(filter) = filter {
-    let filters: FilterGroups = filter.into();
-    let cond: Condition = filters.try_into()?;
-    query.cond_where(cond);
-  }
+  let filters: FilterGroups = filter.into();
+  let cond: Condition = filters.try_into()?;
+  query.cond_where(cond);
+
   // list options
   let list_options = compute_list_options::<MC>(list_options)?;
   list_options.apply_to_sea_query(&mut query);
@@ -196,7 +208,7 @@ where
   Ok(entities)
 }
 
-pub async fn count<MC, F>(mm: &ModelManager, filter: Option<F>) -> Result<i64>
+pub async fn count<MC, F>(mm: &ModelManager, filter: F) -> Result<i64>
 where
   MC: DbBmc,
   F: Into<FilterGroups>,
@@ -206,11 +218,9 @@ where
   let mut query = Query::select().from(MC::table_ref()).expr(Expr::col(sea_query::Asterisk).count()).to_owned();
 
   // condition from filter
-  if let Some(filter) = filter {
-    let filters: FilterGroups = filter.into();
-    let cond: Condition = filters.try_into()?;
-    query.cond_where(cond);
-  }
+  let filters: FilterGroups = filter.into();
+  let cond: Condition = filters.try_into()?;
+  query.cond_where(cond);
 
   let query_str = query.to_string(PostgresQueryBuilder);
 
@@ -221,17 +231,16 @@ where
   Ok(count)
 }
 
-pub async fn page<MC, E, F>(mm: &ModelManager, pagination: Pagination, filter: Option<F>) -> Result<PagePayload<E>>
+pub async fn page<MC, E, F>(mm: &ModelManager, filter: F, pagination: Pagination) -> Result<PagePayload<E>>
 where
   MC: DbBmc,
   F: Into<FilterGroups>,
   E: for<'r> FromRow<'r, PgRow> + Unpin + Send,
   E: HasSeaFields,
 {
-  let filter: Option<FilterGroups> = filter.map(|f| f.into());
-
+  let filter: FilterGroups = filter.into();
   let total_size = count::<MC, _>(mm, filter.clone()).await?;
-  let records = list::<MC, E, _>(mm, filter, Some((&pagination).into())).await?;
+  let records = find_many::<MC, E, _>(mm, filter, Some((&pagination).into())).await?;
 
   Ok(PagePayload::new(Page::new(&pagination, total_size), records))
 }
@@ -337,8 +346,6 @@ where
     return Ok(0);
   }
 
-  let ids_len = ids.len();
-
   // -- Build query
   let mut query = Query::delete();
   query.from_table(MC::table_ref()).and_where(Expr::col(CommonIden::Id).is_in(ids));
@@ -348,8 +355,26 @@ where
   let sqlx_query = sqlx::query_with(&sql, values);
   let n = mm.dbx().execute(sqlx_query).await?;
 
-  // -- Check result
-  check_number_of_affected::<MC>(ids_len, n)
+  Ok(n)
+}
+
+pub async fn delete<MC, E, F>(mm: &ModelManager, filter: F) -> Result<u64>
+where
+  MC: DbBmc,
+  F: Into<FilterGroups>,
+{
+  let mut query = Query::delete();
+  query.from_table(MC::table_ref());
+  let filters: FilterGroups = filter.into();
+  let cond: Condition = filters.try_into()?;
+  query.cond_where(cond);
+
+  // -- Execute query
+  let (sql, values) = query.build_sqlx(PostgresQueryBuilder);
+  let sqlx_query = sqlx::query_with(&sql, values);
+  let n = mm.dbx().execute(sqlx_query).await?;
+
+  Ok(n)
 }
 
 pub fn compute_list_options<MC>(list_options: Option<ListOptions>) -> Result<ListOptions>

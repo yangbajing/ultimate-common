@@ -34,7 +34,10 @@ sea-query.workspace = true
 sea-query-binder.workspace = true
 modql.workspace = true
 enum-iterator.workspace = true
-derive-new = "0.6"
+derive-new = "0.7"
 
 [target.'cfg(not(target_env = "msvc"))'.dependencies]
 tikv-jemallocator.workspace = true
+
+[dev-dependencies]
+pretty_assertions.workspace = true

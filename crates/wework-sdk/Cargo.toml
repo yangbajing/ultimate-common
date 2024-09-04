@@ -9,6 +9,7 @@ repository.workspace = true
 readme = "README.md"
 
 [dependencies]
+weixin-common = { workspace = true }
 thiserror.workspace = true
 tokio.workspace = true
 tokio-stream.workspace = true
@@ -25,7 +26,6 @@ strum.workspace = true
 [dev-dependencies]
 anyhow.workspace = true
 asserhttp = { workspace = true }
-reqwest = { workspace = true }
 config.workspace = true
 dotenvy.workspace = true
 tracing-log.workspace = true

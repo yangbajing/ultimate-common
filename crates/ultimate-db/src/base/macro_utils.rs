@@ -43,42 +43,42 @@ macro_rules! generate_common_bmc_fns {
 						}
 				)?
 
-				pub async fn get_by_id(
+				pub async fn find_by_id(
 						mm: &ultimate_db::ModelManager,
 						id: impl Into<ultimate_db::Id>,
 				) -> ultimate_db::Result<$entity> {
-						ultimate_db::base::get_by_id::<Self, _>(mm, id.into()).await
+						ultimate_db::base::find_by_id::<Self, _>(mm, id.into()).await
 				}
 
 				$(
-						pub async fn find(
+						pub async fn find_unique(
 								mm: &ultimate_db::ModelManager,
-								filter: $filter,
+								filter: Vec<$filter>,
 						) -> ultimate_db::Result<Option<$entity>> {
-								ultimate_db::base::find::<Self, _, _>(mm, filter).await
+								ultimate_db::base::find_unique::<Self, _, _>(mm, filter).await
 						}
 
-						pub async fn list(
+						pub async fn find_many(
 								mm: &ultimate_db::ModelManager,
-								filter: $filter,
+								filter: Vec<$filter>,
 								pagination: Option<&ultimate_db::Pagination>,
 						) -> ultimate_db::Result<Vec<$entity>> {
-								ultimate_db::base::list::<Self, _, _>(mm, Some(filter), pagination.map(Into::into)).await
+								ultimate_db::base::find_many::<Self, _, _>(mm, filter, pagination.map(Into::into)).await
 						}
 
 						pub async fn count(
 								mm: &ultimate_db::ModelManager,
-								filter: $filter,
+								filter: Vec<$filter>,
 						) -> ultimate_db::Result<i64> {
-								ultimate_db::base::count::<Self, _>(mm, Some(filter)).await
+								ultimate_db::base::count::<Self, _>(mm, filter).await
 						}
 
 						pub async fn page(
 								mm: &ultimate_db::ModelManager,
+								filter: Vec<$filter>,
 								pagination: ultimate_db::Pagination,
-								filter: $filter,
 						) -> ultimate_db::Result<ultimate_db::PagePayload<$entity>> {
-								ultimate_db::base::page::<Self, _, _>(mm, pagination, Some(filter)).await
+								ultimate_db::base::page::<Self, _, _>(mm, filter, pagination).await
 						}
 				)?
 
@@ -89,6 +89,14 @@ macro_rules! generate_common_bmc_fns {
 							entity_u: $for_update,
 					) -> ultimate_db::Result<()> {
 							ultimate_db::base::update_by_id::<Self, _>(mm, id.into(), entity_u).await
+					}
+
+					pub async fn update(
+						mm: &ultimate_db::ModelManager,
+						filter: Vec<$filter>,
+						entity_u: $for_update,
+					) -> ultimate_db::Result<u64> {
+						ultimate_db::base::update::<Self, _, _>(mm, filter, entity_u).await
 					}
 				)?
 
