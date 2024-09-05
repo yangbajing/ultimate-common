@@ -8,8 +8,9 @@ use serde::{Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
 use sqlx::prelude::FromRow;
 use ultimate::{DataError, Result};
+use ultimate_api::v1::{Page, PagePayload, Pagination};
 use ultimate_common::{regex, time::UtcDateTime};
-use ultimate_db::{to_sea_chrono_utc, DbRowType, Page, PagePayload, Pagination};
+use ultimate_db::{to_sea_chrono_utc, DbRowType};
 
 #[derive(Debug, Serialize, FromRow, Fields)]
 #[enum_def]

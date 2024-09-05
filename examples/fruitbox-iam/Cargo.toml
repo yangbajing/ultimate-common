@@ -18,7 +18,8 @@ path = "bin/fruitbox-iam.rs"
 # -- ultimates
 ultimate-common = { workspace = true }
 ultimate = { workspace = true }
-ultimate-web = { workspace = true }
+ultimate-api = { workspace = true, features = ["utoipa"] }
+ultimate-web = { workspace = true, features = ["tonic"] }
 ultimate-db = { workspace = true }
 # -- misc
 serde = { workspace = true }
@@ -26,7 +27,11 @@ serde_json = { workspace = true }
 serde_repr = { workspace = true }
 chrono = { workspace = true }
 rust_decimal = { workspace = true }
-derive_more = { workspace = true }
+derive_more = { workspace = true, features = [
+  "from",
+  "display",
+  "constructor",
+] }
 derive-getters = { workspace = true }
 typed-builder = { workspace = true }
 enum-iterator = { workspace = true }

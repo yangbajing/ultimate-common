@@ -1,6 +1,10 @@
-use std::sync::Arc;
+use std::{
+  cell::LazyCell,
+  sync::{Arc, OnceLock},
+};
 
 use derive_getters::Getters;
+use tokio::runtime::Runtime;
 use typed_builder::TypedBuilder;
 use ultimate::{
   configuration::{ConfigState, UltimateConfig},
@@ -35,9 +39,15 @@ impl AppState {
   }
 }
 
-pub async fn new_app_state() -> ultimate::Result<AppState> {
+pub fn get_app_state() -> &'static AppState {
+  static APP: OnceLock<AppState> = OnceLock::new();
+
+  APP.get_or_init(|| new_app_state().unwrap())
+}
+
+fn new_app_state() -> ultimate::Result<AppState> {
   let config = starter::load_and_init();
-  let db = DbState::from_config(config.ultimate_config().db()).await?;
+  let db = DbState::from_config(config.ultimate_config().db())?;
   let app = AppState::builder().config_state(config).db_state(db).build();
   Ok(app)
 }

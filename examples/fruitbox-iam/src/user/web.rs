@@ -6,7 +6,7 @@ use axum::{
 use ultimate::IdI64Result;
 use ultimate_web::{ok, AppResult};
 
-use crate::app::AppState;
+use crate::{app::AppState, ctx::CtxW};
 
 use super::{User, UserForCreate, UserForPage, UserForUpdate, UserPage, UserServ};
 
@@ -17,27 +17,27 @@ pub fn user_routes() -> Router<AppState> {
     .route("/:id", get(get_user).put(update_user).delete(delete_user))
 }
 
-async fn create_user(user_serv: UserServ, Json(req): Json<UserForCreate>) -> AppResult<IdI64Result> {
-  let id = user_serv.create(req).await?;
+async fn create_user(ctx: CtxW, Json(req): Json<UserForCreate>) -> AppResult<IdI64Result> {
+  let id = UserServ::create(&ctx, req).await?;
   ok(IdI64Result::new(id))
 }
 
-async fn page_user(user_serv: UserServ, Json(req): Json<UserForPage>) -> AppResult<UserPage> {
-  let page = user_serv.page(req).await?;
+async fn page_user(ctx: CtxW, Json(req): Json<UserForPage>) -> AppResult<UserPage> {
+  let page = UserServ::page(&ctx, req).await?;
   ok(page)
 }
 
-async fn get_user(user_serv: UserServ, Path(id): Path<i64>) -> AppResult<User> {
-  let u = user_serv.find_by_id(id).await?;
+async fn get_user(ctx: CtxW, Path(id): Path<i64>) -> AppResult<User> {
+  let u = UserServ::find_by_id(&ctx, id).await?;
   ok(u)
 }
 
-async fn update_user(user_serv: UserServ, Path(id): Path<i64>, Json(req): Json<UserForUpdate>) -> AppResult<()> {
-  user_serv.update_by_id(id, req).await?;
+async fn update_user(ctx: CtxW, Path(id): Path<i64>, Json(req): Json<UserForUpdate>) -> AppResult<()> {
+  UserServ::update_by_id(&ctx, id, req).await?;
   ok(())
 }
 
-async fn delete_user(user_serv: UserServ, Path(id): Path<i64>) -> AppResult<()> {
-  user_serv.delete_by_id(id).await?;
+async fn delete_user(ctx: CtxW, Path(id): Path<i64>) -> AppResult<()> {
+  UserServ::delete_by_id(&ctx, id).await?;
   ok(())
 }

@@ -1,6 +1,6 @@
 pub mod app;
 mod auth;
 mod ctx;
-pub mod grpc;
-pub mod router;
+pub mod endpoint;
 mod user;
+mod v1;

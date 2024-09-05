@@ -8,8 +8,11 @@ use serde::{Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
 use sqlx::prelude::FromRow;
 use ultimate::{DataError, Result};
+use ultimate_api::v1::{Page, PagePayload, Pagination};
 use ultimate_common::{regex, time::UtcDateTime};
-use ultimate_db::{to_sea_chrono_utc, DbRowType, Page, PagePayload, Pagination};
+use ultimate_db::{to_sea_chrono_utc, DbRowType};
+
+use crate::v1::UserDto;
 
 #[derive(Debug, Serialize, FromRow, Fields)]
 #[enum_def]
@@ -25,6 +28,22 @@ pub struct User {
   pub mtime: Option<UtcDateTime>,
 }
 impl DbRowType for User {}
+
+impl From<User> for UserDto {
+  fn from(user: User) -> Self {
+    Self {
+      id: user.id,
+      email: user.email,
+      phone: user.phone,
+      name: user.name,
+      status: user.status as i32,
+      cid: user.cid,
+      ctime: user.ctime.timestamp(),
+      mid: user.mid,
+      mtime: user.mtime.map(|t| t.timestamp()),
+    }
+  }
+}
 
 #[derive(Debug, Default, PartialEq, Eq, Serialize_repr, Deserialize_repr, Sequence, sqlx::Type)]
 #[repr(i32)]

@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "ultimate";
+option java_outer_classname = "UltimateProto";
+
+package ultimate_api.v1;
+
+message Pagination {
+  int64 page = 1;
+  int64 page_size = 2;
+  repeated SortBy sort_bys = 3;
+  optional int64 offset = 4;
+}
+
+message Page {
+  int64 page = 1;
+  int64 page_size = 2;
+  int64 total_size = 3;
+  int64 total_page = 4;
+}
+
+message SortBy {
+  string field = 1;
+  SortDirection direction = 2;
+}
+
+enum SortDirection {
+  SORT_DIRECTION_ASC = 0;
+  SORT_DIRECTION_DESC = 2;
+}

@@ -30,6 +30,9 @@ pub enum DataError {
   #[error(transparent)]
   JsonError(#[from] serde_json::Error),
 
+  #[error(transparent)]
+  TaskJoinError(#[from] tokio::task::JoinError),
+
   #[cfg(feature = "tonic")]
   #[error(transparent)]
   GrpcTransportError(#[from] tonic::transport::Error),
@@ -127,6 +130,7 @@ impl From<DataError> for tonic::Status {
       DataError::ParseIntError(ex) => tonic::Status::from_error(ex.into()),
       DataError::IoError(e) => tonic::Status::internal(e.to_string()),
       DataError::JsonError(ex) => tonic::Status::from_error(ex.into()),
+      DataError::TaskJoinError(ex) => tonic::Status::from_error(ex.into()),
       DataError::GrpcTransportError(ex) => tonic::Status::from_error(ex.into()),
     }
   }

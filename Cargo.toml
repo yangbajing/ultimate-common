@@ -24,6 +24,7 @@ huaweicloud-sdk-obs = { version = "0.1", path = "crates/huaweicloud-sdk-obs" }
 huaweicloud-sdk-core = { version = "0.1", path = "crates/huaweicloud-sdk-core" }
 ultimate-common = { version = "0.1", path = "crates/ultimate-common" }
 ultimate = { version = "0.1", path = "crates/ultimate" }
+ultimate-api = { version = "0.1", path = "crates/ultimate-api" }
 ultimate-db = { version = "0.1", path = "crates/ultimate-db" }
 ultimate-web = { version = "0.1", path = "crates/ultimate-web" }
 # -- projects end
@@ -158,6 +159,7 @@ tonic = "0.12"
 tonic-reflection = "0.12"
 tonic-build = "0.12"
 prost = "0.13"
+prost-build = "0.13"
 prost-types = "0.13"
 
 # -- opendal

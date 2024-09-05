@@ -77,5 +77,6 @@
   "accessibility.signals.positionHasError": {
     "sound": "off"
   },
-  "editor.tabSize": 2
+  "editor.tabSize": 2,
+  "rust-analyzer.cargo.buildScripts.enable": true
 }

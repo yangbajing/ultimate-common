@@ -14,10 +14,12 @@ workspace = true
 default = ["with-ulid"]
 with-ulid = ["ultimate/ulid"]
 uuid = ["dep:uuid", "ultimate/uuid"]
+tonic = ["dep:tonic", "ultimate/tonic"]
 
 [dependencies]
 ultimate-common.workspace = true
 ultimate.workspace = true
+ultimate-api.workspace = true
 tokio.workspace = true
 tracing.workspace = true
 mime.workspace = true
@@ -30,5 +32,6 @@ serde_json.workspace = true
 serde_with.workspace = true
 ulid.workspace = true
 uuid = { workspace = true, optional = true }
-tonic = { workspace = true, optional = true }
 utoipa = { workspace = true, optional = true }
+tonic = { workspace = true, optional = true }
+# prost = { workspace = true, optional = true }

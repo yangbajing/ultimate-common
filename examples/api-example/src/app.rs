@@ -13,8 +13,8 @@ use crate::ctx::{CtxW, RequestMetadata};
 
 #[derive(Clone, TypedBuilder, Getters)]
 pub struct AppState {
-  config_state: ConfigState,
-  db_state: DbState,
+  pub config_state: ConfigState,
+  pub db_state: DbState,
 }
 
 impl AppState {
@@ -35,9 +35,9 @@ impl AppState {
   }
 }
 
-pub async fn new_app_state() -> ultimate::Result<AppState> {
+pub fn new_app_state() -> ultimate::Result<AppState> {
   let config = starter::load_and_init();
-  let db = DbState::from_config(config.ultimate_config().db()).await?;
+  let db = DbState::from_config(config.ultimate_config().db())?;
   let app = AppState::builder().config_state(config).db_state(db).build();
   Ok(app)
 }

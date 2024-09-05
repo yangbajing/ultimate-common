@@ -61,7 +61,7 @@ macro_rules! generate_common_bmc_fns {
 						pub async fn find_many(
 								mm: &ultimate_db::ModelManager,
 								filter: Vec<$filter>,
-								pagination: Option<&ultimate_db::Pagination>,
+								pagination: Option<&ultimate_api::v1::Pagination>,
 						) -> ultimate_db::Result<Vec<$entity>> {
 								ultimate_db::base::find_many::<Self, _, _>(mm, filter, pagination.map(Into::into)).await
 						}
@@ -76,8 +76,8 @@ macro_rules! generate_common_bmc_fns {
 						pub async fn page(
 								mm: &ultimate_db::ModelManager,
 								filter: Vec<$filter>,
-								pagination: ultimate_db::Pagination,
-						) -> ultimate_db::Result<ultimate_db::PagePayload<$entity>> {
+								pagination: ultimate_api::v1::Pagination,
+						) -> ultimate_db::Result<ultimate_api::v1::PagePayload<$entity>> {
 								ultimate_db::base::page::<Self, _, _>(mm, filter, pagination).await
 						}
 				)?

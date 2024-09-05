@@ -10,6 +10,11 @@ default_pwd = "2024.Ultimate"
 enable = true
 server_addr = "0.0.0.0:8888"
 
+[ultimate.grpc]
+enable = true
+server_addr = "0.0.0.0:8889"
+plaintext = true
+
 [ultimate.db]
 enable = true
 host = "localhost"

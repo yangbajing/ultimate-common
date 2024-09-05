@@ -36,9 +36,13 @@ josekit.workspace = true
 serde.workspace = true
 serde_json.workspace = true
 serde_with.workspace = true
+serde_repr.workspace = true
 tonic = { workspace = true, optional = true }
 utoipa = { workspace = true, optional = true }
 
 [dev-dependencies]
 dotenvy.workspace = true
 anyhow.workspace = true
+
+[build-dependencies]
+prost-build = { workspace = true }

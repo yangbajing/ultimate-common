@@ -19,7 +19,7 @@ pub use error::{Error, Result};
 // endregion: --- Modules
 
 pub type Db = Pool<Postgres>;
-pub async fn new_db_pool_from_config(c: &DbConfig) -> Result<Db> {
+pub fn new_db_pool_from_config(c: &DbConfig) -> Result<Db> {
   if !c.enable() {
     return Err(Error::ConfigInvalid("Need set ultimate.db.enable = true"));
   }
@@ -81,7 +81,7 @@ pub async fn new_db_pool_from_config(c: &DbConfig) -> Result<Db> {
 
   opts = opts.log_statements(level);
 
-  let db = opt.connect_with(opts).await?;
+  let db = opt.connect_lazy_with(opts);
   Ok(db)
 }
 

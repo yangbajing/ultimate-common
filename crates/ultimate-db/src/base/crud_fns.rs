@@ -5,9 +5,10 @@ use sea_query_binder::SqlxBinder;
 use sqlx::postgres::PgRow;
 use sqlx::FromRow;
 use sqlx::Row;
+use ultimate_api::v1::{Page, PagePayload, Pagination};
 
 use crate::base::{prep_fields_for_create, prep_fields_for_update, CommonIden, DbBmc};
-use crate::{Error, Page, PagePayload, Pagination, Result};
+use crate::{Error, Result};
 use crate::{Id, ModelManager};
 
 /// Create a new entity。需要自增主键ID

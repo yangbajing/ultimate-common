@@ -1,3 +1,4 @@
+pub mod grpc;
 mod user_bmc;
 mod user_credential_bmc;
 mod user_credential_model;
