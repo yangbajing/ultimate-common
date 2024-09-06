@@ -11,8 +11,7 @@ repository.workspace = true
 workspace = true
 
 [features]
-default = ["with-ulid"]
-with-ulid = ["ultimate/ulid"]
+# default = ["with-uuid"]
 uuid = ["dep:uuid", "ultimate/uuid"]
 tonic = ["dep:tonic", "ultimate/tonic"]
 
@@ -34,4 +33,3 @@ ulid.workspace = true
 uuid = { workspace = true, optional = true }
 utoipa = { workspace = true, optional = true }
 tonic = { workspace = true, optional = true }
-# prost = { workspace = true, optional = true }

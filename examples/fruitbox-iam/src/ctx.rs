@@ -1,17 +1,11 @@
 use std::sync::Arc;
 
-use axum::{
-  async_trait,
-  extract::FromRequestParts,
-  http::{request::Parts, HeaderMap, StatusCode},
-  Json,
-};
 use derive_getters::Getters;
-use tonic::{metadata::MetadataMap, Status};
-use ultimate::{ctx::Ctx, security::SecurityUtils, DataError};
+use tonic::{metadata::MetadataMap, Extensions, Status};
+use ultimate::ctx::Ctx;
 use ultimate_common::time::now_utc;
 use ultimate_db::ModelManager;
-use ultimate_web::{extract_session, AppError};
+use ultimate_grpc::utils::extract_jwt_payload_from_metadata;
 
 use crate::app::{get_app_state, AppState};
 
@@ -32,18 +26,6 @@ impl CtxW {
   }
 }
 
-#[async_trait]
-impl FromRequestParts<AppState> for CtxW {
-  type Rejection = (StatusCode, Json<AppError>);
-
-  async fn from_request_parts(parts: &mut Parts, state: &AppState) -> core::result::Result<Self, Self::Rejection> {
-    match extract_session(parts, state.ultimate_config().security()) {
-      Ok(ctx) => Ok(CtxW::new(state, ctx, Arc::new(RequestMetadata::from(&parts.headers)))),
-      Err(e) => Err((StatusCode::UNAUTHORIZED, Json(e.into()))),
-    }
-  }
-}
-
 impl TryFrom<&MetadataMap> for CtxW {
   type Error = Status;
   fn try_from(metadata: &MetadataMap) -> core::result::Result<Self, Status> {
@@ -51,28 +33,20 @@ impl TryFrom<&MetadataMap> for CtxW {
     let sc = app.ultimate_config().security();
     let req_time = now_utc();
 
-    let token = extract_token(metadata)?;
-
-    let (payload, _) =
-      SecurityUtils::decrypt_jwt(sc.pwd(), &token).map_err(|_e| DataError::unauthorized("Failed decode jwt"))?;
-
+    let payload = extract_jwt_payload_from_metadata(sc, metadata)?;
     let req_meta = RequestMetadata::from(metadata);
+
     let ctx = Ctx::try_from_jwt_payload(&payload, Some(req_time))?;
     Ok(CtxW::new(app, ctx, Arc::new(req_meta)))
   }
 }
 
-fn extract_token(metadata: &MetadataMap) -> Result<String, Status> {
-  let auth_header =
-    metadata.get("authorization").ok_or_else(|| Status::unauthenticated("Missing authorization header"))?;
+impl<'a> TryFrom<&'a Extensions> for &'a CtxW {
+  type Error = Status;
 
-  let auth_str = auth_header.to_str().map_err(|_| Status::unauthenticated("Invalid authorization header"))?;
-
-  if !auth_str.starts_with("Bearer ") {
-    return Err(Status::unauthenticated("Invalid token type"));
+  fn try_from(extensions: &'a Extensions) -> Result<&'a CtxW, Status> {
+    extensions.get().ok_or_else(|| Status::unauthenticated("未经身份验证"))
   }
-
-  Ok(auth_str[7..].to_string())
 }
 
 #[derive(Clone, Default)]
@@ -88,14 +62,6 @@ impl RequestMetadata {
 
   pub fn dev_id(&self) -> &str {
     self.dev_id.as_str()
-  }
-}
-
-impl From<&HeaderMap> for RequestMetadata {
-  fn from(headers: &HeaderMap) -> Self {
-    let app_ver = headers.get(X_APP_VERSION).map(|v| v.to_str().unwrap_or("").to_string()).unwrap_or_default();
-    let dev_id = headers.get(X_DEVICE_ID).map(|v| v.to_str().unwrap_or("").to_string()).unwrap_or_default();
-    Self { app_ver, dev_id }
   }
 }
 

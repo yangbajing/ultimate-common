@@ -1,5 +1,4 @@
-use modql::filter::{FilterNodes, OpValString, OpValsString};
-use serde::{Deserialize, Serialize};
+use modql::filter::OpValString;
 
 use crate::{user::UserFilter, v1::SigninRequest};
 

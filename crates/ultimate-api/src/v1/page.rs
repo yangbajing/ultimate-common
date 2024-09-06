@@ -1,6 +1,14 @@
 use serde::{Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
 
+#[derive(Clone, PartialEq, ::prost::Message, Serialize)]
+pub struct OperationReply {
+  #[prost(int32, tag = "1")]
+  pub code: i32,
+  #[prost(string, optional, tag = "2")]
+  pub message: ::core::option::Option<::prost::alloc::string::String>,
+}
+
 #[derive(Debug, Clone, Serialize)]
 pub struct PagePayload<T> {
   pub page: Page,
@@ -110,7 +118,7 @@ impl From<&SortBy> for modql::filter::OrderBy {
 }
 
 #[derive(
-  Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration, Serialize_repr, Deserialize_repr,
+  Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration, Serialize_repr, Deserialize_repr,
 )]
 #[repr(i32)]
 #[allow(non_camel_case_types)]

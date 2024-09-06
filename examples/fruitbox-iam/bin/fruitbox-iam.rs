@@ -1,7 +1,4 @@
-use fruitbox_iam::{
-  app::get_app_state,
-  endpoint::{grpc::grpc_serve, router::start_router},
-};
+use fruitbox_iam::{app::get_app_state, endpoint::grpc::grpc_serve};
 use ultimate::Result;
 
 #[cfg(not(target_env = "msvc"))]
@@ -12,11 +9,13 @@ static GLOBAL: tikv_jemallocator::Jemalloc = tikv_jemallocator::Jemalloc;
 async fn main() -> Result<()> {
   let app = get_app_state();
 
-  let (ret_grpc, ret_router) =
-    tokio::join!(tokio::spawn(grpc_serve(app.clone())?), tokio::spawn(start_router(app.clone())));
+  // let (ret_grpc, ret_router) =
+  //   tokio::join!(tokio::spawn(grpc_serve(app.clone())?), tokio::spawn(start_router(app.clone())));
 
-  ret_grpc??;
-  ret_router??;
+  // ret_grpc??;
+  // ret_router??;
+
+  grpc_serve(app.clone())?.await?;
 
   Ok(())
 }

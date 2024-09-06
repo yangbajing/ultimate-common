@@ -1,4 +1,4 @@
-use ultimate::configuration::model::DbConfig;
+use ultimate::configuration::model::DbConf;
 
 pub mod acs;
 pub mod base;
@@ -19,7 +19,7 @@ pub struct DbState {
 }
 
 impl DbState {
-  pub fn from_config(db: &DbConfig) -> Result<Self> {
+  pub fn from_config(db: &DbConf) -> Result<Self> {
     let mm = ModelManager::new(db)?;
     Ok(DbState { mm })
   }

@@ -1,10 +1,6 @@
-use std::{
-  cell::LazyCell,
-  sync::{Arc, OnceLock},
-};
+use std::sync::{Arc, OnceLock};
 
 use derive_getters::Getters;
-use tokio::runtime::Runtime;
 use typed_builder::TypedBuilder;
 use ultimate::{
   configuration::{ConfigState, UltimateConfig},

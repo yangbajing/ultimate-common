@@ -12,6 +12,7 @@ workspace = true
 
 [features]
 default = ["tracing-appender"]
+tonic = ["dep:tonic", "dep:prost"]
 
 [dependencies]
 ultimate-common.workspace = true
@@ -37,8 +38,9 @@ serde.workspace = true
 serde_json.workspace = true
 serde_with.workspace = true
 serde_repr.workspace = true
-tonic = { workspace = true, optional = true }
 utoipa = { workspace = true, optional = true }
+tonic = { workspace = true, optional = true }
+prost = { workspace = true, optional = true }
 
 [dev-dependencies]
 dotenvy.workspace = true

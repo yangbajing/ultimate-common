@@ -6,16 +6,24 @@ option java_outer_classname = "UserProto";
 
 package fruitbox_iam.v1;
 
-import "ultimate_api/v1/page.proto";
+import "ultimate_api/v1/ultimate.proto";
 
 service UserService {
-  rpc Find(FindUserRequest) returns (UserDto) {}
+  rpc Find(FindUserRequest) returns (UserReply) {}
 
-  rpc Create(CreateUserRequest) returns (UserDto) {}
+  rpc Create(CreateUserRequest) returns (CreateUserReply) {}
 
-  rpc Update(UpdateUserRequest) returns (UserDto) {}
+  rpc Update(UpdateUserRequest) returns (UserReply) {}
 
   rpc Page(PageUserRequest) returns (PageUserReply) {}
+
+  rpc Delete(FindUserRequest) returns (DeleteUserReply) {}
+}
+
+enum UserStatus {
+  NORMAL = 0;
+  DISABLE = 99;
+  ENABLE = 100;
 }
 
 message UserDto {
@@ -33,29 +41,46 @@ message UserDto {
 message FindUserRequest { int64 id = 1; }
 
 message CreateUserRequest {
-  optional string name = 1;
-  optional string email = 2;
-  optional string phone = 3;
-  optional int32 status = 4;
-  optional string password = 5;
+  bool returining_payload = 1;
+  optional string name = 2;
+  optional string email = 3;
+  optional string phone = 4;
+  optional int32 status = 5;
+  optional string password = 6;
+}
+
+message CreateUserReply {
+  oneof reply {
+    int64 id = 1;
+    UserDto user = 2;
+  }
 }
 
 message UpdateUserRequest {
-  int64 id = 1;
-  optional string name = 2;
-  optional int32 status = 3;
+  bool returning_payload = 1;
+  int64 id = 2;
+  optional string name = 3;
+  optional int32 status = 4;
 }
+
+message UserReply { UserDto user = 1; }
+
+message DeleteUserReply {}
 
 message PageUserRequest {
   ultimate_api.v1.Pagination pagination = 1;
-  FilterUserRequest filter = 2;
+  repeated FilterUserRequest filter = 2;
 }
 
 message FilterUserRequest {
-  optional string name = 3;
-  optional string email = 4;
-  optional string phone = 5;
-  optional int32 status = 6;
+  // 支持模糊搜索
+  optional string name = 1;
+
+  optional string email = 2;
+
+  optional string phone = 3;
+
+  repeated int32 status = 4;
 }
 
 message PageUserReply {

@@ -27,6 +27,7 @@ ultimate = { version = "0.1", path = "crates/ultimate" }
 ultimate-api = { version = "0.1", path = "crates/ultimate-api" }
 ultimate-db = { version = "0.1", path = "crates/ultimate-db" }
 ultimate-web = { version = "0.1", path = "crates/ultimate-web" }
+ultimate-grpc = { version = "0.1", path = "crates/ultimate-grpc" }
 # -- projects end
 # begin -- memory allocator
 tikv-jemallocator = "0.6"
@@ -156,6 +157,7 @@ polars = "0.42"
 calamine = "0.25"
 # -- RPC
 tonic = "0.12"
+tonic-types = "0.12"
 tonic-reflection = "0.12"
 tonic-build = "0.12"
 prost = "0.13"

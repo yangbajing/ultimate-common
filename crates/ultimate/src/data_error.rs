@@ -32,10 +32,6 @@ pub enum DataError {
 
   #[error(transparent)]
   TaskJoinError(#[from] tokio::task::JoinError),
-
-  #[cfg(feature = "tonic")]
-  #[error(transparent)]
-  GrpcTransportError(#[from] tonic::transport::Error),
 }
 
 impl DataError {
@@ -93,6 +89,20 @@ impl Serialize for DataError {
 }
 
 #[cfg(feature = "tonic")]
+impl From<prost::UnknownEnumValue> for DataError {
+  fn from(value: prost::UnknownEnumValue) -> Self {
+    DataError::BizError { code: 400, msg: format!("Unknown enum value: {}", value) }
+  }
+}
+
+#[cfg(feature = "tonic")]
+impl From<tonic::transport::Error> for DataError {
+  fn from(value: tonic::transport::Error) -> Self {
+    DataError::server_error(format!("Grpc transport error: {}", value))
+  }
+}
+
+#[cfg(feature = "tonic")]
 impl From<tonic::Status> for DataError {
   fn from(value: tonic::Status) -> Self {
     // TODO 更精细的 gRPC 状态转换
@@ -131,7 +141,6 @@ impl From<DataError> for tonic::Status {
       DataError::IoError(e) => tonic::Status::internal(e.to_string()),
       DataError::JsonError(ex) => tonic::Status::from_error(ex.into()),
       DataError::TaskJoinError(ex) => tonic::Status::from_error(ex.into()),
-      DataError::GrpcTransportError(ex) => tonic::Status::from_error(ex.into()),
     }
   }
 }

@@ -56,12 +56,12 @@ pub fn parse_utc(moment: &str) -> Result<UtcDateTime> {
   Ok(time)
 }
 
-#[cfg(feature = "prost-types")]
+#[cfg(feature = "prost")]
 pub fn to_prost_timestamp(d: &UtcDateTime) -> prost_types::Timestamp {
   prost_types::Timestamp { seconds: d.timestamp(), nanos: d.timestamp_subsec_nanos() as i32 }
 }
 
-#[cfg(feature = "prost-types")]
+#[cfg(feature = "prost")]
 pub fn from_prost_timestamp(t: &prost_types::Timestamp) -> Option<UtcDateTime> {
   DateTime::from_timestamp(t.seconds, t.nanos as u32)
 }

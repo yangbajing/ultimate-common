@@ -35,7 +35,7 @@ impl<'de> Deserialize<'de> for RunMode {
   where
     D: Deserializer<'de>,
   {
-    static MSG: &str = "expect in ('dev', 'test', 'demo', 'prod').";
+    static MSG: &str = "expect in ('DEV', 'TEST', 'DEMO', 'PROD').";
 
     struct StrToRunMode;
 

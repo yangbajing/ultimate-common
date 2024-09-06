@@ -1,18 +1,18 @@
-use enum_iterator::Sequence;
 use modql::{
   field::Fields,
-  filter::{FilterNodes, OpValsInt32, OpValsInt64, OpValsString, OpValsValue},
+  filter::{FilterNodes, OpValInt32, OpValString, OpValsInt32, OpValsInt64, OpValsString, OpValsValue},
 };
 use sea_query::enum_def;
 use serde::{Deserialize, Serialize};
-use serde_repr::{Deserialize_repr, Serialize_repr};
 use sqlx::prelude::FromRow;
 use ultimate::{DataError, Result};
 use ultimate_api::v1::{Page, PagePayload, Pagination};
 use ultimate_common::{regex, time::UtcDateTime};
 use ultimate_db::{to_sea_chrono_utc, DbRowType};
 
-use crate::v1::UserDto;
+use crate::v1::{
+  CreateUserRequest, FilterUserRequest, PageUserReply, PageUserRequest, UpdateUserRequest, UserDto, UserStatus,
+};
 
 #[derive(Debug, Serialize, FromRow, Fields)]
 #[enum_def]
@@ -42,27 +42,6 @@ impl From<User> for UserDto {
       mid: user.mid,
       mtime: user.mtime.map(|t| t.timestamp()),
     }
-  }
-}
-
-#[derive(Debug, Default, PartialEq, Eq, Serialize_repr, Deserialize_repr, Sequence, sqlx::Type)]
-#[repr(i32)]
-pub enum UserStatus {
-  #[default]
-  Normal = 10,
-  Disable = 99,
-  Enable = 100,
-}
-
-impl From<UserStatus> for sea_query::Value {
-  fn from(value: UserStatus) -> Self {
-    sea_query::Value::Int(Some(value as i32))
-  }
-}
-
-impl sea_query::Nullable for UserStatus {
-  fn null() -> sea_query::Value {
-    sea_query::Value::Int(None)
   }
 }
 
@@ -109,6 +88,17 @@ pub struct UserForUpdate {
   pub status: Option<UserStatus>,
 }
 
+impl TryFrom<UpdateUserRequest> for UserForUpdate {
+  type Error = DataError;
+  fn try_from(value: UpdateUserRequest) -> core::result::Result<Self, DataError> {
+    let status = match value.status {
+      Some(i) => Some(UserStatus::try_from(i)?),
+      None => None,
+    };
+    Ok(Self { name: value.name, status })
+  }
+}
+
 #[derive(Debug, Default, Deserialize)]
 pub struct UserForPage {
   pub page: Pagination,
@@ -117,6 +107,8 @@ pub struct UserForPage {
 
 #[derive(Debug, Default, Deserialize, FilterNodes)]
 pub struct UserFilter {
+  pub id: Option<OpValsInt64>,
+
   pub email: Option<OpValsString>,
 
   pub phone: Option<OpValsString>,
@@ -145,5 +137,64 @@ pub struct UserPage {
 impl From<PagePayload<User>> for UserPage {
   fn from(value: PagePayload<User>) -> Self {
     Self { page: value.page, records: value.records }
+  }
+}
+
+// #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize_repr, Deserialize_repr, Sequence, sqlx::Type)]
+// #[repr(i32)]
+// pub enum UserStatus {
+//   #[default]
+//   Normal = 10,
+//   Disable = 99,
+//   Enable = 100,
+// }
+
+impl From<UserStatus> for sea_query::Value {
+  fn from(value: UserStatus) -> Self {
+    sea_query::Value::Int(Some(value as i32))
+  }
+}
+
+impl sea_query::Nullable for UserStatus {
+  fn null() -> sea_query::Value {
+    sea_query::Value::Int(None)
+  }
+}
+
+impl TryFrom<CreateUserRequest> for UserForCreate {
+  type Error = DataError;
+  fn try_from(value: CreateUserRequest) -> core::result::Result<Self, DataError> {
+    let status = match value.status {
+      Some(i) => Some(UserStatus::try_from(i)?),
+      None => None,
+    };
+    Ok(Self { email: value.email, phone: value.phone, name: value.name, status })
+  }
+}
+
+impl From<PageUserRequest> for UserForPage {
+  fn from(value: PageUserRequest) -> Self {
+    let filter = value.filter.into_iter().map(UserFilter::from).collect();
+    let page = value.pagination.unwrap_or_default();
+    Self { page, filter }
+  }
+}
+
+impl From<FilterUserRequest> for UserFilter {
+  fn from(value: FilterUserRequest) -> Self {
+    Self {
+      email: value.email.map(|email| OpValString::Eq(email).into()),
+      phone: value.phone.map(|phone| OpValString::Eq(phone).into()),
+      name: value.name.map(|name| OpValString::Contains(name).into()),
+      status: Some(OpValInt32::In(value.status).into()),
+      ..Default::default()
+    }
+  }
+}
+
+impl From<UserPage> for PageUserReply {
+  fn from(value: UserPage) -> Self {
+    let records = value.records.into_iter().map(UserDto::from).collect();
+    Self { page: Some(value.page), records }
   }
 }
