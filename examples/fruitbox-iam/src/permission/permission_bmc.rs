@@ -1,9 +1,5 @@
-use modql::{
-  field::HasSeaFields,
-  filter::{FilterGroups, ListOptions},
-};
-use sea_query::{Condition, Expr, PostgresQueryBuilder, Query, SelectStatement};
-use sea_query_binder::SqlxBinder;
+use modql::filter::{FilterGroups, ListOptions};
+use sea_query::{Condition, Expr, Query, SelectStatement};
 use ultimate_api::v1::{Page, PagePayload, Pagination};
 use ultimate_db::{
   base::{self, compute_list_options, DbBmc},
@@ -39,7 +35,7 @@ impl PermissionBmc {
   }
 
   pub async fn count(mm: &ModelManager, filters: PermissionFilters) -> Result<i64> {
-    let count = base::count_on::<Self, _>(mm, |query| make_select_statement(query, filters)).await?;
+    let count = base::count_on::<Self, _>(mm, |query| Self::make_select_statement(query, filters, None)).await?;
     Ok(count)
   }
 
@@ -48,42 +44,36 @@ impl PermissionBmc {
     filters: PermissionFilters,
     list_options: Option<ListOptions>,
   ) -> Result<Vec<Permission>> {
-    // -- Build the query
-    let mut query = Query::select();
-    query.from(Self::table_ref());
-
-    // select columns
-    query.columns(Permission::sea_column_refs_with_rel(PermissionIden::Table));
-
-    // condition from filter
-    make_select_statement(&mut query, filters)?;
-
-    // list options
-    let list_options = compute_list_options::<Self>(list_options)?;
-    list_options.apply_to_sea_query(&mut query);
-
-    // -- Execute the query
-    let (sql, values) = query.build_sqlx(PostgresQueryBuilder);
-
-    let sqlx_query = sqlx::query_as_with::<_, Permission, _>(&sql, values);
-    let entities = mm.dbx().fetch_all(sqlx_query).await?;
-
-    Ok(entities)
+    let items =
+      base::find_many_on::<Self, _, _>(mm, |query| Self::make_select_statement(query, filters, list_options)).await?;
+    Ok(items)
   }
-}
 
-fn make_select_statement(query: &mut SelectStatement, filter: PermissionFilters) -> Result<()> {
-  // condition from filter
-  let filters: FilterGroups = filter.filter.into();
-  let cond: Condition = filters.try_into()?;
-  query.cond_where(cond);
-  query.and_where(Expr::col(PermissionIden::Id).in_subquery({
-    let mut q = Query::select();
-    q.from(RolePermissionBmc::table_ref()).column(RolePermissionIden::PermissionId);
+  fn make_select_statement(
+    query: &mut SelectStatement,
+    filter: PermissionFilters,
+    list_options: Option<ListOptions>,
+  ) -> Result<()> {
+    // condition from filter
+    let filters: FilterGroups = filter.filter.into();
+    let cond: Condition = filters.try_into()?;
+    if !cond.is_empty() {
+      query.cond_where(cond);
+    }
+
     let sub_cond: Condition = filter.role_perm_filter.try_into()?;
-    q.cond_where(sub_cond);
-    q
-  }));
+    if !sub_cond.is_empty() {
+      query.and_where(Expr::col(PermissionIden::Id).in_subquery({
+        let mut q = Query::select();
+        q.from(RolePermissionBmc::table_ref()).column(RolePermissionIden::PermissionId);
+        q.cond_where(sub_cond);
+        q
+      }));
+    }
 
-  Ok(())
+    let list_options = compute_list_options::<Self>(list_options)?;
+    list_options.apply_to_sea_query(query);
+
+    Ok(())
+  }
 }

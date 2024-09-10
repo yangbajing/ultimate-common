@@ -6,7 +6,7 @@ option java_outer_classname = "AuthProto";
 
 package fruitbox_iam.v1;
 
-service AuthService {
+service Auth {
   rpc Signin(SigninRequest) returns (SigninReplay) {}
 }
 

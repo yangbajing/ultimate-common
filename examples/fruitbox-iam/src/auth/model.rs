@@ -1,6 +1,6 @@
 use modql::filter::OpValString;
 
-use crate::{proto::v1::SigninRequest, user::UserFilter};
+use crate::{pb::v1::SigninRequest, user::UserFilter};
 
 // #[derive(FilterNodes)]
 // pub struct LoginFilter {

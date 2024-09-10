@@ -6,7 +6,7 @@ use ultimate_db::{
   generate_common_bmc_fns, ModelManager, Result,
 };
 
-use crate::{proto::v1::CreateRoleDto, role::RoleIden};
+use crate::{pb::v1::CreateRoleDto, role::RoleIden};
 
 use super::{
   role_permission::{RolePermissionBmc, RolePermissionIden},

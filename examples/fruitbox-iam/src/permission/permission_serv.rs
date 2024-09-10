@@ -9,7 +9,7 @@ use crate::{
 use super::{permission_bmc::PermissionBmc, Permission, PermissionFilters, PermissionForCreate, PermissionForUpdate};
 
 pub async fn create(ctx: &CtxW, req: PermissionForCreate) -> Result<i64> {
-  let id = PermissionBmc::create(ctx.mm(), req.into()).await?;
+  let id = PermissionBmc::create(ctx.mm(), req).await?;
   Ok(id)
 }
 

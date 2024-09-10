@@ -2,18 +2,18 @@ use tonic::{Request, Response, Status};
 
 use crate::{
   app::get_app_state,
-  proto::v1::{
-    auth_service_server::{AuthService, AuthServiceServer},
+  pb::v1::{
+    auth_server::{Auth, AuthServer},
     SigninReplay, SigninRequest,
   },
 };
 
 use super::auth_serv;
 
-pub struct AuthServiceImpl;
+pub struct AuthService;
 
 #[tonic::async_trait]
-impl AuthService for AuthServiceImpl {
+impl Auth for AuthService {
   async fn signin(&self, request: Request<SigninRequest>) -> Result<Response<SigninReplay>, Status> {
     let app = get_app_state();
     let res = auth_serv::signin(app, request.into_inner()).await?;
@@ -21,6 +21,6 @@ impl AuthService for AuthServiceImpl {
   }
 }
 
-pub fn auth_svc() -> AuthServiceServer<AuthServiceImpl> {
-  AuthServiceServer::new(AuthServiceImpl)
+pub fn auth_svc() -> AuthServer<AuthService> {
+  AuthServer::new(AuthService)
 }

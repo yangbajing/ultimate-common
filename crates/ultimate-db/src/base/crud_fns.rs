@@ -441,7 +441,7 @@ where
   }
   // When None, return default
   else {
-    Ok(ListOptions { limit: Some(MC::LIST_LIMIT_DEFAULT), offset: None, order_bys: Some("id".into()) })
+    Ok(ListOptions { limit: Some(MC::LIST_LIMIT_DEFAULT), offset: None, order_bys: None })
   }
 }
 

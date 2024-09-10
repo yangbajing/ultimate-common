@@ -11,9 +11,9 @@ import "fruitbox_iam/v1/iam.proto";
 import "fruitbox_iam/v1/permission.proto";
 import "ultimate_api/v1/ultimate.proto";
 
-service RoleService {
+service Role {
   rpc Create(CreateRoleRequest) returns (RoleResponse) {}
-  rpc Get(GetRoleRequest) returns (RoleDto) {}
+  rpc Get(GetRoleRequest) returns (RoleResponse) {}
   rpc Update(UpdateRoleRequest) returns (RoleResponse) {}
   rpc Delete(DeleteRoleRequest) returns (DeleteRoleResponse) {}
   rpc Page(PageRoleRequest) returns (PageRoleResponse) {}
@@ -38,7 +38,8 @@ enum RoleStatus {
 }
 
 message GetRoleRequest {
-  int64 id = 1;
+  google.protobuf.FieldMask field_mask = 1;
+  int64 id = 2;
 }
 
 // 添加角色权限关联请求

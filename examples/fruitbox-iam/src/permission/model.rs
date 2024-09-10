@@ -10,7 +10,7 @@ use ultimate_common::time::UtcDateTime;
 use ultimate_db::DbRowType;
 
 use crate::{
-  proto::v1::{CreatePermissionDto, FilterPermissionDto, PagePermissionResponse, UpdatePermissionDto},
+  pb::v1::{CreatePermissionDto, FilterPermissionDto, PagePermissionResponse, UpdatePermissionDto},
   role::role_permission::RolePermissionFilter,
 };
 
@@ -18,7 +18,7 @@ use crate::{
 #[enum_def]
 pub struct Permission {
   pub id: i64,
-  pub name: String,
+  pub code: String,
   pub description: String,
   pub resource: String,
   pub action: String,
@@ -33,7 +33,7 @@ impl DbRowType for Permission {}
 #[derive(Debug, Fields, o2o)]
 #[from_owned(CreatePermissionDto)]
 pub struct PermissionForCreate {
-  pub name: String,
+  pub code: String,
   pub description: Option<String>,
   pub resource: String,
   pub action: String,
@@ -42,7 +42,7 @@ pub struct PermissionForCreate {
 #[derive(Debug, Fields, o2o)]
 #[from_owned(UpdatePermissionDto)]
 pub struct PermissionForUpdate {
-  pub name: Option<String>,
+  pub code: Option<String>,
   pub description: Option<String>,
   pub resource: Option<String>,
   pub action: Option<String>,
@@ -51,7 +51,7 @@ pub struct PermissionForUpdate {
 #[derive(Debug, Clone, Default, FilterNodes)]
 pub struct PermissionFilter {
   pub id: Option<OpValsInt64>,
-  pub name: Option<OpValsString>,
+  pub code: Option<OpValsString>,
   pub description: Option<OpValsString>,
   pub resource: Option<OpValsString>,
   pub action: Option<OpValsString>,
@@ -69,7 +69,7 @@ impl From<FilterPermissionDto> for PermissionFilter {
       description: value.description.map(|v| OpValString::Eq(v).into()),
       resource: value.resource.map(|v| OpValString::Eq(v).into()),
       action: value.action.map(|v| OpValString::Eq(v).into()),
-      name: value.name.map(|v| OpValString::Eq(v).into()),
+      code: value.code.map(|v| OpValString::Eq(v).into()),
       ..Default::default()
     }
   }

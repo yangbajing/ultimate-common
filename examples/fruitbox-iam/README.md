@@ -36,4 +36,14 @@ grpcurl -plaintext -import-path ./examples/fruitbox-iam/proto \
        "permission_ids":[1,2]
      }' \
   localhost:8889 fruitbox_iam.v1.RoleService/Create
+
+grpcurl -plaintext -import-path ./examples/fruitbox-iam/proto \
+  -import-path ./examples/fruitbox-iam/proto/fruitbox_iam/v1 \
+  -proto role.proto \
+  -H 'Authorization: Bearer eyJ0eXAiOiJKV1QiLCJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwiYWxnIjoiZGlyIn0..pmcUdN9wb8J63fkU6JDOJw.kDRISHrRKvo58GSC1TVCNGmjfnojcWFgcuhfNypsQjI.kPWYQa3ApiP7QFkVLNWwrw' \
+  -d '{
+       "field_mask":{ "paths": ["permissions"]},
+       "id": 1
+     }' \
+  localhost:8889 fruitbox_iam.v1.RoleService/Get
 ```

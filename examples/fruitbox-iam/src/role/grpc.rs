@@ -5,21 +5,25 @@ use ultimate_grpc::utils::field_mask_match_with;
 
 use crate::{
   ctx::CtxW,
-  permission::{permission_serv, PermissionFilters},
-  proto::v1::{
-    role_service_server::{RoleService, RoleServiceServer},
+  pb::v1::{
+    role_server::{Role, RoleServer},
     AssignRoleToPermissionsRequest, CreateRoleRequest, DeleteRoleRequest, DeleteRoleResponse, Empty, GetRoleRequest,
-    PageRoleRequest, PageRoleResponse, RoleDto, RoleResponse, UpdateRoleRequest,
+    PageRoleRequest, PageRoleResponse, RoleResponse, UpdateRoleRequest,
   },
+  permission::{permission_serv, PermissionFilters},
   role::{role_serv, RoleFilters},
   util::grpc::{interceptor::auth_interceptor, GrpcServiceIntercepted},
 };
 
 use super::role_permission::RolePermissionFilter;
 
-pub struct RoleServiceImpl;
+pub fn role_svc() -> GrpcServiceIntercepted<RoleServer<RoleService>> {
+  RoleServer::with_interceptor(RoleService, auth_interceptor)
+}
+
+pub struct RoleService;
 #[tonic::async_trait]
-impl RoleService for RoleServiceImpl {
+impl Role for RoleService {
   async fn create(&self, request: Request<CreateRoleRequest>) -> Result<Response<RoleResponse>, Status> {
     let (_, exts, request) = request.into_parts();
     let ctx = (&exts).try_into()?;
@@ -34,12 +38,24 @@ impl RoleService for RoleServiceImpl {
     Ok(Response::new(resp))
   }
 
-  async fn get(&self, request: Request<GetRoleRequest>) -> Result<Response<RoleDto>, Status> {
+  async fn get(&self, request: Request<GetRoleRequest>) -> Result<Response<RoleResponse>, Status> {
     let (_, exts, request) = request.into_parts();
     let ctx = (&exts).try_into()?;
+    let field_mask = request.field_mask.unwrap_or_default();
+    let id = request.id;
 
-    let role = role_serv::find_by_id(ctx, request.id).await?;
-    Ok(Response::new(role.into()))
+    let role = role_serv::find_by_id(ctx, id).await?;
+    let permissions = if field_mask_match_with(&field_mask, "permissions") {
+      let filters = PermissionFilters {
+        role_perm_filter: RolePermissionFilter { role_id: Some(OpValInt64::Eq(id).into()), ..Default::default() },
+        ..Default::default()
+      };
+      permission_serv::find_many(ctx, filters, None).await?.into_iter().map(Into::into).collect()
+    } else {
+      vec![]
+    };
+
+    Ok(Response::new(RoleResponse { role: Some(role.into()), permissions }))
   }
 
   async fn update(&self, request: Request<UpdateRoleRequest>) -> Result<Response<RoleResponse>, Status> {
@@ -87,10 +103,6 @@ impl RoleService for RoleServiceImpl {
     let page = role_serv::page(ctx, filters, request.pagination.unwrap_or_default()).await?;
     Ok(Response::new(page.into()))
   }
-}
-
-pub fn role_svc() -> GrpcServiceIntercepted<RoleServiceServer<RoleServiceImpl>> {
-  RoleServiceServer::with_interceptor(RoleServiceImpl, auth_interceptor)
 }
 
 async fn fetch_role_response(ctx: &CtxW, role_id: i64, field_mask: &FieldMask) -> Result<RoleResponse, Status> {

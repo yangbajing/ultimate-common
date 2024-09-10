@@ -9,7 +9,7 @@ package fruitbox_iam.v1;
 import "ultimate_api/v1/ultimate.proto";
 import "fruitbox_iam/v1/iam.proto";
 
-service UserService {
+service User {
   rpc Find(FindUserRequest) returns (UserResponse) {}
 
   rpc Create(CreateUserRequest) returns (CreateUserResponse) {}

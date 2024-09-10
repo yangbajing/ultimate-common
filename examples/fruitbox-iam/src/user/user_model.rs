@@ -10,7 +10,7 @@ use ultimate_api::v1::{Page, PagePayload, Pagination};
 use ultimate_common::{regex, time::UtcDateTime};
 use ultimate_db::{to_sea_chrono_utc, DbRowType};
 
-use crate::proto::v1::{
+use crate::pb::v1::{
   CreateUserRequest, FilterUserRequest, Gender, PageUserRequest, PageUserResponse, UpdateUserRequest, UserDto,
   UserStatus,
 };

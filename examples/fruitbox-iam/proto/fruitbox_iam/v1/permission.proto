@@ -10,7 +10,7 @@ import "google/protobuf/field_mask.proto";
 import "fruitbox_iam/v1/iam.proto";
 import "ultimate_api/v1/ultimate.proto";
 
-service PermissionService {
+service Permission {
   rpc Create(CreatePermissionRequest) returns (PermissionResponse) {}
   rpc Find(GetPermissionRequest) returns (PermissionDto) {}
   rpc Update(UpdatePermissionRequest) returns (PermissionResponse) {}
@@ -21,7 +21,7 @@ service PermissionService {
 
 message PermissionDto {
   int64 id = 1;
-  string name = 2;
+  string code = 2;
   string description = 3;
   string resource = 4;
   string action = 5;
@@ -42,14 +42,14 @@ message CreatePermissionRequest {
 }
 
 message CreatePermissionDto {
-  string name = 3;
+  string code = 3;
   optional string description = 4;
   string resource = 5;
   string action = 6;
 }
 
 message UpdatePermissionDto {
-  optional string name = 3;
+  optional string code = 3;
   optional string description = 4;
   optional string resource = 5;
   optional string action = 6;
@@ -77,7 +77,7 @@ message PermissionResponse {
 message DeletePermissionResponse {}
 
 message FilterPermissionDto {
-  optional string name = 1;
+  optional string code = 1;
   optional string description = 2;
   optional string resource = 3;
   optional string action = 4;

@@ -1,5 +1,5 @@
 mod grpc;
-mod impls;
+mod helper;
 mod model;
 mod permission_bmc;
 pub mod permission_serv;

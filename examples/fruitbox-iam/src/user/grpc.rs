@@ -1,23 +1,25 @@
-use derive_more::derive::Constructor;
-use tonic::{service::interceptor::InterceptedService, Request, Response, Status};
+use tonic::{Request, Response, Status};
 
 use crate::{
-  proto::v1::{
+  pb::v1::{
     create_user_response,
-    user_service_server::{UserService, UserServiceServer},
+    user_server::{User, UserServer},
     AssignUserToRolesRequest, CreateUserRequest, CreateUserResponse, DeleteUserResponse, Empty, FindUserRequest,
     PageUserRequest, PageUserResponse, UpdateUserRequest, UserDto, UserResponse,
   },
-  util::grpc::interceptor::auth_interceptor,
+  util::grpc::{interceptor::auth_interceptor, GrpcServiceIntercepted},
 };
 
 use super::user_serv;
 
-#[derive(Constructor)]
-pub struct UserServiceImpl;
+pub fn user_svc() -> GrpcServiceIntercepted<UserServer<UserService>> {
+  UserServer::with_interceptor(UserService, auth_interceptor)
+}
+
+pub struct UserService;
 
 #[tonic::async_trait]
-impl UserService for UserServiceImpl {
+impl User for UserService {
   async fn find(&self, request: Request<FindUserRequest>) -> Result<Response<UserResponse>, Status> {
     let ctx = request.extensions().try_into()?;
     let user = user_serv::find_option_by_id(ctx, request.get_ref().id).await?.map(UserDto::from);
@@ -84,9 +86,4 @@ impl UserService for UserServiceImpl {
     user_serv::assign_role(ctx, user_id, role_ids).await?;
     Ok(Response::new(Empty {}))
   }
-}
-
-pub fn user_svc(
-) -> InterceptedService<UserServiceServer<UserServiceImpl>, fn(Request<()>) -> Result<Request<()>, Status>> {
-  UserServiceServer::with_interceptor(UserServiceImpl::new(), auth_interceptor)
 }

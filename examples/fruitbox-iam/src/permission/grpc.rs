@@ -3,8 +3,8 @@ use tonic::{Request, Response, Status};
 
 use crate::{
   ctx::CtxW,
-  proto::v1::{
-    permission_service_server::{PermissionService, PermissionServiceServer},
+  pb::v1::{
+    permission_server::{Permission, PermissionServer},
     AssignPermmissionToRolesRequest, CreatePermissionRequest, DeletePermissionRequest, DeletePermissionResponse, Empty,
     GetPermissionRequest, PagePermissionRequest, PagePermissionResponse, PermissionDto, PermissionResponse,
     UpdatePermissionRequest,
@@ -15,10 +15,14 @@ use crate::{
 
 use super::{permission_serv, PermissionFilters};
 
-pub struct PermissionServiceImpl;
+pub fn permission_svc() -> GrpcServiceIntercepted<PermissionServer<PermissionService>> {
+  PermissionServer::with_interceptor(PermissionService, auth_interceptor)
+}
+
+pub struct PermissionService;
 
 #[tonic::async_trait]
-impl PermissionService for PermissionServiceImpl {
+impl Permission for PermissionService {
   async fn create(&self, request: Request<CreatePermissionRequest>) -> Result<Response<PermissionResponse>, Status> {
     let (_, exts, request) = request.into_parts();
     let ctx = (&exts).try_into()?;
@@ -84,8 +88,4 @@ async fn fetch_permission(ctx: &CtxW, field_mask: FieldMask, id: i64) -> Result<
     None
   };
   Ok(Response::new(PermissionResponse { id, permission }))
-}
-
-pub fn permission_svc() -> GrpcServiceIntercepted<PermissionServiceServer<PermissionServiceImpl>> {
-  PermissionServiceServer::with_interceptor(PermissionServiceImpl, auth_interceptor)
 }

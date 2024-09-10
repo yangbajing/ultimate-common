@@ -2,7 +2,7 @@ use modql::filter::{OpValInt32, OpValString};
 use ultimate::{DataError, Result};
 use ultimate_api::v1::PagePayload;
 
-use crate::proto::v1::{FilterRoleDto, PageRoleResponse, RoleDto, RoleStatus, UpdateRoleDto};
+use crate::pb::v1::{FilterRoleDto, PageRoleResponse, RoleDto, RoleStatus, UpdateRoleDto};
 
 use super::{Role, RoleFilter, RoleForUpdate};
 
@@ -12,7 +12,7 @@ impl From<Role> for RoleDto {
       id: value.id,
       name: value.name,
       description: value.description,
-      status: value.status.try_into().unwrap(),
+      status: value.status.into(),
       cid: value.cid,
       ctime: value.ctime.timestamp_millis(),
       mid: value.mid,

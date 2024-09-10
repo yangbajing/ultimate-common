@@ -3,7 +3,7 @@ mod auth;
 mod ctx;
 mod endpoint;
 mod permission;
-mod proto;
+mod pb;
 mod role;
 mod user;
 pub mod util;

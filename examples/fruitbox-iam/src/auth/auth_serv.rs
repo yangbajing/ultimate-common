@@ -2,7 +2,7 @@ use ultimate::{security::pwd::verify_pwd, Result};
 
 use crate::{
   app::AppState,
-  proto::v1::{SigninReplay, SigninRequest, TokenType},
+  pb::v1::{SigninReplay, SigninRequest, TokenType},
   user::{user_serv, UserFilter},
 };
 
