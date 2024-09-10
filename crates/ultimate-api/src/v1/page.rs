@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
 
 #[derive(Clone, PartialEq, ::prost::Message, Serialize)]
-pub struct OperationReply {
+pub struct OperationResponse {
   #[prost(int32, tag = "1")]
   pub code: i32,
   #[prost(string, optional, tag = "2")]
@@ -12,12 +12,12 @@ pub struct OperationReply {
 #[derive(Debug, Clone, Serialize)]
 pub struct PagePayload<T> {
   pub page: Page,
-  pub records: Vec<T>,
+  pub items: Vec<T>,
 }
 
 impl<T> PagePayload<T> {
-  pub fn new(page: Page, records: Vec<T>) -> Self {
-    Self { page, records }
+  pub fn new(page: Page, items: Vec<T>) -> Self {
+    Self { page, items }
   }
 }
 

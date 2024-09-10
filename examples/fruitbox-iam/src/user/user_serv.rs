@@ -4,6 +4,7 @@ use ultimate::{DataError, Result};
 use crate::ctx::CtxW;
 
 use super::{
+  user_role::{UserRoleBmc, UserRoleForCreate},
   User, UserBmc, UserCredential, UserCredentialBmc, UserFilter, UserForCreate, UserForPage, UserForUpdate, UserPage,
 };
 
@@ -38,8 +39,14 @@ pub async fn delete_by_id(ctx: &CtxW, id: i64) -> Result<()> {
   Ok(())
 }
 
-pub(crate) async fn get_fetch_credential(ctx: &CtxW, req: UserFilter) -> Result<(User, UserCredential)> {
+pub async fn get_fetch_credential(ctx: &CtxW, req: UserFilter) -> Result<(User, UserCredential)> {
   let u = UserBmc::find_unique(ctx.mm(), vec![req]).await?.ok_or_else(|| DataError::not_found("User not exists."))?;
   let uc = UserCredentialBmc::find_by_id(ctx.mm(), u.id).await?;
   Ok((u, uc))
+}
+
+pub async fn assign_role(ctx: &CtxW, user_id: i64, role_ids: Vec<i64>) -> Result<()> {
+  let user_roles = role_ids.into_iter().map(|role_id| UserRoleForCreate { user_id, role_id }).collect();
+  UserRoleBmc::insert_many(ctx.mm(), user_roles).await?;
+  Ok(())
 }

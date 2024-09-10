@@ -7,63 +7,94 @@ option java_outer_classname = "RoleProto";
 package fruitbox_iam.v1;
 
 import "google/protobuf/field_mask.proto";
+import "fruitbox_iam/v1/iam.proto";
 import "fruitbox_iam/v1/permission.proto";
 import "ultimate_api/v1/ultimate.proto";
 
 service RoleService {
-  rpc Create(CreateRoleRequest) returns (RoleReply) {}
-  rpc Update(UpdateRoleRequest) returns (RoleReply) {}
-  rpc Delete(DeleteRoleRequest) returns (DeleteRoleReply) {}
-  rpc AssignPermission(AssignPermissionRequest) returns (RoleReply) {}
-  rpc GetRolePermissions(FindRoleRequest) returns (RoleReply) {}
+  rpc Create(CreateRoleRequest) returns (RoleResponse) {}
+  rpc Get(GetRoleRequest) returns (RoleDto) {}
+  rpc Update(UpdateRoleRequest) returns (RoleResponse) {}
+  rpc Delete(DeleteRoleRequest) returns (DeleteRoleResponse) {}
+  rpc Page(PageRoleRequest) returns (PageRoleResponse) {}
+  rpc AssignPermission(AssignRoleToPermissionsRequest) returns (fruitbox_iam.v1.Empty) {}
 }
 
-message Role {
+message RoleDto {
   int64 id = 1;
   string name = 2;
   string description = 3;
-  int64 cid = 4;
-  int64 ctime = 5;
-  optional int64 mid = 6;
-  optional int64 mtime = 7;
+  RoleStatus status = 4;
+  int64 cid = 17;
+  int64 ctime = 18;
+  optional int64 mid = 19;
+  optional int64 mtime = 20;
 }
 
-// 添加用户角色关联请求
-message AssignRoleRequest {
-  int64 user_id = 1;
-  repeated int64 role_ids = 2;
+enum RoleStatus {
+  ROLE_STATUS_NOT_SET = 0;
+  ROLE_STATUS_DISABLED = 99;
+  ROLE_STATUS_ENABLED = 100;
+}
+
+message GetRoleRequest {
+  int64 id = 1;
 }
 
 // 添加角色权限关联请求
-message AssignPermissionRequest {
+message AssignRoleToPermissionsRequest {
   int64 role_id = 1;
   repeated int64 permission_ids = 2;
 }
 
 message CreateRoleRequest {
+  google.protobuf.FieldMask field_mask = 1;
+  CreateRoleDto create_role = 2;
+  repeated int64 permission_ids = 3;
+}
+
+message CreateRoleDto {
   string name = 1;
-  string description = 2;
+  optional string description = 2;
+  optional RoleStatus status = 3;
 }
 
 message UpdateRoleRequest {
-  int64 id = 1;
-  optional string name = 2;
-  optional string description = 3;
+  google.protobuf.FieldMask field_mask = 1;
+  int64 id = 2;
+  UpdateRoleDto dto = 3;
+}
+
+message UpdateRoleDto {
+  optional string name = 1;
+  optional string description = 2;
+  optional RoleStatus status = 3;
 }
 
 message DeleteRoleRequest {
   int64 id = 1;
 }
 
-message FindRoleRequest {
-  int64 id = 1;
-  google.protobuf.FieldMask field_mask = 2;
-}
-
-message RoleReply {
-  Role role = 1;
+message RoleResponse {
+  RoleDto role = 1;
   repeated PermissionDto permissions = 2;
 }
 
-message DeleteRoleReply {}
+message DeleteRoleResponse {}
 
+message FilterRoleDto {
+  optional string name = 1;
+  optional string description = 2;
+  repeated RoleStatus status = 3;
+}
+
+message PageRoleRequest {
+  ultimate_api.v1.Pagination pagination = 1;
+  repeated FilterRoleDto filter = 2;
+  RolePermissionFilterDto role_perm_filter = 3;
+}
+
+message PageRoleResponse {
+  ultimate_api.v1.Page page = 1;
+  repeated RoleDto items = 2;
+}

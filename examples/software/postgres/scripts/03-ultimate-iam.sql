@@ -40,6 +40,7 @@ create table if not exists iam.role
     id          bigserial   not null,
     name        varchar(50) not null,
     description text,
+    status      int         not null,
     cid         bigint      not null,
     ctime       timestamptz not null,
     mid         bigint,
@@ -50,13 +51,14 @@ create table if not exists iam.role
 -- Permission
 create table if not exists iam.permission
 (
-    id          bigserial   not null,
-    name        varchar(50) not null,
+    id          bigserial    not null,
+    code        varchar(255) not null
+        constraint permission_uk unique,
     description text,
-    resource    varchar(50) not null,
-    action      varchar(50) not null,
-    cid         bigint      not null,
-    ctime       timestamptz not null,
+    resource    varchar(255) not null,
+    action      varchar(255) not null,
+    cid         bigint       not null,
+    ctime       timestamptz  not null,
     mid         bigint,
     mtime       timestamptz,
     constraint permission_pk primary key (id)
@@ -103,7 +105,7 @@ insert into iam.role (id, name, description, cid, ctime)
 values (1, '超级管理员', '拥有所有权限的角色', 1, current_timestamp),
        (2, '普通用户', '基本权限的角色', 1, current_timestamp);
 
-insert into iam.permission (id, name, description, resource, action, cid, ctime)
+insert into iam.permission (id, code, description, resource, action, cid, ctime)
 values (1, '用户查看', '查看用户信息的权限', 'user', 'read', 1, current_timestamp),
        (2, '用户创建', '创建用户的权限', 'user', 'create', 1, current_timestamp),
        (3, '用户更新', '更新用户信息的权限', 'user', 'update', 1, current_timestamp),

@@ -6,6 +6,7 @@ mod permission;
 mod proto;
 mod role;
 mod user;
+pub mod util;
 
 use endpoint::grpc::grpc_serve;
 

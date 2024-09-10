@@ -7,7 +7,7 @@ option java_outer_classname = "UltimateProto";
 package ultimate_api.v1;
 
 // 操作回复
-message OperationReply {
+message OperationResponse {
   int32 code = 1;
   optional string message = 2;
 }

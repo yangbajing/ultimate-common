@@ -1,6 +1,6 @@
 use modql::field::{HasSeaFields, SeaField, SeaFields};
 use modql::filter::{FilterGroups, ListOptions};
-use sea_query::{Condition, Expr, PostgresQueryBuilder, Query};
+use sea_query::{Condition, Expr, PostgresQueryBuilder, Query, SelectStatement};
 use sea_query_binder::SqlxBinder;
 use sqlx::postgres::PgRow;
 use sqlx::FromRow;
@@ -183,9 +183,9 @@ where
 pub async fn find_many<MC, E, F>(mm: &ModelManager, filter: F, list_options: Option<ListOptions>) -> Result<Vec<E>>
 where
   MC: DbBmc,
-  F: Into<FilterGroups>,
   E: for<'r> FromRow<'r, PgRow> + Unpin + Send,
   E: HasSeaFields,
+  F: Into<FilterGroups>,
 {
   // -- Build the query
   let mut query = Query::select();
@@ -199,6 +199,29 @@ where
   // list options
   let list_options = compute_list_options::<MC>(list_options)?;
   list_options.apply_to_sea_query(&mut query);
+
+  // -- Execute the query
+  let (sql, values) = query.build_sqlx(PostgresQueryBuilder);
+
+  let sqlx_query = sqlx::query_as_with::<_, E, _>(&sql, values);
+  let entities = mm.dbx().fetch_all(sqlx_query).await?;
+
+  Ok(entities)
+}
+
+pub async fn find_many_on<MC, E, F>(mm: &ModelManager, f: F) -> Result<Vec<E>>
+where
+  MC: DbBmc,
+  E: for<'r> FromRow<'r, PgRow> + Unpin + Send,
+  E: HasSeaFields,
+  F: FnOnce(&mut SelectStatement) -> Result<()>,
+{
+  // -- Build the query
+  let mut query = Query::select();
+  query.from(MC::table_ref()).columns(E::sea_column_refs());
+
+  // condition from filter and list options
+  f(&mut query)?;
 
   // -- Execute the query
   let (sql, values) = query.build_sqlx(PostgresQueryBuilder);
@@ -228,7 +251,29 @@ where
   let result = sqlx::query(&query_str).fetch_one(db).await.map_err(|_| Error::CountFail)?;
 
   let count: i64 = result.try_get("count").map_err(|_| Error::CountFail)?;
+  Ok(count)
+}
 
+pub async fn count_on<MC, F>(mm: &ModelManager, f: F) -> Result<i64>
+where
+  MC: DbBmc,
+  F: FnOnce(&mut SelectStatement) -> Result<()>,
+{
+  // -- Build the query
+  let mut query = Query::select();
+  query.from(MC::table_ref());
+  query.expr(Expr::col(sea_query::Asterisk).count());
+
+  // -- condition from filter
+  f(&mut query)?;
+
+  // -- Generate sql and values
+  let (sql, values) = query.build_sqlx(PostgresQueryBuilder);
+  println!("sql: {}, values: {:?}", sql, values);
+  let sqlx_query = sqlx::query_as_with::<_, (i64,), _>(&sql, values);
+
+  // -- Execute the query
+  let (count,) = mm.dbx().fetch_one(sqlx_query).await.map_err(|_| Error::CountFail)?;
   Ok(count)
 }
 
@@ -241,9 +286,9 @@ where
 {
   let filter: FilterGroups = filter.into();
   let total_size = count::<MC, _>(mm, filter.clone()).await?;
-  let records = find_many::<MC, E, _>(mm, filter, Some((&pagination).into())).await?;
+  let items = find_many::<MC, E, _>(mm, filter, Some((&pagination).into())).await?;
 
-  Ok(PagePayload::new(Page::new(&pagination, total_size), records))
+  Ok(PagePayload::new(Page::new(&pagination, total_size), items))
 }
 
 pub async fn update_by_id<MC, E>(mm: &ModelManager, id: Id, data: E) -> Result<()>

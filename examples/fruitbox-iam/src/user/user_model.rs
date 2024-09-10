@@ -11,7 +11,8 @@ use ultimate_common::{regex, time::UtcDateTime};
 use ultimate_db::{to_sea_chrono_utc, DbRowType};
 
 use crate::proto::v1::{
-  CreateUserRequest, FilterUserRequest, Gender, PageUserReply, PageUserRequest, UpdateUserRequest, UserDto, UserStatus,
+  CreateUserRequest, FilterUserRequest, Gender, PageUserRequest, PageUserResponse, UpdateUserRequest, UserDto,
+  UserStatus,
 };
 
 #[derive(Debug, Serialize, FromRow, Fields)]
@@ -135,12 +136,12 @@ pub struct UserFilter {
 #[derive(Debug, Serialize)]
 pub struct UserPage {
   pub page: Page,
-  pub records: Vec<User>,
+  pub items: Vec<User>,
 }
 
 impl From<PagePayload<User>> for UserPage {
   fn from(value: PagePayload<User>) -> Self {
-    Self { page: value.page, records: value.records }
+    Self { page: value.page, items: value.items }
   }
 }
 
@@ -199,9 +200,9 @@ impl From<FilterUserRequest> for UserFilter {
   }
 }
 
-impl From<UserPage> for PageUserReply {
+impl From<UserPage> for PageUserResponse {
   fn from(value: UserPage) -> Self {
-    let records = value.records.into_iter().map(UserDto::from).collect();
-    Self { page: Some(value.page), records }
+    let items = value.items.into_iter().map(UserDto::from).collect();
+    Self { page: Some(value.page), items }
   }
 }

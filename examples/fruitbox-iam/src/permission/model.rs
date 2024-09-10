@@ -6,13 +6,16 @@ use o2o::o2o;
 use sea_query::enum_def;
 use sqlx::prelude::FromRow;
 use ultimate_api::v1::PagePayload;
+use ultimate_common::time::UtcDateTime;
 use ultimate_db::DbRowType;
 
-use crate::proto::v1::{CreatePermission, FilterPermission, PagePermissionReply, PermissionDto, UpdatePermission};
+use crate::{
+  proto::v1::{CreatePermissionDto, FilterPermissionDto, PagePermissionResponse, UpdatePermissionDto},
+  role::role_permission::RolePermissionFilter,
+};
 
-#[derive(Debug, FromRow, Fields, o2o)]
+#[derive(Debug, FromRow, Fields)]
 #[enum_def]
-#[owned_into(PermissionDto)]
 pub struct Permission {
   pub id: i64,
   pub name: String,
@@ -21,14 +24,14 @@ pub struct Permission {
   pub action: String,
 
   pub cid: i64,
-  pub ctime: i64,
+  pub ctime: UtcDateTime,
   pub mid: Option<i64>,
-  pub mtime: Option<i64>,
+  pub mtime: Option<UtcDateTime>,
 }
 impl DbRowType for Permission {}
 
 #[derive(Debug, Fields, o2o)]
-#[from_owned(CreatePermission)]
+#[from_owned(CreatePermissionDto)]
 pub struct PermissionForCreate {
   pub name: String,
   pub description: Option<String>,
@@ -37,7 +40,7 @@ pub struct PermissionForCreate {
 }
 
 #[derive(Debug, Fields, o2o)]
-#[from_owned(UpdatePermission)]
+#[from_owned(UpdatePermissionDto)]
 pub struct PermissionForUpdate {
   pub name: Option<String>,
   pub description: Option<String>,
@@ -45,7 +48,7 @@ pub struct PermissionForUpdate {
   pub action: Option<String>,
 }
 
-#[derive(Debug, FilterNodes, Default)]
+#[derive(Debug, Clone, Default, FilterNodes)]
 pub struct PermissionFilter {
   pub id: Option<OpValsInt64>,
   pub name: Option<OpValsString>,
@@ -54,8 +57,14 @@ pub struct PermissionFilter {
   pub action: Option<OpValsString>,
 }
 
-impl From<FilterPermission> for PermissionFilter {
-  fn from(value: FilterPermission) -> Self {
+#[derive(Debug, Clone, Default)]
+pub struct PermissionFilters {
+  pub filter: Vec<PermissionFilter>,
+  pub role_perm_filter: RolePermissionFilter,
+}
+
+impl From<FilterPermissionDto> for PermissionFilter {
+  fn from(value: FilterPermissionDto) -> Self {
     Self {
       description: value.description.map(|v| OpValString::Eq(v).into()),
       resource: value.resource.map(|v| OpValString::Eq(v).into()),
@@ -66,9 +75,9 @@ impl From<FilterPermission> for PermissionFilter {
   }
 }
 
-impl From<PagePayload<Permission>> for PagePermissionReply {
+impl From<PagePayload<Permission>> for PagePermissionResponse {
   fn from(value: PagePayload<Permission>) -> Self {
-    let records = value.records.into_iter().map(|v| v.into()).collect();
-    Self { page: Some(value.page), records }
+    let items = value.items.into_iter().map(|v| v.into()).collect();
+    Self { page: Some(value.page), items }
   }
 }
