@@ -1,0 +1,52 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "fruitbox.iam.permission";
+option java_outer_classname = "PermissionProto";
+
+package fruitbox_iam.v1;
+
+import "ultimate_api/v1/ultimate.proto";
+
+service PermissionService {
+  rpc Create(CreatePermissionRequest) returns (PermissionReply) {}
+  rpc Update(UpdatePermissionRequest) returns (PermissionReply) {}
+  rpc Delete(DeletePermissionRequest) returns (DeletePermissionReply) {}
+}
+
+message PermissionDto {
+  int64 id = 1;
+  string name = 2;
+  string description = 3;
+  string resource = 4;
+  string action = 5;
+  int64 cid = 6;
+  int64 ctime = 7;
+  optional int64 mid = 8;
+  optional int64 mtime = 9;
+}
+
+message CreatePermissionRequest {
+  string name = 1;
+  string description = 2;
+  string resource = 3;
+  string action = 4;
+}
+
+message UpdatePermissionRequest {
+  int64 id = 1;
+  optional string name = 2;
+  optional string description = 3;
+  optional string resource = 4;
+  optional string action = 5;
+}
+
+message DeletePermissionRequest {
+  int64 id = 1;
+}
+
+message PermissionReply {
+  PermissionDto permission = 1;
+}
+
+message DeletePermissionReply {}

@@ -4,7 +4,7 @@ use futures::{Future, TryFutureExt};
 use tonic::transport::Server;
 use ultimate::DataError;
 
-use crate::{app::AppState, auth, user::grpc::UserServiceImpl, v1::user_service_server::UserServiceServer};
+use crate::{app::AppState, auth, proto::v1::user_service_server::UserServiceServer, user::grpc::UserServiceImpl};
 
 use self::interceptor::auth_interceptor;
 

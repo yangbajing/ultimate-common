@@ -10,8 +10,8 @@ use ultimate_api::v1::{Page, PagePayload, Pagination};
 use ultimate_common::{regex, time::UtcDateTime};
 use ultimate_db::{to_sea_chrono_utc, DbRowType};
 
-use crate::v1::{
-  CreateUserRequest, FilterUserRequest, PageUserReply, PageUserRequest, UpdateUserRequest, UserDto, UserStatus,
+use crate::proto::v1::{
+  CreateUserRequest, FilterUserRequest, Gender, PageUserReply, PageUserRequest, UpdateUserRequest, UserDto, UserStatus,
 };
 
 #[derive(Debug, Serialize, FromRow, Fields)]
@@ -22,6 +22,7 @@ pub struct User {
   pub phone: Option<String>,
   pub name: String,
   pub status: UserStatus,
+  pub gender: Gender,
   pub cid: i64,
   pub ctime: UtcDateTime,
   pub mid: Option<i64>,
@@ -37,6 +38,7 @@ impl From<User> for UserDto {
       phone: user.phone,
       name: user.name,
       status: user.status as i32,
+      gender: user.gender as i32,
       cid: user.cid,
       ctime: user.ctime.timestamp(),
       mid: user.mid,
@@ -140,15 +142,6 @@ impl From<PagePayload<User>> for UserPage {
   }
 }
 
-// #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize_repr, Deserialize_repr, Sequence, sqlx::Type)]
-// #[repr(i32)]
-// pub enum UserStatus {
-//   #[default]
-//   Normal = 10,
-//   Disable = 99,
-//   Enable = 100,
-// }
-
 impl From<UserStatus> for sea_query::Value {
   fn from(value: UserStatus) -> Self {
     sea_query::Value::Int(Some(value as i32))
@@ -156,6 +149,18 @@ impl From<UserStatus> for sea_query::Value {
 }
 
 impl sea_query::Nullable for UserStatus {
+  fn null() -> sea_query::Value {
+    sea_query::Value::Int(None)
+  }
+}
+
+impl From<Gender> for sea_query::Value {
+  fn from(value: Gender) -> Self {
+    sea_query::Value::Int(Some(value as i32))
+  }
+}
+
+impl sea_query::Nullable for Gender {
   fn null() -> sea_query::Value {
     sea_query::Value::Int(None)
   }

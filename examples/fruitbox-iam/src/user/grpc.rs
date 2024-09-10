@@ -1,7 +1,7 @@
 use derive_more::derive::Constructor;
 use tonic::Response;
 
-use crate::v1::{
+use crate::proto::v1::{
   create_user_reply, user_service_server::UserService, CreateUserReply, CreateUserRequest, DeleteUserReply,
   FindUserRequest, PageUserReply, PageUserRequest, UpdateUserRequest, UserDto, UserReply,
 };

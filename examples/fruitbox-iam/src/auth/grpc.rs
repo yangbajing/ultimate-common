@@ -3,7 +3,7 @@ use tonic::{Request, Response, Status};
 
 use crate::{
   app::AppState,
-  v1::{
+  proto::v1::{
     auth_service_server::{AuthService, AuthServiceServer},
     SigninReplay, SigninRequest,
   },
