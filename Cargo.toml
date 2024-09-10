@@ -127,6 +127,8 @@ headers = "0.4"
 mime = "0.3"
 reqwest = { version = "0.12", features = ["json"] }
 hyper = "1"
+hyper-util = "0.1"
+tower = "0.5"
 tower-http = { version = "0.5", features = [
     "fs",
     "trace",
@@ -160,6 +162,7 @@ calamine = "0.25"
 tonic = "0.12"
 tonic-types = "0.12"
 tonic-reflection = "0.12"
+tonic-web = "0.12"
 tonic-build = { version = "0.12", features = ["prost"] }
 prost = "0.13"
 prost-build = "0.13"

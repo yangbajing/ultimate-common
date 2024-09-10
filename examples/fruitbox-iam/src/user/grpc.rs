@@ -1,7 +1,7 @@
 use tonic::{Request, Response, Status};
 
 use crate::{
-  pb::v1::{
+  pb::fruitbox_iam::v1::{
     create_user_response,
     user_server::{User, UserServer},
     AssignUserToRolesRequest, CreateUserRequest, CreateUserResponse, DeleteUserResponse, Empty, FindUserRequest,

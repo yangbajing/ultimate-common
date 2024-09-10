@@ -5,7 +5,7 @@ use ultimate_grpc::utils::field_mask_match_with;
 
 use crate::{
   ctx::CtxW,
-  pb::v1::{
+  pb::fruitbox_iam::v1::{
     role_server::{Role, RoleServer},
     AssignRoleToPermissionsRequest, CreateRoleRequest, DeleteRoleRequest, DeleteRoleResponse, Empty, GetRoleRequest,
     PageRoleRequest, PageRoleResponse, RoleResponse, UpdateRoleRequest,

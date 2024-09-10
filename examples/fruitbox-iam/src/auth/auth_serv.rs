@@ -2,7 +2,7 @@ use ultimate::{security::pwd::verify_pwd, Result};
 
 use crate::{
   app::AppState,
-  pb::v1::{SigninReplay, SigninRequest, TokenType},
+  pb::fruitbox_iam::v1::{SigninReplay, SigninRequest, TokenType},
   user::{user_serv, UserFilter},
 };
 

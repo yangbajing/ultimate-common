@@ -2,7 +2,7 @@ use modql::filter::{OpValInt32, OpValString};
 use ultimate::{DataError, Result};
 use ultimate_api::v1::PagePayload;
 
-use crate::pb::v1::{FilterRoleDto, PageRoleResponse, RoleDto, RoleStatus, UpdateRoleDto};
+use crate::pb::fruitbox_iam::v1::{FilterRoleDto, PageRoleResponse, RoleDto, RoleStatus, UpdateRoleDto};
 
 use super::{Role, RoleFilter, RoleForUpdate};
 

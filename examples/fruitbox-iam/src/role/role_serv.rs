@@ -1,7 +1,7 @@
 use ultimate::Result;
 use ultimate_api::v1::{PagePayload, Pagination};
 
-use crate::{ctx::CtxW, pb::v1::CreateRoleDto, role::role_bmc::RoleBmc};
+use crate::{ctx::CtxW, pb::fruitbox_iam::v1::CreateRoleDto, role::role_bmc::RoleBmc};
 
 use super::{
   role_permission::{RolePermissionBmc, RolePermissionForCreate},

@@ -7,7 +7,7 @@ use sqlx::prelude::FromRow;
 use ultimate_common::time::UtcDateTime;
 use ultimate_db::DbRowType;
 
-use crate::pb::v1::RoleStatus;
+use crate::pb::fruitbox_iam::v1::RoleStatus;
 
 use super::role_permission::RolePermissionFilter;
 

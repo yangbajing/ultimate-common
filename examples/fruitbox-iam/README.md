@@ -9,6 +9,9 @@ cargo run -p fruitbox-iam --bin fruitbox-iam
 ## grpc
 
 ```sh
+grpcurl -plaintext localhost:8889 describe
+
+
 grpcurl -plaintext -import-path ./examples/fruitbox-iam/proto \
   -import-path ./examples/fruitbox-iam/proto/fruitbox_iam/v1 -proto auth.proto \
   -d '{"email":"admin@ultimate.com", "password":"2024.Ultimate"}' \

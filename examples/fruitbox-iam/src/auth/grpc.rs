@@ -2,7 +2,7 @@ use tonic::{Request, Response, Status};
 
 use crate::{
   app::get_app_state,
-  pb::v1::{
+  pb::fruitbox_iam::v1::{
     auth_server::{Auth, AuthServer},
     SigninReplay, SigninRequest,
   },

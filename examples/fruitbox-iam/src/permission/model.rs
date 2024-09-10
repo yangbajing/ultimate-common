@@ -10,7 +10,7 @@ use ultimate_common::time::UtcDateTime;
 use ultimate_db::DbRowType;
 
 use crate::{
-  pb::v1::{CreatePermissionDto, FilterPermissionDto, PagePermissionResponse, UpdatePermissionDto},
+  pb::fruitbox_iam::v1::{CreatePermissionDto, FilterPermissionDto, PagePermissionResponse, UpdatePermissionDto},
   role::role_permission::RolePermissionFilter,
 };
 

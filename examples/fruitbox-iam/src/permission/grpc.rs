@@ -3,7 +3,7 @@ use tonic::{Request, Response, Status};
 
 use crate::{
   ctx::CtxW,
-  pb::v1::{
+  pb::fruitbox_iam::v1::{
     permission_server::{Permission, PermissionServer},
     AssignPermmissionToRolesRequest, CreatePermissionRequest, DeletePermissionRequest, DeletePermissionResponse, Empty,
     GetPermissionRequest, PagePermissionRequest, PagePermissionResponse, PermissionDto, PermissionResponse,

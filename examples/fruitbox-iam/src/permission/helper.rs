@@ -1,4 +1,4 @@
-use crate::pb::v1::PermissionDto;
+use crate::pb::fruitbox_iam::v1::PermissionDto;
 
 use super::Permission;
 
