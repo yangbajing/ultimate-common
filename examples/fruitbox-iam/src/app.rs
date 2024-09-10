@@ -15,6 +15,7 @@ use crate::ctx::{CtxW, RequestMetadata};
 pub struct AppState {
   pub config_state: ConfigState,
   pub db_state: DbState,
+  pub runtime: Arc<tokio::runtime::Runtime>,
 }
 
 impl AppState {
@@ -42,8 +43,9 @@ pub fn get_app_state() -> &'static AppState {
 }
 
 fn new_app_state() -> ultimate::Result<AppState> {
+  let runtime = tokio::runtime::Builder::new_multi_thread().enable_all().build().unwrap();
   let config = starter::load_and_init();
-  let db = DbState::from_config(config.ultimate_config().db())?;
-  let app = AppState::builder().config_state(config).db_state(db).build();
+  let db = runtime.block_on(DbState::from_config(config.ultimate_config().db()))?;
+  let app = AppState::builder().config_state(config).db_state(db).runtime(Arc::new(runtime)).build();
   Ok(app)
 }

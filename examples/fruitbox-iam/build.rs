@@ -7,7 +7,7 @@ static ENUM_ATTR: &str =
 // static MESSAGE_ATTR: &str = "#[derive(serde::Serialize, serde::Deserialize)]";
 
 fn main() {
-  println!("cargo::rerun-if-changed=proto/fruitbox_iam/");
+  println!("cargo::rerun-if-changed=proto/fruitbox_iam/**/*");
 
   let out_dir = PathBuf::from(env::var("OUT_DIR").unwrap());
 

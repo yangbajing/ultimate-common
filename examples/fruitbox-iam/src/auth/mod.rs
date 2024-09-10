@@ -3,4 +3,4 @@ mod grpc;
 mod model;
 pub mod utils;
 
-pub use grpc::auth_grpc_server;
+pub use grpc::auth_svc;

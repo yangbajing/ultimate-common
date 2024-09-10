@@ -6,12 +6,15 @@ option java_outer_classname = "PermissionProto";
 
 package fruitbox_iam.v1;
 
+import "google/protobuf/field_mask.proto";
 import "ultimate_api/v1/ultimate.proto";
 
 service PermissionService {
   rpc Create(CreatePermissionRequest) returns (PermissionReply) {}
+  rpc Find(GetPermissionRequest) returns (PermissionDto) {}
   rpc Update(UpdatePermissionRequest) returns (PermissionReply) {}
   rpc Delete(DeletePermissionRequest) returns (DeletePermissionReply) {}
+  rpc Page(PagePermissionRequest) returns (PagePermissionReply) {}
 }
 
 message PermissionDto {
@@ -27,18 +30,32 @@ message PermissionDto {
 }
 
 message CreatePermissionRequest {
-  string name = 1;
-  string description = 2;
-  string resource = 3;
-  string action = 4;
+  google.protobuf.FieldMask field_mask = 1;
+  CreatePermission dto = 2;
+}
+
+message CreatePermission {
+  string name = 3;
+  optional string description = 4;
+  string resource = 5;
+  string action = 6;
+}
+
+message UpdatePermission {
+  optional string name = 3;
+  optional string description = 4;
+  optional string resource = 5;
+  optional string action = 6;
+}
+
+message GetPermissionRequest {
+  int64 id = 1;
 }
 
 message UpdatePermissionRequest {
-  int64 id = 1;
-  optional string name = 2;
-  optional string description = 3;
-  optional string resource = 4;
-  optional string action = 5;
+  google.protobuf.FieldMask field_mask = 1;
+  int64 id = 2;
+  UpdatePermission dto = 3;
 }
 
 message DeletePermissionRequest {
@@ -46,7 +63,25 @@ message DeletePermissionRequest {
 }
 
 message PermissionReply {
-  PermissionDto permission = 1;
+   int64 id = 1;
+  PermissionDto permission = 2;
 }
 
 message DeletePermissionReply {}
+
+message PagePermissionRequest {
+  ultimate_api.v1.Pagination pagination = 1;
+  repeated FilterPermission filter = 2;
+}
+
+message FilterPermission {
+  optional string name = 1;
+  optional string description = 2;
+  optional string resource = 3;
+  optional string action = 4;
+}
+
+message PagePermissionReply {
+  ultimate_api.v1.Page page = 1;
+  repeated PermissionDto records = 2;
+}

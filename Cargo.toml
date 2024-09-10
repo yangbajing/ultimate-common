@@ -60,6 +60,7 @@ chrono = { version = "0.4", default-features = false, features = [
 typed-builder = "0.20"
 derive-getters = "0.5"
 clap = { version = "4.5.7", features = ["derive"] }
+o2o = { version = "0.4" }
 # -- Helpful macros for working with enums and strings
 enum-iterator = "2"
 # -- Error

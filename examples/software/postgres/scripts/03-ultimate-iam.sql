@@ -65,9 +65,9 @@ create table if not exists iam.permission
 -- User Role Relation
 create table if not exists iam.user_role
 (
-    user_id bigint not null,
-    role_id bigint not null,
-    cid     bigint not null,
+    user_id bigint      not null,
+    role_id bigint      not null,
+    cid     bigint      not null,
     ctime   timestamptz not null,
     constraint user_role_pk primary key (user_id, role_id),
     constraint user_role_fk_user foreign key (user_id) references iam.user (id),
@@ -77,9 +77,9 @@ create table if not exists iam.user_role
 -- Role Permission Relation
 create table if not exists iam.role_permission
 (
-    role_id       bigint not null,
-    permission_id bigint not null,
-    cid           bigint not null,
+    role_id       bigint      not null,
+    permission_id bigint      not null,
+    cid           bigint      not null,
     ctime         timestamptz not null,
     constraint role_permission_pk primary key (role_id, permission_id),
     constraint role_permission_fk_role foreign key (role_id) references iam.role (id),
@@ -88,9 +88,9 @@ create table if not exists iam.role_permission
 --
 -- initial data
 ------------------
-insert into iam."user" (id, email, phone, name, status, cid, ctime)
-values (1, 'admin@ultimate.com', null, '超管', 100, 1, current_timestamp),
-       (10000, 'user@ultimate.com', '13912345678', '普通用户', 100, 1, current_timestamp);
+insert into iam."user" (id, email, phone, name, status, gender, cid, ctime)
+values (1, 'admin@ultimate.com', null, '超管', 100, 0, 1, current_timestamp),
+       (10000, 'user@ultimate.com', '13912345678', '普通用户', 100, 0, 1, current_timestamp);
 insert into iam.user_credential (id, encrypted_pwd, cid, ctime)
 values (1,
         '#1#$argon2id$v=19$m=19456,t=2,p=1$hAPRw63nW4mdwOd0l0WnmA$wN1i4uYbL+h/FjsaMVae6n93A3LikkqJ4IwiAqr78x0', -- 密码为：2024.Ultimate
@@ -122,8 +122,9 @@ values (2, 1, 1, current_timestamp);
 --
 -- 为现有用户分配角色
 insert into iam.user_role (user_id, role_id, cid, ctime)
-values (1, 1, 1, current_timestamp),      -- 超管用户分配超级管理员角色
-       (10000, 2, 1, current_timestamp);  -- 普通用户分配普通用户角色
+values (1, 1, 1, current_timestamp), -- 超管用户分配超级管理员角色
+       (10000, 2, 1, current_timestamp);
+-- 普通用户分配普通用户角色
 --
 -- 重置序列
 alter sequence iam.role_id_seq restart 3;

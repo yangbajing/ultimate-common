@@ -35,9 +35,9 @@ impl AppState {
   }
 }
 
-pub fn new_app_state() -> ultimate::Result<AppState> {
+pub async fn new_app_state() -> ultimate::Result<AppState> {
   let config = starter::load_and_init();
-  let db = DbState::from_config(config.ultimate_config().db())?;
+  let db = DbState::from_config(config.ultimate_config().db()).await?;
   let app = AppState::builder().config_state(config).db_state(db).build();
   Ok(app)
 }

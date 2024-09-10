@@ -119,6 +119,8 @@ pub struct UserFilter {
 
   pub status: Option<OpValsInt32>,
 
+  pub gender: Option<OpValsInt32>,
+
   pub cid: Option<OpValsInt64>,
 
   #[modql(to_sea_value_fn = "to_sea_chrono_utc")]

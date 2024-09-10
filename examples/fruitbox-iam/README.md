@@ -17,7 +17,7 @@ grpcurl -plaintext -import-path ./examples/fruitbox-iam/proto \
 grpcurl -plaintext -import-path ./examples/fruitbox-iam/proto \
   -import-path ./examples/fruitbox-iam/proto/fruitbox_iam/v1 \
   -proto user.proto \
-  -H 'Authorization: Bearer eyJ0eXAiOiJKV1QiLCJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwiYWxnIjoiZGlyIn0..Y2qiFBZyc7T01VV4ZG_jAw.mGTz66crmc054z7elr9QgS2-CYZHVptu1hOTIt2nQdY.f4TwgO3dFXPKAY4qqNu6mA' \
+  -H 'Authorization: Bearer eyJ0eXAiOiJKV1QiLCJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwiYWxnIjoiZGlyIn0..pmcUdN9wb8J63fkU6JDOJw.kDRISHrRKvo58GSC1TVCNGmjfnojcWFgcuhfNypsQjI.kPWYQa3ApiP7QFkVLNWwrw' \
   -d '{"id":1}' \
   localhost:8889 fruitbox_iam.v1.UserService/Find
 ```

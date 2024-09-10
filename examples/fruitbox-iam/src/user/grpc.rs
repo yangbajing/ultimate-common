@@ -1,9 +1,14 @@
 use derive_more::derive::Constructor;
-use tonic::Response;
+use tonic::{service::interceptor::InterceptedService, Request, Response, Status};
 
-use crate::proto::v1::{
-  create_user_reply, user_service_server::UserService, CreateUserReply, CreateUserRequest, DeleteUserReply,
-  FindUserRequest, PageUserReply, PageUserRequest, UpdateUserRequest, UserDto, UserReply,
+use crate::{
+  endpoint::grpc::interceptor::auth_interceptor,
+  proto::v1::{
+    create_user_reply,
+    user_service_server::{UserService, UserServiceServer},
+    CreateUserReply, CreateUserRequest, DeleteUserReply, FindUserRequest, PageUserReply, PageUserRequest,
+    UpdateUserRequest, UserDto, UserReply,
+  },
 };
 
 use super::user_serv;
@@ -13,16 +18,13 @@ pub struct UserServiceImpl;
 
 #[tonic::async_trait]
 impl UserService for UserServiceImpl {
-  async fn find(&self, request: tonic::Request<FindUserRequest>) -> Result<tonic::Response<UserReply>, tonic::Status> {
+  async fn find(&self, request: Request<FindUserRequest>) -> Result<Response<UserReply>, Status> {
     let ctx = request.extensions().try_into()?;
     let user = user_serv::find_option_by_id(ctx, request.get_ref().id).await?.map(UserDto::from);
     Ok(Response::new(UserReply { user }))
   }
 
-  async fn create(
-    &self,
-    request: tonic::Request<CreateUserRequest>,
-  ) -> Result<tonic::Response<CreateUserReply>, tonic::Status> {
+  async fn create(&self, request: Request<CreateUserRequest>) -> Result<Response<CreateUserReply>, Status> {
     let (_, exts, req) = request.into_parts();
     let returining_payload = req.returining_payload;
 
@@ -38,10 +40,7 @@ impl UserService for UserServiceImpl {
     Ok(Response::new(CreateUserReply { reply: Some(reply) }))
   }
 
-  async fn update(
-    &self,
-    request: tonic::Request<UpdateUserRequest>,
-  ) -> Result<tonic::Response<UserReply>, tonic::Status> {
+  async fn update(&self, request: Request<UpdateUserRequest>) -> Result<Response<UserReply>, Status> {
     let (_, exts, req) = request.into_parts();
     let ctx = (&exts).try_into()?;
     let id = req.id;
@@ -58,10 +57,7 @@ impl UserService for UserServiceImpl {
     Ok(Response::new(UserReply { user }))
   }
 
-  async fn page(
-    &self,
-    request: tonic::Request<PageUserRequest>,
-  ) -> Result<tonic::Response<PageUserReply>, tonic::Status> {
+  async fn page(&self, request: Request<PageUserRequest>) -> Result<Response<PageUserReply>, Status> {
     let (_, exts, req) = request.into_parts();
     let ctx = (&exts).try_into()?;
 
@@ -69,13 +65,15 @@ impl UserService for UserServiceImpl {
     Ok(Response::new(page.into()))
   }
 
-  async fn delete(
-    &self,
-    request: tonic::Request<FindUserRequest>,
-  ) -> Result<tonic::Response<DeleteUserReply>, tonic::Status> {
+  async fn delete(&self, request: Request<FindUserRequest>) -> Result<Response<DeleteUserReply>, Status> {
     let ctx = request.extensions().try_into()?;
     let id = request.get_ref().id;
     user_serv::delete_by_id(ctx, id).await?;
     Ok(Response::new(DeleteUserReply {}))
   }
+}
+
+pub fn user_svc(
+) -> InterceptedService<UserServiceServer<UserServiceImpl>, fn(Request<()>) -> Result<Request<()>, Status>> {
+  UserServiceServer::with_interceptor(UserServiceImpl::new(), auth_interceptor)
 }

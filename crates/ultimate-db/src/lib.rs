@@ -19,8 +19,8 @@ pub struct DbState {
 }
 
 impl DbState {
-  pub fn from_config(db: &DbConf) -> Result<Self> {
-    let mm = ModelManager::new(db)?;
+  pub async fn from_config(db: &DbConf) -> Result<Self> {
+    let mm = ModelManager::new(db).await?;
     Ok(DbState { mm })
   }
 

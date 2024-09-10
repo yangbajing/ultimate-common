@@ -4,15 +4,16 @@ use futures::{Future, TryFutureExt};
 use tonic::transport::Server;
 use ultimate::DataError;
 
-use crate::{app::AppState, auth, proto::v1::user_service_server::UserServiceServer, user::grpc::UserServiceImpl};
+use crate::{app::get_app_state, auth::auth_svc, permission::permission_svc, user::grpc::user_svc};
 
-use self::interceptor::auth_interceptor;
+pub fn grpc_serve() -> ultimate::Result<impl Future<Output = std::result::Result<(), DataError>>> {
+  let grpc_conf = get_app_state().ultimate_config().grpc();
+  let grpc_addr = grpc_conf.server_addr.parse()?;
 
-pub fn grpc_serve(app: AppState) -> ultimate::Result<impl Future<Output = std::result::Result<(), DataError>>> {
-  let grpc_addr = app.ultimate_config().grpc().server_addr.parse()?;
   let serve = Server::builder()
-    .add_service(UserServiceServer::with_interceptor(UserServiceImpl::new(), auth_interceptor))
-    .add_service(auth::auth_grpc_server(app.clone()))
+    .add_service(permission_svc())
+    .add_service(user_svc())
+    .add_service(auth_svc())
     .serve(grpc_addr)
     .map_err(DataError::from);
   Ok(serve)
