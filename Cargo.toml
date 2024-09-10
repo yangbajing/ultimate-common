@@ -125,6 +125,7 @@ urlencoding = "2.1"
 serde_urlencoded = "0.7"
 headers = "0.4"
 mime = "0.3"
+http = "1.1"
 reqwest = { version = "0.12", features = ["json"] }
 hyper = "1"
 hyper-util = "0.1"
@@ -135,6 +136,7 @@ tower-http = { version = "0.5", features = [
     "cors",
     "compression-full",
 ] }
+tower-service = { version = "0.3" }
 tower-cookies = "0.10"
 cookie = "0.18"
 axum = { version = "0.7", features = ["macros", "form"] }

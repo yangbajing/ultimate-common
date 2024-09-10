@@ -15,14 +15,15 @@ grpcurl -plaintext localhost:8889 describe
 grpcurl -plaintext -import-path ./examples/fruitbox-iam/proto \
   -import-path ./examples/fruitbox-iam/proto/fruitbox_iam/v1 -proto auth.proto \
   -d '{"email":"admin@ultimate.com", "password":"2024.Ultimate"}' \
-  localhost:8889 fruitbox_iam.v1.AuthService/Signin
+  localhost:8889 fruitbox_iam.v1.Auth/Signin
+
 
 grpcurl -plaintext -import-path ./examples/fruitbox-iam/proto \
   -import-path ./examples/fruitbox-iam/proto/fruitbox_iam/v1 \
   -proto user.proto \
   -H 'Authorization: Bearer eyJ0eXAiOiJKV1QiLCJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwiYWxnIjoiZGlyIn0..pmcUdN9wb8J63fkU6JDOJw.kDRISHrRKvo58GSC1TVCNGmjfnojcWFgcuhfNypsQjI.kPWYQa3ApiP7QFkVLNWwrw' \
   -d '{"id":1}' \
-  localhost:8889 fruitbox_iam.v1.UserService/Find
+  localhost:8889 fruitbox_iam.v1.User/Find
 
 
 grpcurl -plaintext -import-path ./examples/fruitbox-iam/proto \
@@ -38,7 +39,8 @@ grpcurl -plaintext -import-path ./examples/fruitbox-iam/proto \
        },
        "permission_ids":[1,2]
      }' \
-  localhost:8889 fruitbox_iam.v1.RoleService/Create
+  localhost:8889 fruitbox_iam.v1.Role/Create
+
 
 grpcurl -plaintext -import-path ./examples/fruitbox-iam/proto \
   -import-path ./examples/fruitbox-iam/proto/fruitbox_iam/v1 \
@@ -48,5 +50,5 @@ grpcurl -plaintext -import-path ./examples/fruitbox-iam/proto \
        "field_mask":{ "paths": ["permissions"]},
        "id": 1
      }' \
-  localhost:8889 fruitbox_iam.v1.RoleService/Get
+  localhost:8889 fruitbox_iam.v1.Role/Get
 ```

@@ -15,8 +15,9 @@ name = "fruitbox-iam"
 path = "bin/fruitbox-iam.rs"
 
 [features]
-default = ["tonic-reflection"]
-# tonic-reflection = ["dep:tonic-reflection"]
+# default = ["tonic-reflection"]
+tonic-reflection = ["dep:tonic-reflection", "ultimate-grpc/tonic-reflection"]
+tonic-web = ["dep:tonic-web", "ultimate-grpc/tonic-web"]
 
 [dependencies]
 # -- ultimates

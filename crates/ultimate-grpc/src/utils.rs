@@ -1,9 +1,45 @@
+use futures::{Future, TryFutureExt};
 use prost_types::FieldMask;
-use tonic::{metadata::MetadataMap, Status};
+use tonic::{metadata::MetadataMap, service::RoutesBuilder, transport::Server, Status};
 use ultimate::{
-  configuration::model::SecurityConf,
+  configuration::model::{GrpcConf, SecurityConf},
   security::{jose::JwtPayload, SecurityUtils},
+  DataError,
 };
+
+pub fn init_grpc_server<'b, F>(
+  conf: &GrpcConf,
+  _encoded_file_descriptor_sets: impl IntoIterator<Item = &'b [u8]>,
+  f: F,
+) -> ultimate::Result<impl Future<Output = std::result::Result<(), DataError>>>
+where
+  F: FnOnce(&mut RoutesBuilder),
+{
+  let grpc_addr = conf.server_addr.parse()?;
+
+  #[cfg(not(feature = "tonic-web"))]
+  let mut b = Server::builder();
+
+  #[cfg(feature = "tonic-web")]
+  let mut b = Server::builder().accept_http1(true).layer(tonic_web::GrpcWebLayer::new());
+
+  let mut routes_builder = RoutesBuilder::default();
+  f(&mut routes_builder);
+
+  #[cfg(feature = "tonic-reflection")]
+  {
+    let rb = _encoded_file_descriptor_sets
+      .into_iter()
+      .fold(tonic_reflection::server::Builder::configure(), |rb, set| rb.register_encoded_file_descriptor_set(set));
+    let service = rb.build_v1().unwrap();
+    routes_builder.add_service(service);
+  }
+
+  // let s = router.into_service();
+
+  let serve = b.add_routes(routes_builder.routes()).serve(grpc_addr).map_err(DataError::from);
+  Ok(serve)
+}
 
 pub fn extract_jwt_payload_from_metadata(
   sc: &SecurityConf,

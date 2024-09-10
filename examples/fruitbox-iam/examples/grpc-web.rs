@@ -1,23 +1,29 @@
-use hello_world::{role_client::RoleClient, GetRoleRequest};
-use hyper_util::rt::TokioExecutor;
-
-#[cfg(feature = "tonic-web")]
-use tonic_web::GrpcWebClientLayer;
-
 pub mod hello_world {
   tonic::include_proto!("fruitbox_iam.v1");
 }
 
+///
+/// ```
+/// cargo run -p fruitbox-iam --example grpc-web --features tonic-web
+/// ``
+///
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
+  #[cfg(feature = "tonic-web")]
+  test_grpc_web().await?;
+
+  Ok(())
+}
+
+#[cfg(feature = "tonic-web")]
+async fn test_grpc_web() -> Result<(), Box<dyn std::error::Error>> {
+  use hello_world::{role_client::RoleClient, GetRoleRequest};
+  use hyper_util::rt::TokioExecutor;
+  use tonic_web::GrpcWebClientLayer;
+
   // Must use hyper directly...
   let client = hyper_util::client::legacy::Client::builder(TokioExecutor::new()).build_http();
-  let mut svc_b = tower::ServiceBuilder::new();
-
-  #[cfg(feature = "tonic-web")]
-  {
-    svc_b = svc_b.layer(GrpcWebClientLayer::new());
-  }
+  let svc_b = tower::ServiceBuilder::new().layer(GrpcWebClientLayer::new());
 
   let svc = svc_b.service(client);
 
