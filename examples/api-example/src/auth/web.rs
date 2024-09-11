@@ -1,7 +1,7 @@
 use axum::{routing::post, Json, Router};
 use ultimate_web::{ok, AppResult};
 
-use crate::state::AppState;
+use crate::app::AppState;
 
 use super::{AuthServ, LoginByPwdReq, LoginResp};
 

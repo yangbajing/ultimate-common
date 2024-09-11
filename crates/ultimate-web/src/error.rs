@@ -69,8 +69,7 @@ impl From<DataError> for AppError {
       DataError::ParseIntError(e) => Self::new(e.to_string()),
       DataError::IoError(e) => Self::new(e.to_string()),
       DataError::JsonError(e) => Self::new(e.to_string()),
-      #[cfg(feature = "tonic")]
-      DataError::GrpcTransportError(e) => Self::new(e.to_string()),
+      DataError::TaskJoinError(e) => Self::new(e.to_string()),
     }
   }
 }

@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use axum::Router;
 use tower_http::{
   compression::CompressionLayer,
@@ -8,7 +10,7 @@ use tracing::info;
 
 use ultimate::configuration::UltimateConfig;
 
-pub async fn init_server(conf: &UltimateConfig, app: Router) -> ultimate::Result<()> {
+pub async fn init_server(conf: Arc<UltimateConfig>, app: Router) -> ultimate::Result<()> {
   let make_service = app
     .layer(CompressionLayer::new())
     .layer(CorsLayer::new().allow_methods(cors::Any).allow_origin(cors::Any))

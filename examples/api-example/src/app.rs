@@ -13,8 +13,8 @@ use crate::ctx::{CtxW, RequestMetadata};
 
 #[derive(Clone, TypedBuilder, Getters)]
 pub struct AppState {
-  config_state: ConfigState,
-  db_state: DbState,
+  pub config_state: ConfigState,
+  pub db_state: DbState,
 }
 
 impl AppState {

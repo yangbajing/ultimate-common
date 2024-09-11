@@ -8,7 +8,7 @@ use derive_new::new;
 use ultimate::{DataError, Result};
 use ultimate_web::AppError;
 
-use crate::{ctx::CtxW, state::AppState};
+use crate::{app::AppState, ctx::CtxW};
 
 use super::{
   User, UserBmc, UserCredential, UserCredentialBmc, UserFilter, UserForCreate, UserForPage, UserForUpdate, UserPage,
@@ -26,12 +26,13 @@ impl UserServ {
   }
 
   pub async fn page(&self, req: UserForPage) -> Result<UserPage> {
-    let page = UserBmc::page(self.ctx.mm(), req.page.unwrap_or_default(), req.filter.unwrap_or_default()).await?;
+    let page =
+      UserBmc::page(self.ctx.mm(), req.filter.into_iter().collect::<Vec<_>>(), req.page.unwrap_or_default()).await?;
     Ok(page.into())
   }
 
-  pub async fn get_by_id(&self, id: i64) -> Result<User> {
-    let u = UserBmc::get_by_id(self.ctx.mm(), id).await?;
+  pub async fn find_by_id(&self, id: i64) -> Result<User> {
+    let u = UserBmc::find_by_id(self.ctx.mm(), id).await?;
     Ok(u)
   }
 
@@ -46,8 +47,9 @@ impl UserServ {
   }
 
   pub(crate) async fn get_fetch_credential(&self, req: UserFilter) -> Result<(User, UserCredential)> {
-    let u = UserBmc::find(self.ctx.mm(), req).await?.ok_or_else(|| DataError::not_found("User not exists."))?;
-    let uc = UserCredentialBmc::get_by_id(self.ctx.mm(), u.id).await?;
+    let u =
+      UserBmc::find_unique(self.ctx.mm(), vec![req]).await?.ok_or_else(|| DataError::not_found("User not exists."))?;
+    let uc = UserCredentialBmc::find_by_id(self.ctx.mm(), u.id).await?;
     Ok((u, uc))
   }
 }

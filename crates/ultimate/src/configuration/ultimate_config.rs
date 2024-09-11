@@ -2,25 +2,25 @@ use config::Config;
 use serde::de::{Unexpected, Visitor};
 use serde::{Deserialize, Deserializer, Serialize};
 
-use super::model::{AppConfig, DbConfig, GrpcConfig, SecruityConfig, TraceConfig, WebConfig};
+use super::model::{AppConf, DbConf, GrpcConf, SecurityConf, TraceConfig, WebConfig};
 
 #[derive(Clone, Serialize, Deserialize)]
 pub struct UltimateConfig {
-  app: AppConfig,
+  app: AppConf,
 
-  security: SecruityConfig,
+  security: SecurityConf,
 
-  db: DbConfig,
+  db: DbConf,
 
   trace: TraceConfig,
 
   web: WebConfig,
 
-  grpc: GrpcConfig,
+  grpc: GrpcConf,
 }
 
 impl UltimateConfig {
-  pub fn app(&self) -> &AppConfig {
+  pub fn app(&self) -> &AppConf {
     &self.app
   }
 
@@ -28,11 +28,11 @@ impl UltimateConfig {
     &self.web
   }
 
-  pub fn security(&self) -> &SecruityConfig {
+  pub fn security(&self) -> &SecurityConf {
     &self.security
   }
 
-  pub fn db(&self) -> &DbConfig {
+  pub fn db(&self) -> &DbConf {
     &self.db
   }
 
@@ -40,7 +40,7 @@ impl UltimateConfig {
     &self.trace
   }
 
-  pub fn grpc(&self) -> &GrpcConfig {
+  pub fn grpc(&self) -> &GrpcConf {
     &self.grpc
   }
 }

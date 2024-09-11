@@ -1,7 +1,6 @@
 use std::{ops::Deref, sync::Arc};
 
 use josekit::jwt::JwtPayload;
-
 use ultimate_common::time::{self, DateTime, Duration, Utc, UtcDateTime};
 
 use crate::DataError;
@@ -121,12 +120,6 @@ impl Deref for Ctx {
     &self.0
   }
 }
-
-// impl DerefMut for Ctx {
-//   fn deref_mut(&mut self) -> &mut Self::Target {
-//     &mut self.0
-//   }
-// }
 
 impl TryFrom<JwtPayload> for Ctx {
   type Error = DataError;

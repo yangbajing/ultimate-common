@@ -11,7 +11,7 @@ use ultimate::ctx::Ctx;
 use ultimate_db::ModelManager;
 use ultimate_web::{extract_session, AppError};
 
-use crate::state::AppState;
+use crate::app::AppState;
 
 static X_APP_VERSION: &str = "X-APP-VARSION";
 static X_DEVICE_ID: &str = "X-DEVICE-ID";

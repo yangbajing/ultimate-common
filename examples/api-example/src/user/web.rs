@@ -6,7 +6,7 @@ use axum::{
 use ultimate::IdI64Result;
 use ultimate_web::{ok, AppResult};
 
-use crate::state::AppState;
+use crate::app::AppState;
 
 use super::{User, UserForCreate, UserForPage, UserForUpdate, UserPage, UserServ};
 
@@ -28,7 +28,7 @@ async fn page_user(user_serv: UserServ, Json(req): Json<UserForPage>) -> AppResu
 }
 
 async fn get_user(user_serv: UserServ, Path(id): Path<i64>) -> AppResult<User> {
-  let u = user_serv.get_by_id(id).await?;
+  let u = user_serv.find_by_id(id).await?;
   ok(u)
 }
 

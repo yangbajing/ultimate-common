@@ -8,7 +8,7 @@ use ultimate::{security::pwd::verify_pwd, Result};
 use ultimate_web::AppError;
 
 use crate::{
-  state::AppState,
+  app::AppState,
   user::{UserFilter, UserServ},
   util::make_token,
 };

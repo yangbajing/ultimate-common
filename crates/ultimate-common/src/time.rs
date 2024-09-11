@@ -51,17 +51,21 @@ pub fn now_utc_plus_sec_str(sec: u64) -> Result<String> {
   format_time(new_time)
 }
 
+pub fn from_milliseconds(milliseconds: i64) -> DateTime<Utc> {
+  DateTime::<Utc>::MIN_UTC + Duration::milliseconds(milliseconds)
+}
+
 pub fn parse_utc(moment: &str) -> Result<UtcDateTime> {
   let time = moment.parse::<UtcDateTime>().unwrap();
   Ok(time)
 }
 
-#[cfg(feature = "prost-types")]
+#[cfg(feature = "prost")]
 pub fn to_prost_timestamp(d: &UtcDateTime) -> prost_types::Timestamp {
   prost_types::Timestamp { seconds: d.timestamp(), nanos: d.timestamp_subsec_nanos() as i32 }
 }
 
-#[cfg(feature = "prost-types")]
+#[cfg(feature = "prost")]
 pub fn from_prost_timestamp(t: &prost_types::Timestamp) -> Option<UtcDateTime> {
   DateTime::from_timestamp(t.seconds, t.nanos as u32)
 }
