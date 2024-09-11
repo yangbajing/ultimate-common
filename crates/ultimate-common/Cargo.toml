@@ -8,6 +8,9 @@ license-file.workspace = true
 repository.workspace = true
 readme = "README.md"
 
+[features]
+prost = ["dep:prost-types"]
+
 [dependencies]
 thiserror.workspace = true
 serde.workspace = true

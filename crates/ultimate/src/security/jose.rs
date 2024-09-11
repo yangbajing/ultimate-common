@@ -82,7 +82,7 @@ mod tests {
   use super::*;
   use crate::configuration::{
     load_config,
-    model::{KeyConf, SecruityConfig},
+    model::{KeyConf, SecurityConf},
   };
   use std::{
     sync::OnceLock,
@@ -178,10 +178,10 @@ mod tests {
   // static PRIVATE_KEY: &str = concat!(env!("CARGO_MANIFEST_DIR"), "/data/pem/EC_P-256_private.pem");
   // static PUBLIC_KEY: &str = concat!(env!("CARGO_MANIFEST_DIR"), "/data/pem/EC_P-256_public.pem");
   static EXPIRES_AT: OnceLock<SystemTime> = OnceLock::new();
-  static SECURITY_CONFIG: OnceLock<SecruityConfig> = OnceLock::new();
-  fn helper() -> (&'static SecruityConfig, &'static SystemTime) {
+  static SECURITY_CONFIG: OnceLock<SecurityConf> = OnceLock::new();
+  fn helper() -> (&'static SecurityConf, &'static SystemTime) {
     (
-      SECURITY_CONFIG.get_or_init(|| load_config().unwrap().get::<SecruityConfig>("ultimate.security").unwrap()),
+      SECURITY_CONFIG.get_or_init(|| load_config().unwrap().get::<SecurityConf>("ultimate.security").unwrap()),
       EXPIRES_AT.get_or_init(|| SystemTime::now().checked_add(Duration::from_secs(60 * 60 * 24 * 30)).unwrap()),
     )
   }

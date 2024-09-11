@@ -3,12 +3,12 @@ use serde::{Deserialize, Serialize};
 use crate::RunMode;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct AppConfig {
+pub struct AppConf {
   run_mode: RunMode,
   name: String,
 }
 
-impl AppConfig {
+impl AppConf {
   pub fn run_mode(&self) -> &RunMode {
     &self.run_mode
   }

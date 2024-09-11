@@ -8,8 +8,9 @@ use serde::{Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
 use sqlx::prelude::FromRow;
 use ultimate::{DataError, Result};
+use ultimate_api::v1::{Page, PagePayload, Pagination};
 use ultimate_common::{regex, time::UtcDateTime};
-use ultimate_db::{to_sea_chrono_utc, DbRowType, Page, PagePayload, Pagination};
+use ultimate_db::{to_sea_chrono_utc, DbRowType};
 
 #[derive(Debug, Serialize, FromRow, Fields)]
 #[enum_def]
@@ -120,11 +121,11 @@ pub struct UserFilter {
 #[derive(Debug, Serialize)]
 pub struct UserPage {
   pub page: Page,
-  pub records: Vec<User>,
+  pub items: Vec<User>,
 }
 
 impl From<PagePayload<User>> for UserPage {
   fn from(value: PagePayload<User>) -> Self {
-    Self { page: value.page, records: value.records }
+    Self { page: value.page, items: value.items }
   }
 }

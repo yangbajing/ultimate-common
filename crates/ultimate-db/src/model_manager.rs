@@ -1,4 +1,4 @@
-use ultimate::{configuration::model::DbConfig, ctx::Ctx};
+use ultimate::{configuration::model::DbConf, ctx::Ctx};
 
 use crate::store::{dbx::new_db_pool_from_config, Dbx};
 
@@ -12,7 +12,7 @@ pub struct ModelManager {
 
 impl ModelManager {
   /// Constructor
-  pub async fn new(db_config: &DbConfig) -> Result<Self> {
+  pub async fn new(db_config: &DbConf) -> Result<Self> {
     let db_pool =
       new_db_pool_from_config(db_config).await.map_err(|ex| Error::CantCreateModelManagerProvider(ex.to_string()))?;
     let dbx = Dbx::new(db_pool, false)?;

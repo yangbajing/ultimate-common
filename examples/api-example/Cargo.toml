@@ -17,6 +17,7 @@ workspace = true
 [dependencies]
 ultimate-common = { workspace = true }
 ultimate = { workspace = true, features = ["ulid"] }
+ultimate-api = { workspace = true, features = ["utoipa"] }
 ultimate-web = { workspace = true }
 ultimate-db = { workspace = true }
 thiserror.workspace = true

@@ -5,12 +5,12 @@ use ultimate_common::{
 };
 
 #[derive(Clone, Deserialize, Serialize)]
-pub struct SecruityConfig {
+pub struct SecurityConf {
   pwd: PwdConf,
   token: TokenConf,
 }
 
-impl SecruityConfig {
+impl SecurityConf {
   pub fn pwd(&self) -> &PwdConf {
     &self.pwd
   }
