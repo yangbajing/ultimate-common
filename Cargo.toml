@@ -157,7 +157,7 @@ utoipa-scalar = { version = "0.2.0-beta", features = ["axum"] }
 asserhttp = { version = "0.7", features = ["reqwest"] }
 dotenvy = "0.15"
 # -- Data Science
-polars = "0.42"
+polars = "0.43"
 # An Excel/OpenDocument Spreadsheets reader and deserializer in pure rust
 calamine = "0.25"
 # -- RPC
