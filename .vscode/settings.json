@@ -78,5 +78,6 @@
     "sound": "off"
   },
   "editor.tabSize": 2,
-  "rust-analyzer.cargo.buildScripts.enable": true
+  "rust-analyzer.cargo.buildScripts.enable": true,
+  "editor.formatOnSave": true
 }
