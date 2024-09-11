@@ -1,5 +1,5 @@
 [workspace]
-members = ["crates/*", "examples/api-example", "examples/fruitbox-iam"]
+members = ["crates/*", "examples/api-example"]
 resolver = "2"
 
 [workspace.package]
