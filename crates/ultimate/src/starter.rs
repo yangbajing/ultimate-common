@@ -2,7 +2,7 @@ use crate::{configuration::ConfigState, trace};
 
 pub fn load_and_init() -> ConfigState {
   let config_state = config_load();
-  let ultimate_config = config_state.ultimate_config();
+  let ultimate_config = config_state.configuration();
   trace::init_trace(ultimate_config);
   config_state
 }

@@ -3,7 +3,6 @@ use axum::response::IntoResponse;
 use axum::Json;
 use serde::Serialize;
 use serde_json::Value;
-use ulid::Ulid;
 use ultimate::security;
 use ultimate::DataError;
 
@@ -14,7 +13,7 @@ pub type AppResult<T> = core::result::Result<Json<T>, AppError>;
 #[cfg_attr(feature = "utoipa", derive(utoipa::ToSchema))]
 pub struct AppError {
   /// A unique error ID.
-  pub err_id: Ulid,
+  pub err_id: ulid::Ulid,
 
   pub err_code: i32,
 
@@ -28,11 +27,11 @@ pub struct AppError {
 
 impl AppError {
   pub fn new(error: impl Into<String>) -> Self {
-    Self { err_id: Ulid::new(), err_code: 500, err_msg: error.into(), err_msg_detail: None }
+    Self { err_id: ulid::Ulid::new(), err_code: 500, err_msg: error.into(), err_msg_detail: None }
   }
 
   pub fn new_with_code(err_code: i32, err_msg: impl Into<String>) -> Self {
-    Self { err_id: Ulid::new(), err_code, err_msg: err_msg.into(), err_msg_detail: None }
+    Self { err_id: ulid::Ulid::new(), err_code, err_msg: err_msg.into(), err_msg_detail: None }
   }
 
   pub fn with_err_code(mut self, err_code: i32) -> Self {

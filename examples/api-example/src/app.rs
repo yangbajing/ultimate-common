@@ -3,7 +3,7 @@ use std::sync::Arc;
 use derive_getters::Getters;
 use typed_builder::TypedBuilder;
 use ultimate::{
-  configuration::{ConfigState, UltimateConfig},
+  configuration::{ConfigState, Configuration},
   ctx::Ctx,
   starter,
 };
@@ -18,8 +18,8 @@ pub struct AppState {
 }
 
 impl AppState {
-  pub fn ultimate_config(&self) -> &UltimateConfig {
-    self.config_state().ultimate_config()
+  pub fn configuration(&self) -> &Configuration {
+    self.config_state().configuration()
   }
 
   pub fn mm(&self) -> &ModelManager {
@@ -37,7 +37,7 @@ impl AppState {
 
 pub async fn new_app_state() -> ultimate::Result<AppState> {
   let config = starter::load_and_init();
-  let db = DbState::from_config(config.ultimate_config().db()).await?;
+  let db = DbState::from_config(config.configuration().db()).await?;
   let app = AppState::builder().config_state(config).db_state(db).build();
   Ok(app)
 }

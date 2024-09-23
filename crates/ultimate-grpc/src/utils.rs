@@ -1,7 +1,7 @@
 use futures::{Future, TryFutureExt};
 use prost_types::FieldMask;
 use tonic::{metadata::MetadataMap, service::RoutesBuilder, transport::Server, Status};
-use tower_http::{compression::CompressionLayer, trace::TraceLayer};
+use tower_http::trace::TraceLayer;
 use ultimate::{
   configuration::model::{GrpcConf, SecurityConf},
   security::{jose::JwtPayload, SecurityUtils},
@@ -18,7 +18,8 @@ where
 {
   let grpc_addr = conf.server_addr.parse()?;
 
-  let mut b = Server::builder().layer(CompressionLayer::new()).layer(TraceLayer::new_for_grpc());
+  #[allow(unused_mut)]
+  let mut b = Server::builder().layer(TraceLayer::new_for_grpc());
 
   #[cfg(feature = "tonic-web")]
   let mut b = b.accept_http1(true).layer(tonic_web::GrpcWebLayer::new());

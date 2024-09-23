@@ -27,7 +27,7 @@ impl AuthServ {
     let (u, uc) = user_serv.get_fetch_credential(UserFilter::from(&req)).await?;
     verify_pwd(&req.pwd, &uc.encrypted_pwd).await?;
 
-    let token = make_token(self.app.ultimate_config().security(), u.id)?;
+    let token = make_token(self.app.configuration().security(), u.id)?;
     Ok(LoginResp { token, token_type: TokenType::Bearer })
   }
 }

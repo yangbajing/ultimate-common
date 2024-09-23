@@ -74,7 +74,7 @@ hmac = "0.12"
 sha2 = "0.10"
 argon2 = "0.5"
 # -- JWT & JWE
-josekit = "0.8"
+josekit = "0.10"
 aliri = "0.6"
 # -- Async
 futures = "0.3"
@@ -171,7 +171,7 @@ prost-build = "0.13"
 prost-types = "0.13"
 
 # -- opendal
-opendal = { version = "0.49", features = ["services-obs"] }
+opendal = { version = "0.50", features = ["services-obs"] }
 
 strum = { version = "0.26", features = ["derive"] }
 strum_macros = "0.26"

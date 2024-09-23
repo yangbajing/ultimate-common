@@ -24,13 +24,11 @@ impl IdUuidResult {
   }
 }
 
-#[cfg(feature = "ulid")]
 #[derive(Debug, Serialize, Deserialize)]
 #[cfg_attr(feature = "utoipa", derive(utoipa::ToSchema))]
 pub struct IdUlidResult {
   pub id: ulid::Ulid,
 }
-#[cfg(feature = "ulid")]
 impl IdUlidResult {
   pub fn new(id: ulid::Ulid) -> Self {
     Self { id }

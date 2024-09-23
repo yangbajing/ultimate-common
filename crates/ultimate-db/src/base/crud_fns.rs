@@ -97,7 +97,7 @@ where
   let sqlx_query = sqlx::query_with(&sql, values);
 
   let count = mm.dbx().execute(sqlx_query).await?;
-  if count == 0 {
+  if count == 1 {
     Ok(())
   } else {
     // TODO 需要更有效的插入失败错误
@@ -137,7 +137,11 @@ where
   E: for<'r> FromRow<'r, PgRow> + Unpin + Send,
   E: HasSeaFields,
 {
-  let filter: FilterGroups = id.to_filter_node("id").into();
+  let filter: FilterGroups = match id {
+    #[cfg(feature = "uuid")]
+    Id::Uuid(id) => crate::IdUuidFilter { id: Some(modql::filter::OpValString::Eq(id.to_string()).into()) }.into(),
+    _ => id.to_filter_node("id").into(),
+  };
   find_unique::<MC, E, _>(mm, filter).await?.ok_or_else(|| Error::EntityNotFound {
     schema: MC::SCHEMA,
     entity: MC::TABLE,

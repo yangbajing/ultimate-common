@@ -34,7 +34,7 @@ impl FromRequestParts<AppState> for CtxW {
   type Rejection = (StatusCode, Json<AppError>);
 
   async fn from_request_parts(parts: &mut Parts, state: &AppState) -> core::result::Result<Self, Self::Rejection> {
-    match extract_session(parts, state.ultimate_config().security()) {
+    match extract_session(parts, state.configuration().security()) {
       Ok(ctx) => Ok(CtxW::new(state, ctx, Arc::new(RequestMetadata::from(&parts.headers)))),
       Err(e) => Err((StatusCode::UNAUTHORIZED, Json(e.into()))),
     }

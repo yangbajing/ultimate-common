@@ -25,12 +25,21 @@ impl<T> PagePayload<T> {
 pub struct Pagination {
   #[prost(int64, tag = "1")]
   pub page: i64,
+
   #[prost(int64, tag = "2")]
   pub page_size: i64,
+
+  #[serde(default = "default_sort_bys")]
   #[prost(message, repeated, tag = "3")]
   pub sort_bys: ::prost::alloc::vec::Vec<SortBy>,
+
+  #[serde(skip_serializing_if = "Option::is_none")]
   #[prost(int64, optional, tag = "4")]
   pub offset: ::core::option::Option<i64>,
+}
+
+fn default_sort_bys() -> Vec<SortBy> {
+  vec![]
 }
 
 impl Pagination {
@@ -101,7 +110,7 @@ pub struct SortBy {
 impl From<SortBy> for modql::filter::OrderBy {
   fn from(value: SortBy) -> Self {
     match value.d.try_into().unwrap_or_default() {
-      SortDirection::ASC => modql::filter::OrderBy::Asc(value.f),
+      SortDirection::ASC | SortDirection::UNSPECIFIED => modql::filter::OrderBy::Asc(value.f),
       SortDirection::DESC => modql::filter::OrderBy::Desc(value.f),
     }
   }
@@ -111,7 +120,7 @@ impl From<SortBy> for modql::filter::OrderBy {
 impl From<&SortBy> for modql::filter::OrderBy {
   fn from(value: &SortBy) -> Self {
     match value.d.try_into().unwrap_or_default() {
-      SortDirection::ASC => modql::filter::OrderBy::Asc(value.f.clone()),
+      SortDirection::ASC | SortDirection::UNSPECIFIED => modql::filter::OrderBy::Asc(value.f.clone()),
       SortDirection::DESC => modql::filter::OrderBy::Desc(value.f.clone()),
     }
   }
@@ -123,8 +132,9 @@ impl From<&SortBy> for modql::filter::OrderBy {
 #[repr(i32)]
 #[allow(non_camel_case_types)]
 pub enum SortDirection {
-  ASC = 0,
-  DESC = 1,
+  UNSPECIFIED = 0,
+  ASC = 1,
+  DESC = 2,
 }
 
 impl SortDirection {
@@ -136,6 +146,7 @@ impl SortDirection {
     match self {
       SortDirection::ASC => "ASC",
       SortDirection::DESC => "DESC",
+      SortDirection::UNSPECIFIED => "UNSPECIFIED",
     }
   }
   /// Creates an enum from field names used in the ProtoBuf definition.
